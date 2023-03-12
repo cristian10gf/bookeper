@@ -28,7 +28,7 @@ def leer_archivo():
 
 # importa requests
 import requests
-
+# recomendaciones de libros (https://es.wikipedia.org/w/api.php) o mangas(mangaDex)
 """ url = 'https://www.goodreads.com/book/review_counts.json'
 # haz una peticion de un libro a la api de goodreads
 def peticion_libro(isbn, nombre_libro):

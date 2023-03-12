@@ -1,11 +1,14 @@
+import random, libro
 class EstanteDeLibros:
-    def __init__(self, libros = None):
+    def __init__(self, libros = None, admin = None):
         if libros is None:
             self.libros = []
         else:
             self.libros = libros
+        self.admin = admin
+        self.codigo = random.randint(1, 100)
 
-    def agregar_libro(self, libro):
+    def agregar_libro(self, libro: "libro"):
         self.libros.append(libro)
 
     def quitar_libro(self, libro):

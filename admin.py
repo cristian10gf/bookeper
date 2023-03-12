@@ -1,14 +1,16 @@
+from stand import EstanteDeLibros
+
 class administrador:
-    def __init__(self, estantes=None):
+    def __init__(self, estantes=None or EstanteDeLibros):
         if estantes is None:
             self.estantes = []
         else:
             self.estantes = estantes
 
-    def agregar_estante(self, estante):
+    def agregar_estante(self, estante: "EstanteDeLibros"):
         self.estantes.append(estante)
 
-    def quitar_estante(self, estante):
+    def quitar_estante(self, estante: "EstanteDeLibros"):
         self.estantes.remove(estante)
 
     def buscar_libro_por_nombre(self, nombre):
