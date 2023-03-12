@@ -1,18 +1,26 @@
 from libro import Libro
 
-# crea un archivo donde se almacenaran los libros
-with open('libros.txt', 'w') as archivo:
-    archivo.write('nombre_libro,autor,editorial,genero,fecha_publicacion')
+# crea una funcion para almacenar un libro en un archivo de texto
+def almacenar_libro(nombre_libro, autor, editorial, genero, fecha_publicacion):
+    with open('libros.txt', 'a') as archivo:
+        archivo.write(f'{nombre_libro},{autor},{editorial},{genero},{fecha_publicacion}\n')
 
 # crea una funcion para leer los datos de un archivo de texto y guardarlos en un diccionario
 def leer_archivo():
+    libros_del_archivo = []
     with open('libros.txt', 'r') as archivo:
         for linea in archivo:
             libros = {}
             linea = linea.strip()
-            nombre_libro, autor, editorial, genero, fecha_publicacion = linea.split(',')
-            libros[nombre_libro] = Libro(nombre_libro, autor, editorial, genero, fecha_publicacion)
-    return libros
+            nombre_libro, autor, editorial, formato, fecha_publicacion = linea.split(',')
+            libro = Libro(nombre_libro, autor, editorial, formato, fecha_publicacion)
+            libros["nombre_libro"] = libro.nombre
+            libros["autor"] = libro.autores
+            libros["editorial"] = libro.editorial
+            libros["formato"] = libro.formato
+            libros["fecha_publicacion"] = libro.fecha_lanzamiento
+            libros_del_archivo.append(libros)
+    return libros_del_archivo
 
 # crea una funcion para verificar si un libro existe en el archivo de texto
 def verificar_libro(nombre_libro):

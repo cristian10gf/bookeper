@@ -1,7 +1,8 @@
-import gui
-import gui1
+"""import gui
+import gui1"""
 from date_users import *
-import admin, user, stand, libro, random, date_users
+import  user, stand, libro, random, date_users
+from admin import administrador
 def main():
     act = True
     print("inicio app")
@@ -17,13 +18,17 @@ def main():
             if verificar_usuario(nombre_usuario) and verificar_contraseña(nombre_usuario, contraseña) and verificar_tipo_usuario(nombre_usuario, tipo_usuario):
                 print("acceso concedido")
                 if tipo_usuario == "admin":
-                    usuario_admin = admin.administrador(nombre_usuario)
+                    usuario_admin = administrador(nombre_usuario)
                     print("bienvenido administrador")
                     print("que desea hacer?")
+                    opc = 0
                     while opc != 6:
                         opc = int(input("1. agregar estante \n2. agregar libro \n3. eliminar estante \n4. prestar libro \n5. ver libros prestados \n6. salir \n"))
                         if opc == 1:
-                            usuario_admin.agregar_estante()
+                            libros = None
+                            admin = nombre_usuario
+                            estante_nuevo = stand.EstanteDeLibros(libros, admin)
+                            usuario_admin.agregar_estante(estante_nuevo)
                         elif opc == 2:
                             nombre_libro = input("ingrese el nombre del libro: ")
                             autor_libro = input("ingrese el autor del libro: ")
@@ -36,6 +41,7 @@ def main():
                             libro_nuevo.agregar_stand(usuario_admin.estantes[0].codigo)
                             usuario_admin.estantes.agregar_libro(libro_nuevo)
                         elif opc == 3:
+                            
                             usuario_admin.quitar_estante()
                         elif opc == 4:
                             print("prestar libro")
@@ -50,6 +56,7 @@ def main():
                         usuario = user.Usuario(nombre_usuario, "correo")
                         print("bienvenido usuario")
                         print("que desea hacer?")
+                        opc = 0
                         while opc != 6:
                             opc = int(input("1. buscar libro \n2. ver libros prestados \n3. devolver libro \n4. ver estantes \n5. ver libros \n6. salir \n"))
                             if opc == 1:
@@ -74,6 +81,8 @@ def main():
                                 print("adios")
                             else:
                                 print("opcion invalida")
+            else:
+                print("acceso denegado")
         elif opcion == "2":
             print("crear cuenta")
             nombre_usuario = input("ingrese su nombre de usuario: ")

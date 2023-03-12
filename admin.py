@@ -7,10 +7,10 @@ class administrador:
         else:
             self.estantes = estantes
 
-    def agregar_estante(self, estante: "EstanteDeLibros"):
+    def agregar_estante(self, estante: EstanteDeLibros):
         self.estantes.append(estante)
 
-    def quitar_estante(self, estante: "EstanteDeLibros"):
+    def quitar_estante(self, estante: EstanteDeLibros):
         self.estantes.remove(estante)
 
     def buscar_libro_por_nombre(self, nombre):

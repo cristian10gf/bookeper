@@ -1,0 +1,3 @@
+nombre_usuario,contraseña,tipo_usuario,codigo
+1234,1234,admin,3217
+andres,4566,usuario,3764
