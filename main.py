@@ -1,8 +1,9 @@
 """import gui
 import gui1"""
 from date_users import *
-import  user, stand, libro, random, date_users
+import  user, stand, Libros.libro as libro, random, date_users
 from admin import administrador
+import Libros.date_libros as date_libros
 
 def main():
     act = True
@@ -24,7 +25,7 @@ def main():
                     print("que desea hacer?")
                     opc = 0
                     while opc != 6:
-                        opc = int(input("1. agregar estante \n2. agregar libro \n3. eliminar estante \n4. prestar libro \n5. ver libros prestados \n6. salir \n"))
+                        opc = int(input("1. agregar estante \n2. agregar libro \n3. eliminar estante \n4. prestar libro \n5. ver libros prestados \n6. salir \n 7. ver todos los libros \n"))
                         if opc == 1:
                             libros = None
                             admin = nombre_usuario
@@ -32,17 +33,17 @@ def main():
                             usuario_admin.agregar_estante(estante_nuevo)
                         elif opc == 2:
                             nombre_libro = input("ingrese el nombre del libro: ")
-                            autor_libro = input("ingrese el autor del libro: ")
+                            autor_libro = input("ingrese el autor o los autores del libro: ")
                             año_libro = input("ingrese el año de lanzamiento del libro: ")
                             formato_libro = input("ingrese el formato del libro: ")
                             editorial_libro = input("ingrese la editorial del libro: ")
-                            codigo_libro = random.randint(1000, 9999)
                             ubicacion_libro = None
-                            libro_nuevo = libro.Libro(nombre_libro, autor_libro, año_libro, formato_libro, editorial_libro, codigo_libro, ubicacion_libro)
-                            libro_nuevo.agregar_stand(usuario_admin.estantes[0].codigo)
-                            usuario_admin.estantes.agregar_libro(libro_nuevo)
+                            genero_libro = input("ingrese el genero del libro: ")
+                            estado_libro = "disponible"
+                            libro_nuevo = libro.Libro(nombre_libro, autor_libro, año_libro, genero_libro, editorial_libro, formato_libro,ubicacion_libro, estado_libro)
+                            date_libros.almacenar_libro(libro_nuevo)
+                            #usuario_admin.estantes.agregar_libro(libro_nuevo)
                         elif opc == 3:
-                            
                             usuario_admin.quitar_estante()
                         elif opc == 4:
                             print("prestar libro")
@@ -50,6 +51,10 @@ def main():
                             print("ver libros prestados")
                         elif opc == 6:
                             print("adios")
+                        elif opc == 7:
+                            print("ver todos los libros")
+                            todos = date_libros.leer_archivo()
+                            print(todos)
                         else:
                             print("opcion invalida")
                 elif tipo_usuario == "usuario":

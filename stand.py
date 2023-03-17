@@ -1,4 +1,4 @@
-import random, libro
+import random, Libros.libro as libro
 class EstanteDeLibros:
     def __init__(self, libros = None or libro.Libro, admin = None):
         if libros is None:
