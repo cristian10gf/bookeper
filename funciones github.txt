@@ -1,0 +1,9 @@
+git checkout - b " nombre rama" // crear rama
+git add . // agregar nuevo
+git status
+git commit -m "descripcion commit" 
+git push // cargar en la nube
+git fetch  // ver cambios del online
+git pull // actualizar el local frente al online
+git push --set-upstream origin "nombre de la rama" // carga rama al online
+git checkout "nombre rama" // cambio de rama
