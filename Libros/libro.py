@@ -1,6 +1,7 @@
 from datetime import date
 import random
 
+
 class Libro:
     def __init__(self, nombre: str, autores: str, fecha_lanzamiento: date, genero: str, editorial:str, formato: str, ubicacion: str, estado: str):
         self.nombre = nombre
@@ -14,7 +15,7 @@ class Libro:
         self.estado = estado
 
     def __str__(self):
-        return f"{self.nombre}, {self.autores}, ({self.fecha_lanzamiento}), {self.editorial}, {self.formato}, {self.genero}, {self.ubicacion}, {self.estado}"
+        return f"{self.nombre},{self.autores},{self.fecha_lanzamiento},{self.editorial},{self.formato},{self.genero},{self.ubicacion},{self.estado}"
     
     def __repr__(self):
         return f"{self.nombre} de {', '.join(self.autores)} ({self.fecha_lanzamiento}) - {self.editorial}, {self.formato}, {self.genero}, {self.ubicacion}, {self.estado}"

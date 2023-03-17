@@ -25,7 +25,7 @@ def main():
                     print("que desea hacer?")
                     opc = 0
                     while opc != 6:
-                        opc = int(input("1. agregar estante \n2. agregar libro \n3. eliminar estante \n4. prestar libro \n5. ver libros prestados \n6. salir \n 7. ver todos los libros \n"))
+                        opc = int(input("1. agregar estante \n2. agregar libro \n3. eliminar estante \n4. prestar libro \n5. ver libros prestados \n6. salir \n7. ver todos los libros \n"))
                         if opc == 1:
                             libros = None
                             admin = nombre_usuario

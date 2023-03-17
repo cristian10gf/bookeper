@@ -45,3 +45,4 @@ class EstanteDeLibros:
         else:
             libros_str = "\n".join([f" - {libro}" for libro in self.libros])
             return f"Estante con {len(self.libros)} libros:\n{libros_str}"
+        
