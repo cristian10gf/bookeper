@@ -3,6 +3,7 @@ import gui1"""
 from date_users import *
 import  user, stand, libro, random, date_users
 from admin import administrador
+
 def main():
     act = True
     print("inicio app")
@@ -51,8 +52,7 @@ def main():
                             print("adios")
                         else:
                             print("opcion invalida")
-                else:
-                    if tipo_usuario == "usuario":
+                elif tipo_usuario == "usuario":
                         usuario = user.Usuario(nombre_usuario, "correo")
                         print("bienvenido usuario")
                         print("que desea hacer?")

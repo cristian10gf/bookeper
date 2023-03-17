@@ -1,9 +1,9 @@
 from libro import Libro
 
 # crea una funcion para almacenar un libro en un archivo de texto
-def almacenar_libro(nombre_libro, autor, editorial, genero, fecha_publicacion):
+def almacenar_libro(nombre_libro, autor, editorial, fecha_publicacion, formato, ubicacion,  codigo):
     with open('libros.txt', 'a') as archivo:
-        archivo.write(f'{nombre_libro},{autor},{editorial},{genero},{fecha_publicacion}\n')
+        archivo.write(f'{nombre_libro},{autor},{editorial},{fecha_publicacion},{formato},{ubicacion},{codigo}\n')
 
 # crea una funcion para leer los datos de un archivo de texto y guardarlos en un diccionario
 def leer_archivo():
@@ -12,13 +12,15 @@ def leer_archivo():
         for linea in archivo:
             libros = {}
             linea = linea.strip()
-            nombre_libro, autor, editorial, formato, fecha_publicacion = linea.split(',')
-            libro = Libro(nombre_libro, autor, editorial, formato, fecha_publicacion)
+            nombre_libro, autor, editorial, fecha_publicacion, formato, ubicacion, codigo = linea.split(',')
+            libro = Libro(nombre_libro, autor, editorial, formato, fecha_publicacion, codigo)
             libros["nombre_libro"] = libro.nombre
             libros["autor"] = libro.autores
             libros["editorial"] = libro.editorial
             libros["formato"] = libro.formato
             libros["fecha_publicacion"] = libro.fecha_lanzamiento
+            libros["codigo"] = libro.codigo
+            libros["ubicacion"] = libro.ubicacion
             libros_del_archivo.append(libros)
     return libros_del_archivo
 

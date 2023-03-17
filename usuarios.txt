@@ -1,3 +1,5 @@
 nombre_usuario,contraseña,tipo_usuario,codigo
 1234,1234,admin,3217
 andres,4566,usuario,3764
+cristian,1256,admin,1459
+brainer,hulu,admin,7936
