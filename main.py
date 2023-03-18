@@ -25,7 +25,7 @@ def main():
                     print("que desea hacer?")
                     opc = 0
                     while opc != 6:
-                        opc = int(input("1. agregar estante \n2. agregar libro \n3. eliminar estante \n4. prestar libro \n5. ver libros prestados \n6. salir \n7. ver todos los libros \n"))
+                        opc = int(input("1. agregar estante \n2. agregar libro \n3. eliminar estante \n4. prestar libro \n5. ver libros prestados \n6. salir \n7. ver todos los libros \n8. ver todos los estantes \n"))
                         if opc == 1:
                             libros = []	
                             admin = nombre_usuario
@@ -36,13 +36,14 @@ def main():
                         elif opc == 2:
                             nombre_libro = input("ingrese el nombre del libro: ")
                             autor_libro = input("ingrese el autor o los autores del libro: ")
-                            año_libro = input("ingrese el año de lanzamiento del libro: ")
+                            año_libro = int(input("ingrese el año de lanzamiento del libro: "))
                             formato_libro = input("ingrese el formato del libro: ")
                             editorial_libro = input("ingrese la editorial del libro: ")
-                            ubicacion_libro = int(input("ingrese la ubicacion del libro(estan en el que se desea ingresar): "))
+                            ubicacion_libro = int(input("ingrese la ubicacion del libro(estante en el que se desea ingresar): "))
                             genero_libro = input("ingrese el genero del libro: ")
                             estado_libro = "disponible"
                             libro_nuevo = libro.Libro(nombre_libro, autor_libro, año_libro, genero_libro, editorial_libro, formato_libro,ubicacion_libro, estado_libro)
+                            stand.modificar_estante(libro_nuevo, ubicacion_libro)
                             date_libros.almacenar_libro(libro_nuevo)
                             #usuario_admin.estantes.agregar_libro(libro_nuevo)
                         elif opc == 3:
@@ -56,6 +57,10 @@ def main():
                         elif opc == 7:
                             print("ver todos los libros")
                             todos = date_libros.leer_archivo()
+                            print(todos)
+                        elif opc == 8:
+                            print("ver todos los estantes")
+                            todos = stand.leer_estantes()
                             print(todos)
                         else:
                             print("opcion invalida")

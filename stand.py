@@ -60,8 +60,8 @@ class EstanteDeLibros:
         elif self.libros == "Estante vacio":
             return f"Estante vacio,{self.codigo},{self.admin}"
         else:
-            libros_str = "\n".join([f" - {libro}" for libro in self.libros])
-            return f"Estante con {len(self.libros)} libros:\n{libros_str},{self.codigo},{self.admin}"
+            libros_str = "\n".join([f" -{libro.codigo}" for libro in self.libros])
+            return f"Estante con {len(self.libros)} libros:,\n{libros_str},{self.codigo},{self.admin}"
         
     def __repr__(self) -> str:
         if len(self.libros) == 0:
@@ -69,8 +69,8 @@ class EstanteDeLibros:
         elif self.libros == "Estante vacio":
             return f"Estante vacio,{self.admin}"
         else:
-            libros_str = "\n".join([f" - {libro}" for libro in self.libros])
-            return f"Estante con {len(self.libros)} libros:\n{libros_str},{self.admin}"
+            libros_str = "\n".join([f" -{libro}" for libro in self.libros])
+            return f"Estante con {len(self.libros)} libros:,{libros_str},{self.admin}"
         
 # crea un archivo para guardar los estantes
 def almacenar_estante(estante: EstanteDeLibros) -> None:
@@ -84,6 +84,29 @@ def leer_estantes() -> list:
         for linea in archivo:
             linea = linea.strip()
             estante = linea.split(',')
+            if estante[0] == "Estante vacio":
+                estante[0] = []
+            estante[1] = int(estante[1])
             estante = EstanteDeLibros(estante[0], estante[1], estante[2])
             lista_estantes.append(estante)
     return lista_estantes
+
+def borrar_estante() -> None:
+    archivo = open("estante.txt", "w")
+    archivo.write("")
+    archivo.close()
+
+def modificar_estante(libro: libro, codigo: int) -> None:
+    act = False
+    todos_los_estantes = leer_estantes()
+    for estante_actual in todos_los_estantes:
+        if estante_actual.codigo == codigo:
+            estante_actual.agregar_libro(libro)
+            act = True
+            break
+    if act == False: 
+        "No se encontro el estante"
+    else:
+        borrar_estante()
+        for estante in todos_los_estantes:
+            almacenar_estante(estante)

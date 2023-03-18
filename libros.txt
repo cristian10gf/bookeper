@@ -1,1 +1,2 @@
-guerra,cristo,1900,ofiesco,terror,terror,None,disponible,535
+guerra,cristo,1900,ofiesco,digital,terror,None,disponible,535
+la odisea,homero,2010,arcaica,fisico,aventura,79,disponible,104
