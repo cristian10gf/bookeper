@@ -27,17 +27,19 @@ def main():
                     while opc != 6:
                         opc = int(input("1. agregar estante \n2. agregar libro \n3. eliminar estante \n4. prestar libro \n5. ver libros prestados \n6. salir \n7. ver todos los libros \n"))
                         if opc == 1:
-                            libros = None
+                            libros = []	
                             admin = nombre_usuario
                             estante_nuevo = stand.EstanteDeLibros(libros, admin)
+                            print(estante_nuevo)
                             usuario_admin.agregar_estante(estante_nuevo)
+                            stand.almacenar_estante(estante_nuevo)
                         elif opc == 2:
                             nombre_libro = input("ingrese el nombre del libro: ")
                             autor_libro = input("ingrese el autor o los autores del libro: ")
                             año_libro = input("ingrese el año de lanzamiento del libro: ")
                             formato_libro = input("ingrese el formato del libro: ")
                             editorial_libro = input("ingrese la editorial del libro: ")
-                            ubicacion_libro = None
+                            ubicacion_libro = int(input("ingrese la ubicacion del libro(estan en el que se desea ingresar): "))
                             genero_libro = input("ingrese el genero del libro: ")
                             estado_libro = "disponible"
                             libro_nuevo = libro.Libro(nombre_libro, autor_libro, año_libro, genero_libro, editorial_libro, formato_libro,ubicacion_libro, estado_libro)
@@ -80,6 +82,8 @@ def main():
                                 print("el libro ha sido devuelto")
                             elif opc == 4:
                                 print("ver estantes")
+                                print("estos son todos los estantes con sus libros")
+                                print(stand.leer_estantes())
                             elif opc == 5:
                                 print("ver libros")
                             elif opc == 6:

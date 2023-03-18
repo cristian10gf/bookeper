@@ -1,0 +1,5 @@
+Estante vacio,36,cristian
+Estante vacio,66,cristian
+Estante vacio,79,cristian
+Estante vacio,64,cristian
+Estante vacio,97,cristian

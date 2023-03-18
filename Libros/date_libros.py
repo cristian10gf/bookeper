@@ -13,13 +13,13 @@ def leer_archivo():
             libros = {}
             linea = linea.strip()
             nombre_libro, autor, fecha_publicacion, editoriales, formato, genero, ubicacion, estado, codigo = linea.split(',')
-            libro = Libro(nombre_libro, autor, fecha_publicacion, editoriales, formato, genero, ubicacion, estado)
+            libro = Libro(nombre_libro, autor, fecha_publicacion, editoriales, formato, genero, ubicacion, estado, codigo)
             libros["nombre_libro"] = libro.nombre
             libros["autor"] = libro.autores
             libros["editorial"] = libro.editorial
             libros["formato"] = libro.formato
             libros["fecha_publicacion"] = libro.fecha_lanzamiento
-            #libros["codigo"] = libro.codigo
+            libros["codigo"] = libro.codigo
             libros["genero"] = libro.genero
             libros["estado"] = libro.estado
             libros["ubicacion"] = libro.ubicacion
