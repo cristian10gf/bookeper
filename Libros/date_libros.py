@@ -3,17 +3,17 @@ from Libros.libro import Libro
 # crea una funcion para almacenar un libro en un archivo de texto
 def almacenar_libro(libro: Libro):
     with open('libros.txt', 'a') as archivo:
-        archivo.write(f"{libro},{libro.codigo}\n")
+        archivo.write(f"{libro}\n")
 
 # crea una funcion para leer los datos de un archivo de texto y guardarlos en un diccionario
-def leer_archivo():
+def leer_archivo() -> list:
     libros_del_archivo = []
     with open('libros.txt', 'r') as archivo:
         for linea in archivo:
             libros = {}
             linea = linea.strip()
             nombre_libro, autor, fecha_publicacion, editoriales, formato, genero, ubicacion, estado, codigo = linea.split(',')
-            libro = Libro(nombre_libro, autor, fecha_publicacion, editoriales, formato, genero, ubicacion, estado, codigo)
+            libro = Libro(nombre_libro, autor, int(fecha_publicacion), editoriales, formato, genero, ubicacion, estado, int(codigo))
             libros["nombre_libro"] = libro.nombre
             libros["autor"] = libro.autores
             libros["editorial"] = libro.editorial
@@ -27,7 +27,7 @@ def leer_archivo():
     return libros_del_archivo
 
 # crea una funcion para verificar si un libro existe en el archivo de texto
-def verificar_libro(nombre_libro):
+def verificar_libro(nombre_libro) -> bool:
     libros = leer_archivo()
     if nombre_libro in libros:
         return True
@@ -35,7 +35,7 @@ def verificar_libro(nombre_libro):
         return False
 
 # una funcion que retorne todos los libros de un autor
-def libros_autor(autor):
+def libros_autor(autor) -> list:
     libros = leer_archivo()
     libros_autor = []
     for libro in libros:
@@ -44,7 +44,7 @@ def libros_autor(autor):
     return libros_autor
 
 # una funcion que retorne todos los libros de un genero
-def libros_genero(genero):
+def libros_genero(genero) -> list:
     libros = leer_archivo()
     libros_genero = []
     for libro in libros:
@@ -53,7 +53,7 @@ def libros_genero(genero):
     return libros_genero
 
 # una funcion que retorne todos los libros de una editorial
-def libros_editorial(editorial):
+def libros_editorial(editorial) -> list:
     libros = leer_archivo()
     libros_editorial = []
     for libro in libros:
@@ -62,7 +62,7 @@ def libros_editorial(editorial):
     return libros_editorial
 
 # cree una funcion que retorne ciertos libros segun un filtro
-def libros_filtro(filtro):
+def libros_filtro(filtro) -> list:
     libros = leer_archivo()
     libros_filtro = []
     for libro in libros:
@@ -70,3 +70,10 @@ def libros_filtro(filtro):
             libros_filtro.append(libros[libro])
     return libros_filtro
 
+def retornar_libro(codigo) -> Libro:
+    libros = leer_archivo()
+    for libro in libros:
+        if libro["codigo"] == codigo:
+            pos = libros.index(libro)
+            return Libro(libros[pos]["nombre_libro"], libros[pos]["autor"], libros[pos]["fecha_publicacion"], libros[pos]["editorial"], libros[pos]["formato"], libros[pos]["genero"], libros[pos]["ubicacion"], libros[pos]["estado"], libros[pos]["codigo"])
+            #return libros[pos]

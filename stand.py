@@ -1,5 +1,6 @@
 import random
 from Libros.libro import Libro as libro
+from Libros.date_libros import *
 from multipledispatch import dispatch
 
 class EstanteDeLibros:
@@ -24,16 +25,17 @@ class EstanteDeLibros:
 
     
     def agregar_libro(self, libro: "libro") -> None:
-        self.libros.append(libro)
+        self.libros.append(libro.codigo)
 
     def quitar_libro(self, libro) -> None:
         self.libros.remove(libro)
 
-    def buscar_libro_por_nombre(self, nombre) -> "libro":
+    def buscar_libro_por_nombre(self, nombre: str) -> "libro":
         for libro in self.libros:
-            if libro.nombre == nombre:
-                return libro
-        return None
+            libro_a_buscar = retornar_libro(libro)
+            if libro_a_buscar != None:
+                if libro_a_buscar.nombre == nombre:
+                    return libro_a_buscar
 
     def buscar_libros_por_autor(self, autor) -> list:
         libros_encontrados = []
@@ -55,22 +57,22 @@ class EstanteDeLibros:
         return libros_encontrados
 
     def __str__(self) -> str:
-        if len(self.libros) == 0:
-            return f"Estante vacio,{self.codigo},{self.admin}"
-        elif self.libros == "Estante vacio":
-            return f"Estante vacio,{self.codigo},{self.admin}"
+        if len(self.libros) == 0 or self.libros == []:
+            return f"[],{self.codigo},{self.admin}"
         else:
-            libros_str = "\n".join([f" -{libro.codigo}" for libro in self.libros])
-            return f"Estante con {len(self.libros)} libros:,\n{libros_str},{self.codigo},{self.admin}"
+            libros_str = ""
+            for libro in self.libros:
+                libros_str = libros_str + f"-{libro}"
+            return f"{libros_str},{self.codigo},{self.admin}"
         
     def __repr__(self) -> str:
-        if len(self.libros) == 0:
-            return f"Estante vacio,{self.admin}"
-        elif self.libros == "Estante vacio":
-            return f"Estante vacio,{self.admin}"
+        if len(self.libros) == 0 or self.libros == []:
+            return f"Estante vacio, admim:{self.admin}"
         else:
-            libros_str = "\n".join([f" -{libro}" for libro in self.libros])
-            return f"Estante con {len(self.libros)} libros:,{libros_str},{self.admin}"
+            libros_str = ""
+            for libro in self.libros:
+                libros_str = libros_str + f"-{libro}"
+            return f"Estante con {len(self.libros)} libros:{libros_str}, admin:{self.admin}"
         
 # crea un archivo para guardar los estantes
 def almacenar_estante(estante: EstanteDeLibros) -> None:
@@ -84,9 +86,15 @@ def leer_estantes() -> list:
         for linea in archivo:
             linea = linea.strip()
             estante = linea.split(',')
-            if estante[0] == "Estante vacio":
+            if estante[0] == "[]":
                 estante[0] = []
+            else:
+                estante[0] = estante[0].split('-')
+                print(estante[0])
+                estante[0].pop(0)
             estante[1] = int(estante[1])
+            for codigo in estante[0]:
+                codigo = retornar_libro(int(codigo))
             estante = EstanteDeLibros(estante[0], estante[1], estante[2])
             lista_estantes.append(estante)
     return lista_estantes

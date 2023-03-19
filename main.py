@@ -70,12 +70,14 @@ def main():
                         print("que desea hacer?")
                         opc = 0
                         while opc != 6:
-                            opc = int(input("1. buscar libro \n2. ver libros prestados \n3. devolver libro \n4. ver estantes \n5. ver libros \n6. salir \n"))
+                            opc = int(input("1. buscar libro \n2. ver libros prestados \n3. devolver libro \n4. ver estantes \n5. ver libros \n6. salir \n7. prestar libro\n"))
                             if opc == 1:
                                 print("buscar libro")
                                 busqueda = input("ingrese el nombre del libro que desea buscar: ")
-                                libro_encontrado = stand.EstanteDeLibros.buscar_libro_por_nombre(busqueda)
-                                print(libro_encontrado)
+                                estantes = stand.leer_estantes()
+                                for estante in estantes:
+                                    libro_encontrado = estante.buscar_libro_por_nombre(busqueda)
+                                    print(libro_encontrado)
                             elif opc == 2:
                                 print("ver libros prestados")
                                 libros_prestados = usuario.imprimir_libros_prestados()
