@@ -1,0 +1,2 @@
+class LibroPrueba:
+    pass
