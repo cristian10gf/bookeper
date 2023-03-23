@@ -1,11 +1,9 @@
 from stand import EstanteDeLibros
 
 class administrador:
-    def __init__(self, estantes=None or EstanteDeLibros):
-        if estantes is None:
-            self.estantes = []
-        else:
-            self.estantes = estantes
+    def __init__(self, nombre):
+        self.estantes = []
+        self.nombre = nombre
 
     def agregar_estante(self, estante: EstanteDeLibros):
         self.estantes.append(estante)

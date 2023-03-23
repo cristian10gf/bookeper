@@ -1,0 +1,11 @@
+guerra,cristo,1900,ofiesco,digital,terror,23,disponible,535
+la odisea,homero,2010,arcaica,fisico,aventura,79,disponible,104
+el cuarzo,yo,2000,ofiesco,digital,suspenso,79,disponible,533
+la orca,frausto,1999,oriundo,fisico,terror,78,disponible,831
+jesus,dios,12,jesuita,fisico,ficcion,78,disponible,116
+las locuras,pernet,2020,congo,digital,ficcion,92,disponible,743
+la locura del emperador,cris pratt,2030,ofiesco,fisico,ficcion,92,disponible,454
+juana de arco,carlo magno,1890,ofiesco,fisico,historico,61,disponible,219
+historia mundial,carl sagan,2021,global,digital,informativo,61,disponible,110
+olimpo,marie curie,2300,historica,fisico,historia,42,disponible,946
+recetas cocina linda,margarita,2010,cocinando,fisico,informativo,20,disponible,161
