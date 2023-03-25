@@ -1,3 +1,51 @@
+from Files.file_manager import FileManager
+
+class Usuario:
+    def __init__(self, nombre, correo_electronico):
+        self.nombre = nombre
+        self.correo_electronico = correo_electronico
+        self.libros_prestados = []
+
+    def prestar_libro(self, libro):
+        if libro in self.libros_prestados:
+            print("Ya tienes este libro prestado.")
+        else:
+            self.libros_prestados.append(libro)
+            libro.prestar()
+            print(f"{self.nombre} ha prestado el libro {libro.titulo}.")
+
+    def devolver_libro(self, libro):
+        if libro in self.libros_prestados:
+            self.libros_prestados.remove(libro)
+            libro.devolver()
+        else:
+            print("No tienes este libro prestado.")
+
+    def tiene_libro_prestado(self, libro):
+        return libro in self.libros_prestados
+
+    def imprimir_libros_prestados(self):
+        if len(self.libros_prestados) == 0:
+            print(f"{self.nombre} no tiene libros prestados.")
+        else:
+            print(f"Libros prestados por {self.nombre}:")
+            for libro in self.libros_prestados:
+                print(f"- {libro.titulo}")
+
+    @staticmethod
+    def libros_prestados(usuarios):
+        libros_prestados = []
+        for usuario in usuarios:
+            libros_prestados.extend(usuario.libros_prestados)
+        return libros_prestados
+
+    def __str__(self):
+        libros_prestados_str = ", ".join([libro.titulo for libro in self.libros_prestados])
+        return f"{self.nombre} ({self.correo_electronico}): {libros_prestados_str}"
+    
+
+print(FileManager.DATA_PATH)
+#direccion_todos_usuarios = FileManeger('usuarios.txt')
 # crea un objeto de clase dato usuario que reciba un nombre de usuario, contraseña, tipo de usuario ademas de un codigo unico
 class DatoUsuario:
     def __init__(self, nombre_usuario, contraseña, tipo_usuario, codigo):
@@ -11,13 +59,13 @@ class DatoUsuario:
 
     # ahora crea un metodo para almacenar un usuario en un archivo de texto
     def almacenar_usuario(self):
-        with open('usuarios.txt', 'a') as archivo:
+        with open('Datos/usuarios.txt','a') as archivo:
             archivo.write(f'{self.nombre_usuario},{self.contraseña},{self.tipo_usuario},{self.codigo}\n')
 
 # crea una funcion para leer los datos de un archivo de texto y guardarlos en un diccionario
 def leer_archivo():
     lista_usuarios = []
-    with open('usuarios.txt', 'r') as archivo:
+    with open('Datos/usuarios.txt', 'r') as archivo:
         for linea in archivo:
             usuarios = {
                 "nombre_usuario": "",

@@ -1,12 +1,11 @@
 import random
-from Libros.libro import Libro as libro
-from Libros.date_libros import *
+from Libros.libro import *
 from multipledispatch import dispatch
 
 class EstanteDeLibros:
     
-    @dispatch(list or libro, str)
-    def __init__(self, libros: list or libro, admin: str):
+    @dispatch(list or Libro, str)
+    def __init__(self, libros: list or Libro, admin: str):
         if libros is None:
             self.libros = []
         else:
@@ -14,8 +13,8 @@ class EstanteDeLibros:
         self.admin = admin
         self.codigo = random.randint(1, 100)
 
-    @dispatch(list or libro, int, str)
-    def __init__(self, libros: list or libro, codigo: int, admin: str):
+    @dispatch(list or Libro, int, str)
+    def __init__(self, libros: list or Libro, codigo: int, admin: str):
         if libros is None:
             self.libros = []
         else:
@@ -24,13 +23,13 @@ class EstanteDeLibros:
         self.codigo = codigo
 
     
-    def agregar_libro(self, libro: "libro") -> None:
+    def agregar_libro(self, libro: "Libro") -> None:
         self.libros.append(libro.codigo)
 
     def quitar_libro(self, libro) -> None:
         self.libros.remove(libro)
 
-    def buscar_libro_por_nombre(self, nombre: str) -> "libro":
+    def buscar_libro_por_nombre(self, nombre: str) -> "Libro":
         for libro in self.libros:
             libro_a_buscar = retornar_libro(libro)
             if libro_a_buscar != None:
@@ -76,12 +75,12 @@ class EstanteDeLibros:
         
 # crea un archivo para guardar los estantes
 def almacenar_estante(estante: EstanteDeLibros) -> None:
-    archivo = open("estante.txt", "a")
+    archivo = open("Datos\estante.txt", "a")
     archivo.write(str(estante) + "\n")
     archivo.close()
 
 def leer_estantes() -> list:
-    with open('estante.txt', 'r') as archivo:
+    with open('Datos\estante.txt', 'r') as archivo:
         lista_estantes = []
         for linea in archivo:
             linea = linea.strip()
@@ -100,11 +99,11 @@ def leer_estantes() -> list:
     return lista_estantes
 
 def borrar_estante() -> None:
-    archivo = open("estante.txt", "w")
+    archivo = open("Datos\estante.txt", "w")
     archivo.write("")
     archivo.close()
 
-def modificar_estante(libro: libro, codigo: int) -> None:
+def modificar_estante(libro: Libro, codigo: int) -> None:
     act = False
     todos_los_estantes = leer_estantes()
     for estante_actual in todos_los_estantes:

@@ -3,3 +3,4 @@ nombre_usuario,contraseña,tipo_usuario,codigo
 andres,4566,usuario,3764
 cristian,1256,admin,1459
 brainer,hulu,admin,7936
+carlos123,1234567,usuario,4682

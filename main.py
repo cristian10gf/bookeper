@@ -1,9 +1,8 @@
 """import gui
 import gui1"""
-from date_users import *
-import  user, stand, Libros.libro as libro, random, date_users
-from admin import administrador
-import Libros.date_libros as date_libros
+from Usuarios.user import *
+import stand, Libros.libro as libro, random
+from Usuarios.admin import administrador
 
 def main():
     act = True
@@ -16,7 +15,7 @@ def main():
         if opcion == "1":
             nombre_usuario = input("ingrese su nombre de usuario: ")
             contraseña = input("ingrese su contraseña: ")
-            tipo_usuario = input("ingrese su tipo de usuario: amdmin o usuario: ")
+            tipo_usuario = input("ingrese su tipo de usuario: admin o usuario: ")
             if verificar_usuario(nombre_usuario) and verificar_contraseña(nombre_usuario, contraseña) and verificar_tipo_usuario(nombre_usuario, tipo_usuario):
                 print("acceso concedido")
                 if tipo_usuario == "admin":
@@ -44,7 +43,7 @@ def main():
                             estado_libro = "disponible"
                             libro_nuevo = libro.Libro(nombre_libro, autor_libro, año_libro, genero_libro, editorial_libro, formato_libro,ubicacion_libro, estado_libro)
                             stand.modificar_estante(libro_nuevo, ubicacion_libro)
-                            date_libros.almacenar_libro(libro_nuevo)
+                            libro.almacenar_libro(libro_nuevo)
                             #usuario_admin.estantes.agregar_libro(libro_nuevo)
                         elif opc == 3:
                             usuario_admin.quitar_estante()
@@ -56,7 +55,7 @@ def main():
                             print("adios")
                         elif opc == 7:
                             print("ver todos los libros")
-                            todos = date_libros.leer_archivo()
+                            todos = libro.leer_archivo()
                             print(todos)
                         elif opc == 8:
                             print("ver todos los estantes")
@@ -65,7 +64,7 @@ def main():
                         else:
                             print("opcion invalida")
                 elif tipo_usuario == "usuario":
-                        usuario = user.Usuario(nombre_usuario, "correo")
+                        usuario = Usuario(nombre_usuario, "correo")
                         print("bienvenido usuario")
                         print("que desea hacer?")
                         opc = 0
@@ -105,7 +104,7 @@ def main():
             contraseña = input("ingrese su contraseña: ")
             tipo_usuario = input("ingrese su tipo de usuario: amdmin o usuario: ")
             codigo = random.randint(1000, 9999)
-            usuario_nuevo = date_users.DatoUsuario(nombre_usuario, contraseña, tipo_usuario, codigo)
+            usuario_nuevo = DatoUsuario(nombre_usuario, contraseña, tipo_usuario, codigo)
             usuario_nuevo.almacenar_usuario()
         elif opcion == "3":
             print("adios")

@@ -1,4 +1,4 @@
-from stand import EstanteDeLibros
+from stand import *
 
 class administrador:
     def __init__(self, nombre):
