@@ -1,10 +1,8 @@
-"""import gui
-import gui1"""
 from Usuarios.user import *
 import stand, Libros.libro as libro, random
 from Usuarios.admin import administrador
 
-def main():
+def main() -> None:
     act = True
     print("inicio app")
     print("bienvenido a bookeeper")
@@ -19,7 +17,8 @@ def main():
             if verificar_usuario(nombre_usuario) and verificar_contraseña(nombre_usuario, contraseña) and verificar_tipo_usuario(nombre_usuario, tipo_usuario):
                 print("acceso concedido")
                 if tipo_usuario == "admin":
-                    usuario_admin = administrador(nombre_usuario)
+                    mis_estantes = stand.leer_estantes(nombre_usuario)
+                    usuario_admin = administrador(nombre_usuario,mis_estantes)
                     print("bienvenido administrador")
                     print("que desea hacer?")
                     opc = 0
@@ -76,7 +75,8 @@ def main():
                                 estantes = stand.leer_estantes()
                                 for estante in estantes:
                                     libro_encontrado = estante.buscar_libro_por_nombre(busqueda)
-                                    print(libro_encontrado)
+                                    if libro_encontrado.nombre == busqueda:
+                                        print(libro_encontrado)
                             elif opc == 2:
                                 print("ver libros prestados")
                                 libros_prestados = usuario.imprimir_libros_prestados()
@@ -114,5 +114,3 @@ def main():
             
 if __name__ == "__main__":
     main()
-    #gui.window.mainloop()
-    #gui1.window.mainloop()

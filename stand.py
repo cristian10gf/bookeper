@@ -3,7 +3,6 @@ from Libros.libro import *
 from multipledispatch import dispatch
 
 class EstanteDeLibros:
-    
     @dispatch(list or Libro, str)
     def __init__(self, libros: list or Libro, admin: str):
         if libros is None:
@@ -22,7 +21,6 @@ class EstanteDeLibros:
         self.admin = admin
         self.codigo = codigo
 
-    
     def agregar_libro(self, libro: "Libro") -> None:
         self.libros.append(libro.codigo)
 
@@ -79,6 +77,7 @@ def almacenar_estante(estante: EstanteDeLibros) -> None:
     archivo.write(str(estante) + "\n")
     archivo.close()
 
+@dispatch()
 def leer_estantes() -> list:
     with open('Datos\estante.txt', 'r') as archivo:
         lista_estantes = []
@@ -89,7 +88,6 @@ def leer_estantes() -> list:
                 estante[0] = []
             else:
                 estante[0] = estante[0].split('-')
-                print(estante[0])
                 estante[0].pop(0)
             estante[1] = int(estante[1])
             for codigo in estante[0]:
@@ -98,6 +96,25 @@ def leer_estantes() -> list:
             lista_estantes.append(estante)
     return lista_estantes
 
+@dispatch(str)
+def leer_estantes(nombre: str) -> list:
+    with open('Datos\estante.txt', 'r') as archivo:
+        mis_estantes = []
+        for linea in archivo:
+            linea = linea.strip()
+            estante = linea.split(',')
+            if estante[0] == "[]":
+                estante[0] = []
+            else:
+                estante[0] = estante[0].split('-')
+                estante[0].pop(0)
+            estante[1] = int(estante[1])
+            for codigo in estante[0]:
+                codigo = retornar_libro(int(codigo))
+            estante = EstanteDeLibros(estante[0], estante[1], estante[2])
+            if estante.admin == nombre:
+                mis_estantes.append(estante)
+    return mis_estantes
 def borrar_estante() -> None:
     archivo = open("Datos\estante.txt", "w")
     archivo.write("")

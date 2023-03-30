@@ -43,9 +43,9 @@ class Usuario:
         libros_prestados_str = ", ".join([libro.titulo for libro in self.libros_prestados])
         return f"{self.nombre} ({self.correo_electronico}): {libros_prestados_str}"
     
-
 print(FileManager.DATA_PATH)
 #direccion_todos_usuarios = FileManeger('usuarios.txt')
+
 # crea un objeto de clase dato usuario que reciba un nombre de usuario, contraseña, tipo de usuario ademas de un codigo unico
 class DatoUsuario:
     def __init__(self, nombre_usuario, contraseña, tipo_usuario, codigo):

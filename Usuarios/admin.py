@@ -1,14 +1,22 @@
 from stand import *
 
 class administrador:
-    def __init__(self, nombre):
+    @dispatch(str)
+    def __init__(self, nombre: str):
         self.estantes = []
         self.nombre = nombre
+        self.prestamos_pendientes = []
 
-    def agregar_estante(self, estante: EstanteDeLibros):
+    @dispatch(str, list)
+    def __init__(self, nombre:str, estantes: list):
+        self.estantes = estantes
+        self.nombre = nombre
+        self.prestamos_pendientes = []
+
+    def agregar_estante(self, estante: 'EstanteDeLibros'):
         self.estantes.append(estante)
 
-    def quitar_estante(self, estante: EstanteDeLibros):
+    def quitar_estante(self, estante: 'EstanteDeLibros'):
         self.estantes.remove(estante)
 
     def buscar_libro_por_nombre(self, nombre):

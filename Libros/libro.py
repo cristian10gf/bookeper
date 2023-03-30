@@ -1,9 +1,11 @@
 from datetime import date
 import random
 from multipledispatch import dispatch
-from Files.file_manager import FileManager
+from bookeper.Files.file_manager import FileManager
+import os
 
 class Libro:
+    todos_libros = "D:\python\{0}\Datos\libros.txt".format("bookeper")
     @dispatch(str, str, int, str, str, str, int, str)
     def __init__(self, nombre: str, autores: str, fecha_lanzamiento: int, genero: str, editorial:str, formato: str, ubicacion: int, estado: str):
         self.nombre = nombre
@@ -43,17 +45,16 @@ class Libro:
     def asignar_estante(self, ubicacion):
         self.ubicacion = ubicacion
 
-print(FileManager.DATA_PATH)
-#direccion_todos_libros = FileManeger('libros.txt')
 # crea una funcion para almacenar un libro en un archivo de texto
-def almacenar_libro(libro: Libro):
+def almacenar_libro(libro: Libro) -> None:
     with open('Datos\libros.txt', 'a') as archivo:
         archivo.write(f"{libro}\n")
 
 # crea una funcion para leer los datos de un archivo de texto y guardarlos en un diccionario
 def leer_archivo() -> list:
     libros_del_archivo = []
-    with open('Datos\libros.txt', 'r') as archivo:
+    with open(Libro.todos_libros, 'r') as archivo:
+    #with open('Datos\libros.txt', 'r') as archivo:
         for linea in archivo:
             libros = {}
             linea = linea.strip()
@@ -79,33 +80,6 @@ def verificar_libro(nombre_libro) -> bool:
     else:
         return False
 
-# una funcion que retorne todos los libros de un autor
-def libros_autor(autor) -> list:
-    libros = leer_archivo()
-    libros_autor = []
-    for libro in libros:
-        if libros[libro].autor == autor:
-            libros_autor.append(libros[libro])
-    return libros_autor
-
-# una funcion que retorne todos los libros de un genero
-def libros_genero(genero) -> list:
-    libros = leer_archivo()
-    libros_genero = []
-    for libro in libros:
-        if libros[libro].genero == genero:
-            libros_genero.append(libros[libro])
-    return libros_genero
-
-# una funcion que retorne todos los libros de una editorial
-def libros_editorial(editorial) -> list:
-    libros = leer_archivo()
-    libros_editorial = []
-    for libro in libros:
-        if libros[libro].editorial == editorial:
-            libros_editorial.append(libros[libro])
-    return libros_editorial
-
 # cree una funcion que retorne ciertos libros segun un filtro
 def libros_filtro(filtro) -> list:
     libros = leer_archivo()
@@ -115,10 +89,10 @@ def libros_filtro(filtro) -> list:
             libros_filtro.append(libros[libro])
     return libros_filtro
 
-def retornar_libro(codigo) -> Libro:
+def retornar_libro(codigo: int) -> Libro:
     libros = leer_archivo()
     for libro in libros:
-        if libro["codigo"] == codigo:
+        if libro['codigo'] == codigo:
             pos = libros.index(libro)
             return Libro(libros[pos]["nombre_libro"], libros[pos]["autor"], libros[pos]["fecha_publicacion"], libros[pos]["editorial"], libros[pos]["formato"], libros[pos]["genero"], libros[pos]["ubicacion"], libros[pos]["estado"], libros[pos]["codigo"])
             #return libros[pos]
