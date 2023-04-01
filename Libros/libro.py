@@ -1,11 +1,11 @@
 from datetime import date
 import random
 from multipledispatch import dispatch
-from bookeper.Files.file_manager import FileManager
+from Files.file_manager import FileManager
 import os
 
 class Libro:
-    todos_libros = "D:\python\{0}\Datos\libros.txt".format("bookeper")
+    todos_libros = FileManager("libros.txt").generate_path()
     @dispatch(str, str, int, str, str, str, int, str)
     def __init__(self, nombre: str, autores: str, fecha_lanzamiento: int, genero: str, editorial:str, formato: str, ubicacion: int, estado: str):
         self.nombre = nombre
@@ -34,7 +34,7 @@ class Libro:
         return f"{self.nombre},{self.autores},{self.fecha_lanzamiento},{self.editorial},{self.formato},{self.genero},{self.ubicacion},{self.estado},{self.codigo}"
     
     def __repr__(self):
-        return f"{self.nombre} de {', '.join(self.autores)} ({self.fecha_lanzamiento}) - {self.editorial}, {self.formato}, {self.genero}, {self.ubicacion}, {self.estado}"
+        return f"{self.nombre} de {self.autores} ({self.fecha_lanzamiento}) - {self.editorial}, {self.formato}, {self.genero}, {self.ubicacion}, {self.estado}"
     
     def __eq__(self, other: "Libro"):
         return self.nombre == other.nombre and self.autores == other.autores and self.fecha_lanzamiento == other.fecha_lanzamiento and self.editorial == other.editorial and self.formato == other.formato and self.genero == other.genero and self.ubicacion == other.ubicacion
@@ -54,22 +54,12 @@ def almacenar_libro(libro: Libro) -> None:
 def leer_archivo() -> list:
     libros_del_archivo = []
     with open(Libro.todos_libros, 'r') as archivo:
-    #with open('Datos\libros.txt', 'r') as archivo:
         for linea in archivo:
-            libros = {}
+            #libros = {}
             linea = linea.strip()
             nombre_libro, autor, fecha_publicacion, editoriales, formato, genero, ubicacion, estado, codigo = linea.split(',')
             libro = Libro(nombre_libro, autor, int(fecha_publicacion), editoriales, formato, genero, ubicacion, estado, int(codigo))
-            libros["nombre_libro"] = libro.nombre
-            libros["autor"] = libro.autores
-            libros["editorial"] = libro.editorial
-            libros["formato"] = libro.formato
-            libros["fecha_publicacion"] = libro.fecha_lanzamiento
-            libros["codigo"] = libro.codigo
-            libros["genero"] = libro.genero
-            libros["estado"] = libro.estado
-            libros["ubicacion"] = libro.ubicacion
-            libros_del_archivo.append(libros)
+            libros_del_archivo.append(libro)
     return libros_del_archivo
 
 # crea una funcion para verificar si un libro existe en el archivo de texto
@@ -92,7 +82,6 @@ def libros_filtro(filtro) -> list:
 def retornar_libro(codigo: int) -> Libro:
     libros = leer_archivo()
     for libro in libros:
-        if libro['codigo'] == codigo:
-            pos = libros.index(libro)
-            return Libro(libros[pos]["nombre_libro"], libros[pos]["autor"], libros[pos]["fecha_publicacion"], libros[pos]["editorial"], libros[pos]["formato"], libros[pos]["genero"], libros[pos]["ubicacion"], libros[pos]["estado"], libros[pos]["codigo"])
-            #return libros[pos]
+        if libro.codigo == codigo:
+            return libro
+

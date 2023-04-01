@@ -74,9 +74,10 @@ def main() -> None:
                                 busqueda = input("ingrese el nombre del libro que desea buscar: ")
                                 estantes = stand.leer_estantes()
                                 for estante in estantes:
-                                    libro_encontrado = estante.buscar_libro_por_nombre(busqueda)
-                                    if libro_encontrado.nombre == busqueda:
-                                        print(libro_encontrado)
+                                    if len(estante.libros) > 0:
+                                        libro_encontrado = estante.buscar_libro_por_nombre(busqueda)
+                                        if libro_encontrado.nombre == busqueda:
+                                            print(libro_encontrado)
                             elif opc == 2:
                                 print("ver libros prestados")
                                 libros_prestados = usuario.imprimir_libros_prestados()

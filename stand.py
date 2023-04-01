@@ -3,18 +3,18 @@ from Libros.libro import *
 from multipledispatch import dispatch
 
 class EstanteDeLibros:
-    @dispatch(list or Libro, str)
-    def __init__(self, libros: list or Libro, admin: str):
-        if libros is None:
+    @dispatch(list, str)
+    def __init__(self, libros: list, admin: str):
+        if libros is None or len(libros) == 0:
             self.libros = []
         else:
             self.libros = libros
         self.admin = admin
         self.codigo = random.randint(1, 100)
 
-    @dispatch(list or Libro, int, str)
-    def __init__(self, libros: list or Libro, codigo: int, admin: str):
-        if libros is None:
+    @dispatch(list, int, str)
+    def __init__(self, libros: list, codigo: int, admin: str):
+        if libros is None or len(libros) == 0:
             self.libros = []
         else:
             self.libros = libros
@@ -28,9 +28,12 @@ class EstanteDeLibros:
         self.libros.remove(libro)
 
     def buscar_libro_por_nombre(self, nombre: str) -> "Libro":
-        for libro in self.libros:
-            libro_a_buscar = retornar_libro(libro)
-            if libro_a_buscar != None:
+        if len(self.libros) == 0:
+            return None
+        else: 
+            for libro in self.libros:
+                print(libro)
+                libro_a_buscar = libro
                 if libro_a_buscar.nombre == nombre:
                     return libro_a_buscar
 
@@ -90,8 +93,10 @@ def leer_estantes() -> list:
                 estante[0] = estante[0].split('-')
                 estante[0].pop(0)
             estante[1] = int(estante[1])
+            libros_del_estante = []
             for codigo in estante[0]:
-                codigo = retornar_libro(int(codigo))
+                libros_del_estante.append(retornar_libro(int(codigo)))
+            estante[0] = libros_del_estante
             estante = EstanteDeLibros(estante[0], estante[1], estante[2])
             lista_estantes.append(estante)
     return lista_estantes
@@ -115,6 +120,7 @@ def leer_estantes(nombre: str) -> list:
             if estante.admin == nombre:
                 mis_estantes.append(estante)
     return mis_estantes
+
 def borrar_estante() -> None:
     archivo = open("Datos\estante.txt", "w")
     archivo.write("")

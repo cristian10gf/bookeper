@@ -2,7 +2,8 @@ import os
 
 #from config import PROJECT_PATH, DATA_DIR
 
-PROJECT_PATH = os.path.abspath(os.pardir)
+# encuentra la ruta absoluta de bookeper
+PROJECT_PATH = os.path.dirname(os.path.abspath("bookeper"))
 DATA_DIR = 'Datos'
 
 class FileManager:

@@ -43,8 +43,7 @@ class Usuario:
         libros_prestados_str = ", ".join([libro.titulo for libro in self.libros_prestados])
         return f"{self.nombre} ({self.correo_electronico}): {libros_prestados_str}"
     
-print(FileManager.DATA_PATH)
-#direccion_todos_usuarios = FileManeger('usuarios.txt')
+todos_usuarios = FileManager("usuarios.txt").generate_path()
 
 # crea un objeto de clase dato usuario que reciba un nombre de usuario, contraseña, tipo de usuario ademas de un codigo unico
 class DatoUsuario:
@@ -59,13 +58,13 @@ class DatoUsuario:
 
     # ahora crea un metodo para almacenar un usuario en un archivo de texto
     def almacenar_usuario(self):
-        with open('Datos/usuarios.txt','a') as archivo:
+        with open(todos_usuarios,'a') as archivo:
             archivo.write(f'{self.nombre_usuario},{self.contraseña},{self.tipo_usuario},{self.codigo}\n')
 
 # crea una funcion para leer los datos de un archivo de texto y guardarlos en un diccionario
 def leer_archivo():
     lista_usuarios = []
-    with open('Datos/usuarios.txt', 'r') as archivo:
+    with open(todos_usuarios, 'r') as archivo:
         for linea in archivo:
             usuarios = {
                 "nombre_usuario": "",
