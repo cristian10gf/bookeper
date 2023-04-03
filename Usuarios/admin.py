@@ -15,9 +15,11 @@ class administrador:
 
     def agregar_estante(self, estante: 'EstanteDeLibros'):
         self.estantes.append(estante)
+        almacenar_estante(estante)
 
     def quitar_estante(self, estante: 'EstanteDeLibros'):
         self.estantes.remove(estante)
+        borrar_un_estante(estante.codigo)
 
     def buscar_libro_por_nombre(self, nombre):
         for estante in self.estantes:
@@ -44,8 +46,8 @@ class administrador:
         if len(self.estantes) == 0:
             return "No hay estantes disponibles"
         else:
-            estantes_str = "\n".join([f" - {estante}" for estante in self.estantes])
-            return f"Administrador con {len(self.estantes)} estantes:\n{estantes_str}"
+            estantes_str = "\n".join([f" - {estante.__repr__()}" for estante in self.estantes])
+            return f"{self.nombre} con {len(self.estantes)} estantes:\n{estantes_str}"
 
     def registrar_prestamo(self, usuario, libro):
         if usuario.tiene_libro_prestado(libro):

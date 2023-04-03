@@ -23,6 +23,8 @@ class EstanteDeLibros:
 
     def agregar_libro(self, libro: "Libro") -> None:
         self.libros.append(libro.codigo)
+        almacenar_libro(libro)
+        modificar_estante(libro, libro.ubicacion)
 
     def quitar_libro(self, libro) -> None:
         self.libros.remove(libro)
@@ -32,10 +34,10 @@ class EstanteDeLibros:
             return None
         else: 
             for libro in self.libros:
-                print(libro)
-                libro_a_buscar = libro
+                libro_a_buscar = retornar_libro(int(libro))
                 if libro_a_buscar.nombre == nombre:
                     return libro_a_buscar
+            return None
 
     def buscar_libros_por_autor(self, autor) -> list:
         libros_encontrados = []
@@ -81,7 +83,7 @@ def almacenar_estante(estante: EstanteDeLibros) -> None:
     archivo.close()
 
 @dispatch()
-def leer_estantes() -> list:
+def leer_estantes() -> list['EstanteDeLibros']:
     with open('Datos\estante.txt', 'r') as archivo:
         lista_estantes = []
         for linea in archivo:
@@ -93,16 +95,15 @@ def leer_estantes() -> list:
                 estante[0] = estante[0].split('-')
                 estante[0].pop(0)
             estante[1] = int(estante[1])
-            libros_del_estante = []
+            codigos = []
             for codigo in estante[0]:
-                libros_del_estante.append(retornar_libro(int(codigo)))
-            estante[0] = libros_del_estante
-            estante = EstanteDeLibros(estante[0], estante[1], estante[2])
+                codigos.append(int(codigo))
+            estante = EstanteDeLibros(codigos, estante[1], estante[2])
             lista_estantes.append(estante)
     return lista_estantes
 
 @dispatch(str)
-def leer_estantes(nombre: str) -> list:
+def leer_estantes(nombre: str) -> list['EstanteDeLibros']:
     with open('Datos\estante.txt', 'r') as archivo:
         mis_estantes = []
         for linea in archivo:
@@ -115,28 +116,37 @@ def leer_estantes(nombre: str) -> list:
                 estante[0].pop(0)
             estante[1] = int(estante[1])
             for codigo in estante[0]:
-                codigo = retornar_libro(int(codigo))
+                codigo = int(codigo)
             estante = EstanteDeLibros(estante[0], estante[1], estante[2])
             if estante.admin == nombre:
                 mis_estantes.append(estante)
     return mis_estantes
 
-def borrar_estante() -> None:
+def borrar_estantes() -> None:
     archivo = open("Datos\estante.txt", "w")
     archivo.write("")
     archivo.close()
+
+def borrar_un_estante(codigo: int) -> None:
+    todos_los_estantes = leer_estantes()
+    for estante in todos_los_estantes:
+        if estante.codigo == codigo:
+            todos_los_estantes.remove(estante)
+            break
+    borrar_estantes()
+    for estante in todos_los_estantes:
+        almacenar_estante(estante)
 
 def modificar_estante(libro: Libro, codigo: int) -> None:
     act = False
     todos_los_estantes = leer_estantes()
     for estante_actual in todos_los_estantes:
         if estante_actual.codigo == codigo:
-            estante_actual.agregar_libro(libro)
             act = True
             break
     if act == False: 
         "No se encontro el estante"
     else:
-        borrar_estante()
+        borrar_estantes()
         for estante in todos_los_estantes:
             almacenar_estante(estante)
