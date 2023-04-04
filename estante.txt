@@ -1,8 +1,0 @@
--161,20,cristian
--160,90,cristian
-[],78,cristian
--946,42,cristian
-[],16,cristian
--219-110,61,cristian
-[],23,cristian
-[],29,cristian
