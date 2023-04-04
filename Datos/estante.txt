@@ -1,6 +1,6 @@
 -161-535,20,cristian
 [],90,cristian
--104-533-831-116,79,cristian
+-104-533-116,79,cristian
 -946,42,cristian
 [],16,cristian
 -110,61,cristian

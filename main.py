@@ -60,8 +60,18 @@ def main() -> None:
                                     usuario_admin.quitar_estante(estante)
                         elif opc == 4:
                             print("prestar libro")
+                            nombre_libro = input("ingrese el nombre del libro que desea prestar: ")
+                            libro_a_prestar = buscar_libro_general(nombre_libro)
+                            usuario_a_prestar = input("ingrese el nombre del usuario al que desea prestar el libro: ")
+                            codigo_usuario = get_condigo_usuario(usuario_a_prestar)
+                            prestamo_nuevo = Prestamo(codigo_usuario, libro_a_prestar, datetime.datetime.now(), False, None, random.randint(1000, 9999))
+                            almacenar_prestamo(prestamo_nuevo)
+                            libro_a_prestar.prestar()
+                            print("prestamo realizado")
                         elif opc == 5:
                             print("ver libros prestados")
+                            prestamos_totales = leer_prestamos()
+                            print(prestamos_totales)
                         elif opc == 6:
                             print("adios")
                         elif opc == 7:
@@ -89,19 +99,26 @@ def main() -> None:
                             print(buscar.__repr__())
                         elif opc == 2:
                             print("ver libros prestados")
-                            libros_prestados = usuario.imprimir_libros_prestados()
-                            print(libros_prestados)
+                            usuario.imprimir_libros_prestados()
                         elif opc == 3:
                             print("devolver libro")
                             nombre_libro = input("ingrese el nombre del libro que desea devolver: ")
-                            libros_prestado = usuario.devolver_libro(nombre_libro)
-                            print("el libro ha sido devuelto")
+                            libro_a_devolver = buscar_libro_general(nombre_libro)
+                            usuario.devolver_libro(libro_a_devolver)
+                            estantes = stand.leer_estantes()
+                            for estante in estantes:
+                                if estante.codigo == libro_a_devolver.ubicacion:
+                                    estante.agregar_libro(libro_a_devolver ,False)
                         elif opc == 4:
                             print("ver estantes")
                             print("estos son todos los estantes con sus libros")
                             print(stand.leer_estantes())
                         elif opc == 5:
                             print("ver libros")
+                            print("estos son todos los libros")
+                            for estante in stand.leer_estantes():
+                                for libro in estante.libros:
+                                    print(retornar_libro(libro).__repr__())
                         elif opc == 6:
                                 print("adios")
                         elif opc == 7:
@@ -109,6 +126,10 @@ def main() -> None:
                             nombre_libro = input("ingrese el nombre del libro que desea prestar: ")
                             libro_a_prestar = buscar_libro_general(nombre_libro)
                             usuario.prestar_libro(libro_a_prestar)
+                            estantes = stand.leer_estantes()
+                            for estante in estantes:
+                                if estante.codigo == libro_a_prestar.ubicacion:
+                                    estante.quitar_libro(libro_a_prestar)
                             print("el libro ha sido prestado")
                         else:
                             print("opcion invalida")

@@ -49,6 +49,10 @@ class Libro:
         self.estado = "prestado"
         modificar_info_libro(self.codigo, "prestado")
 
+    def devolver(self):
+        self.estado = "disponible"
+        modificar_info_libro(self.codigo, "disponible")
+
 
 # crea una funcion para almacenar un libro en un archivo de texto
 def almacenar_libro(libro: Libro) -> None:

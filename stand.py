@@ -21,13 +21,16 @@ class EstanteDeLibros:
         self.admin = admin
         self.codigo = codigo
 
-    def agregar_libro(self, libro: "Libro") -> None:
+    def agregar_libro(self, libro: "Libro", tipo: bool) -> None:
+        # tipo = True si es un libro nuevo, False si es un libro que ya existe
         self.libros.append(libro.codigo)
-        almacenar_libro(libro)
+        if tipo:
+            almacenar_libro(libro)
         modificar_estante(libro, libro.ubicacion)
 
     def quitar_libro(self, libro) -> None:
         self.libros.remove(libro)
+        modificar_estante(libro, libro.ubicacion)
 
     def buscar_libro_por_nombre(self, nombre: str) -> "Libro":
         if len(self.libros) == 0:

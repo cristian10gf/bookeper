@@ -1,11 +1,11 @@
-guerra,cristo,1900,terror,ofiesco,digital,20,disponible,535
-la odisea,homero,2010,aventura,arcaica,fisico,79,disponible,104
-el cuarzo,yo,2000,suspenso,ofiesco,digital,79,disponible,533
-la orca,frausto,1999,terror,oriundo,fisico,79,prestado,831
-jesus,dios,12,ficcion,jesuita,fisico,79,disponible,116
-las locuras,pernet,2020,ficcion,congo,digital,92,disponible,743
-la locura del emperador,cris pratt,2030,ficcion,ofiesco,fisico,92,disponible,454
-juana de arco,carlo magno,1890,historico,ofiesco,fisico,61,disponible,219
-historia mundial,carl sagan,2021,informativo,global,digital,61,disponible,110
-olimpo,marie curie,2300,historia,historica,fisico,42,disponible,946
-recetas cocina linda,margarita,2010,informativo,cocinando,fisico,20,disponible,161
+guerra,cristo,1900,ofiesco,digital,terror,20,disponible,535
+la odisea,homero,2010,arcaica,fisico,aventura,79,disponible,104
+el cuarzo,yo,2000,ofiesco,digital,suspenso,79,disponible,533
+la orca,frausto,1999,oriundo,fisico,terror,79,Prestado,831
+jesus,dios,12,jesuita,fisico,ficcion,79,disponible,116
+las locuras,pernet,2020,congo,digital,ficcion,92,disponible,743
+la locura del emperador,cris pratt,2030,ofiesco,fisico,ficcion,92,disponible,454
+juana de arco,carlo magno,1890,ofiesco,fisico,historico,61,disponible,219
+historia mundial,carl sagan,2021,global,digital,informativo,61,disponible,110
+olimpo,marie curie,2300,historica,fisico,historia,42,disponible,946
+recetas cocina linda,margarita,2010,cocinando,fisico,informativo,20,disponible,161

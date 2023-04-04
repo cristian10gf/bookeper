@@ -8,7 +8,7 @@ class Usuario:
         self.nombre = nombre
         self.correo_electronico = correo_electronico
         self.codigo_Usuario = codigo_Usuario
-        self.libros_prestados = []
+        self.libros_prestados = self.buscar_libros_prestados()
 
     def prestar_libro(self, libro: 'Libro'):
         if libro in self.libros_prestados:
@@ -21,16 +21,34 @@ class Usuario:
             print(prestamo_actual)
 
     def devolver_libro(self, libro: 'Libro'):
-        if libro in self.libros_prestados:
-            self.libros_prestados.remove(libro)
-            libro.devolver()
-        else:
+        act = False
+        for libro_totales in self.libros_prestados:
+            if libro_totales.codigo == libro.codigo:
+                self.libros_prestados.remove(libro)
+                prestamos = leer_prestamos()
+                for prestamo in prestamos:
+                    if prestamo.libro.codigo == libro.codigo and prestamo.usuario == self.codigo_Usuario and prestamo.devuelto == False:
+                        prestamo.devolver()
+                libro.devolver()
+                print(f"El libro {libro.nombre} ha sido devuelto.")
+                act = True
+                break
+        if act == False:
             print("No tienes este libro prestado.")
 
     def tiene_libro_prestado(self, libro: 'Libro'):
         return libro in self.libros_prestados
 
-    def imprimir_libros_prestados(self):
+    def buscar_libros_prestados(self) -> list['Libro']:
+        prestamos = leer_prestamos()
+        lista_libros = []
+        for prestamo in prestamos:
+            if prestamo.usuario == self.codigo_Usuario and prestamo.devuelto == False:
+                lista_libros.append(prestamo.libro)
+        return lista_libros
+
+    def imprimir_libros_prestados(self) -> None:
+        #self.buscar_libros_prestados()
         if len(self.libros_prestados) == 0:
             print(f"{self.nombre} no tiene libros prestados.")
         else:
@@ -38,12 +56,7 @@ class Usuario:
             for libro in self.libros_prestados:
                 print(f"- {libro.nombre}")
 
-    @staticmethod
-    def libros_prestados(usuarios):
-        libros_prestados = []
-        for usuario in usuarios:
-            libros_prestados.extend(usuario.libros_prestados)
-        return libros_prestados
+
 
     def __str__(self):
         libros_prestados_str = ", ".join([libro.nombre for libro in self.libros_prestados])
