@@ -1,4 +1,4 @@
-from stand import *
+from estante_libros import *
 
 class administrador:
     @dispatch(str)
