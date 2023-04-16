@@ -1,6 +1,6 @@
-# bookeper
+# Bookeeper
 proyecto de programacion orientada a objetos que permite una mejor administracion bibliotecaria
-se usa la version de `python 3.10.10`
+se usa la version de `python 3.11.0`
 
-## requirements
-`pip instal -r requirements.txt`
+## Requirements
+para instalar las dependencias escriba en la terminal `pip instal -r requirements.txt`
