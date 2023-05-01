@@ -1,5 +1,6 @@
 from Usuarios.user import *
-import estante_libros, Libros.libro as libro
+import Libros.libro as libro
+from core import estante_libros
 from Usuarios.admin import administrador
 
 def buscar_libro_general(nombre_libro: str) -> libro.Libro:

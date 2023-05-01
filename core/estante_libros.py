@@ -1,93 +1,88 @@
-import random
 from Libros.libro import *
-from multipledispatch import dispatch
+from Usuarios.admin import administrador
 
 class EstanteDeLibros:
-    @dispatch(list, str)
-    def __init__(self, libros: list, admin: str):
+    __id = 0
+    @dispatch(list, administrador, str, int)
+    def __init__(self, libros: list['libro'], admin: 'administrador', genero: str, tamano: int):
+        self.__codigo = EstanteDeLibros.__id
+        EstanteDeLibros.__id += 1
         if libros is None or len(libros) == 0:
-            self.libros = []
+            self.__libros = []
         else:
-            self.libros = libros
-        self.admin = admin
-        self.codigo = random.randint(1, 100)
+            self.__libros = libros
+            for libro in self.__libros:
+                libro.ubicacion = self
+        self.__admin = admin
+        self.__admin.estantes.append(self)
+        self.__genero = genero
+        self.__tamano = tamano
 
-    @dispatch(list, int, str)
-    def __init__(self, libros: list, codigo: int, admin: str):
+    @dispatch(list, int, administrador, str, int)
+    def __init__(self, libros: list, codigo: int, admin: 'administrador', genero: str, tamano: int):
         if libros is None or len(libros) == 0:
-            self.libros = []
+            self.__libros = []
         else:
-            self.libros = libros
-        self.admin = admin
-        self.codigo = codigo
+            self.__libros = libros
+            for libro in self.__libros:
+                libro.ubicacion = self
+        self.__admin = admin
+        self.__admin.estantes.append(self)
+        self.__codigo = codigo
+        self.__genero = genero
+        self.__tamano = tamano
 
-    def agregar_libro(self, libro: "Libro", tipo: bool) -> None:
-        # tipo = True si es un libro nuevo, False si es un libro que ya existe
-        self.libros.append(libro.codigo)
-        if tipo:
-            almacenar_libro(libro)
-        modificar_estante(libro, libro.ubicacion)
+    def agregar_libro(self, libro: "Libro") -> None:
+        if len(self.__libros) == self.__tamano:
+            print("No se pueden agregar mas libros")
+        else:
+            self.__libros.append(libro)
 
-    def quitar_libro(self, libro) -> None:
-        self.libros.remove(libro)
-        modificar_estante(libro, libro.ubicacion)
+    def quitar_libro(self, libro: 'Libro') -> None:
+        if libro not in self.__libros:
+            print("No se puede quitar un libro que no esta en el estante")
+        else:
+            self.__libros.remove(libro)
 
     def buscar_libro_por_nombre(self, nombre: str) -> "Libro":
-        if len(self.libros) == 0:
+        if len(self.__libros) == 0:
             return None
-        else: 
-            for libro in self.libros:
-                libro_a_buscar = retornar_libro(int(libro))
-                if libro_a_buscar.nombre == nombre:
-                    return libro_a_buscar
+        else:
+            for libro in self.__libros:
+                if libro.nombre == nombre:
+                    return libro
             return None
 
-    def buscar_libros_por_autor(self, autor) -> list:
+    def buscar_libros_por_autor(self, autor) -> list['Libro']:
         libros_encontrados = []
         for libro in self.libros:
             if autor in libro.autores:
                 libros_encontrados.append(libro)
         return libros_encontrados
 
-    def buscar(self, criterios) -> list:
-        libros_encontrados = []
-        for libro in self.libros:
-            cumple_criterios = True
-            for clave, valor in criterios.items():
-                if getattr(libro, clave, None) != valor:
-                    cumple_criterios = False
-                    break
-            if cumple_criterios:
-                libros_encontrados.append(libro)
-        return libros_encontrados
+    @property
+    def libros(self):
+        return self.__libros
 
-    def __str__(self) -> str:
-        if len(self.libros) == 0 or self.libros == []:
-            return f"[],{self.codigo},{self.admin}"
-        else:
-            libros_str = ""
-            for libro in self.libros:
-                libros_str = libros_str + f"-{libro}"
-            return f"{libros_str},{self.codigo},{self.admin}"
-        
-    def __repr__(self) -> str:
-        if len(self.libros) == 0 or self.libros == []:
-            return f"Estante vacio, admim:{self.admin}"
-        else:
-            libros_str = ""
-            for libro in self.libros:
-                libros_str = libros_str + f"-{libro}"
-            return f"Estante con {len(self.libros)} libros:{libros_str}, admin:{self.admin}"
+    @property
+    def codigo(self):
+        return self.__codigo
+
+    @property
+    def genero(self):
+        return self.__genero
+
+
         
 # crea un archivo para guardar los estantes
 def almacenar_estante(estante: EstanteDeLibros) -> None:
-    archivo = open("Datos\estante.txt", "a")
+    archivo = open("../Datos/estante.txt", "a")
     archivo.write(str(estante) + "\n")
     archivo.close()
 
 @dispatch()
 def leer_estantes() -> list['EstanteDeLibros']:
-    with open('Datos\estante.txt', 'r') as archivo:
+    with open('../Datos/estante.txt', 'r') as archivo:
         lista_estantes = []
         for linea in archivo:
             linea = linea.strip()
@@ -107,7 +102,7 @@ def leer_estantes() -> list['EstanteDeLibros']:
 
 @dispatch(str)
 def leer_estantes(nombre: str) -> list['EstanteDeLibros']:
-    with open('Datos\estante.txt', 'r') as archivo:
+    with open('../Datos/estante.txt', 'r') as archivo:
         mis_estantes = []
         for linea in archivo:
             linea = linea.strip()
@@ -126,7 +121,7 @@ def leer_estantes(nombre: str) -> list['EstanteDeLibros']:
     return mis_estantes
 
 def borrar_estantes() -> None:
-    archivo = open("Datos\estante.txt", "w")
+    archivo = open("../Datos/estante.txt", "w")
     archivo.write("")
     archivo.close()
 

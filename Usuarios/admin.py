@@ -1,28 +1,29 @@
-from estante_libros import *
+from multipledispatch import dispatch
+from Usuarios.usuarios import Usuario
+from core.prestamos import Prestamo
 
-class administrador:
-    @dispatch(str)
-    def __init__(self, nombre: str):
-        self.estantes = []
-        self.nombre = nombre
-        self.prestamos_pendientes = []
+class administrador(Usuario):
+    @dispatch(str, str)
+    def __init__(self, nombre: str, contrasena: str) -> None:
+        super().__init__(nombre, contrasena)
+        self.__estantes = []
+        self.__prestamos_pendientes = []
 
-    @dispatch(str, list)
-    def __init__(self, nombre:str, estantes: list):
-        self.estantes = estantes
-        self.nombre = nombre
-        self.prestamos_pendientes = []
+    @dispatch(str, str, list, int)
+    def __init__(self, nombre:str, contrasena: str, estantes: list['EstanteDeLibros'], codigo_usuario: int) -> None:
+        super().__init__(nombre, contrasena)
+        self.__estantes = estantes
+        self.__prestamos_pendientes = []
+        self._codigo_Usuario = codigo_usuario
 
     def agregar_estante(self, estante: 'EstanteDeLibros'):
-        self.estantes.append(estante)
-        almacenar_estante(estante)
+        self.__estantes.append(estante)
 
     def quitar_estante(self, estante: 'EstanteDeLibros'):
-        self.estantes.remove(estante)
-        borrar_un_estante(estante.codigo)
+        self.__estantes.remove(estante)
 
-    def buscar_libro_por_nombre(self, nombre):
-        for estante in self.estantes:
+    def buscar_libro_por_nombre(self, nombre: str) -> 'Libro':
+        for estante in self.__estantes:
             libro = estante.buscar_libro_por_nombre(nombre)
             if libro is not None:
                 return libro
@@ -35,38 +36,33 @@ class administrador:
             libros_encontrados.extend(libros_en_estante)
         return libros_encontrados
 
-    def buscar_libros(self, criterios):
-        libros_encontrados = []
-        for estante in self.estantes:
-            libros_en_estante = estante.buscar(criterios)
-            libros_encontrados.extend(libros_en_estante)
-        return libros_encontrados
+    def prestar_libro(self, libro: 'Libro', Cliente: 'Cliente') -> None:
+        prestamo = Prestamo(libro, Cliente)
+        self.__prestamos_pendientes.append()
 
-    def __str__(self):
-        if len(self.estantes) == 0:
-            return "No hay estantes disponibles"
-        else:
-            estantes_str = "\n".join([f" - {estante.__repr__()}" for estante in self.estantes])
-            return f"{self.nombre} con {len(self.estantes)} estantes:\n{estantes_str}"
+    def devolver_libro(self, libro: 'Libro', Cliente: 'Cliente') -> None:
+        Cliente.devolver_libro(libro)
+        self.__prestamos_pendientes.remove(libro)
 
-    def registrar_prestamo(self, usuario, libro):
-        if usuario.tiene_libro_prestado(libro):
-            print("El usuario ya tiene este libro prestado.")
-        else:
-            self.prestamos_pendientes.append((usuario, libro))
-            print(f"{usuario.nombre} ha prestado el libro {libro.titulo}.")
-        
-    def registrar_devolucion(self, usuario, libro):
-        if not usuario.tiene_libro_prestado(libro):
-            print("El usuario no tiene este libro prestado.")
-        else:
-            self.prestamos_pendientes.remove((usuario, libro))
-            print(f"{usuario.nombre} ha devuelto el libro {libro.titulo}.")
-    
-    def imprimir_prestamos_pendientes(self):
-        if len(self.prestamos_pendientes) == 0:
-            print("No hay préstamos pendientes.")
-        else:
-            print("Préstamos pendientes:")
-            for (usuario, libro) in self.prestamos_pendientes:
-                print(f"- {usuario.nombre} ha prestado el libro {libro.titulo}.")
+    def ver_libros_prestados(self) -> list['Libro']:
+        return self.__prestamos_pendientes
+
+    def verificar_libro_prestado(self, libro: 'Libro') -> bool:
+        return libro in self.__prestamos_pendientes
+
+    @property
+    def estantes(self):
+        return self.__estantes
+
+    @estantes.setter
+    def estantes(self, estante):
+        self.__estantes.append(estante)
+
+    @property
+    def prestamos_pendientes(self):
+        return self.__prestamos_pendientes
+
+    @prestamos_pendientes.setter
+    def prestamos_pendientes(self, prestamo):
+        self.__prestamos_pendientes.append(prestamo)
+
