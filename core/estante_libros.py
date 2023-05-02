@@ -72,79 +72,14 @@ class EstanteDeLibros:
     def genero(self):
         return self.__genero
 
+    @property
+    def tamano(self):
+        return self.__tamano
 
-        
-# crea un archivo para guardar los estantes
-def almacenar_estante(estante: EstanteDeLibros) -> None:
-    archivo = open("../Datos/estante.txt", "a")
-    archivo.write(str(estante) + "\n")
-    archivo.close()
+    @property
+    def admin(self):
+        return self.__admin
 
-@dispatch()
-def leer_estantes() -> list['EstanteDeLibros']:
-    with open('../Datos/estante.txt', 'r') as archivo:
-        lista_estantes = []
-        for linea in archivo:
-            linea = linea.strip()
-            estante = linea.split(',')
-            if estante[0] == "[]":
-                estante[0] = []
-            else:
-                estante[0] = estante[0].split('-')
-                estante[0].pop(0)
-            estante[1] = int(estante[1])
-            codigos = []
-            for codigo in estante[0]:
-                codigos.append(int(codigo))
-            estante = EstanteDeLibros(codigos, estante[1], estante[2])
-            lista_estantes.append(estante)
-    return lista_estantes
-
-@dispatch(str)
-def leer_estantes(nombre: str) -> list['EstanteDeLibros']:
-    with open('../Datos/estante.txt', 'r') as archivo:
-        mis_estantes = []
-        for linea in archivo:
-            linea = linea.strip()
-            estante = linea.split(',')
-            if estante[0] == "[]":
-                estante[0] = []
-            else:
-                estante[0] = estante[0].split('-')
-                estante[0].pop(0)
-            estante[1] = int(estante[1])
-            for codigo in estante[0]:
-                codigo = int(codigo)
-            estante = EstanteDeLibros(estante[0], estante[1], estante[2])
-            if estante.admin == nombre:
-                mis_estantes.append(estante)
-    return mis_estantes
-
-def borrar_estantes() -> None:
-    archivo = open("../Datos/estante.txt", "w")
-    archivo.write("")
-    archivo.close()
-
-def borrar_un_estante(codigo: int) -> None:
-    todos_los_estantes = leer_estantes()
-    for estante in todos_los_estantes:
-        if estante.codigo == codigo:
-            todos_los_estantes.remove(estante)
-            break
-    borrar_estantes()
-    for estante in todos_los_estantes:
-        almacenar_estante(estante)
-
-def modificar_estante(libro: Libro, codigo: int) -> None:
-    act = False
-    todos_los_estantes = leer_estantes()
-    for estante_actual in todos_los_estantes:
-        if estante_actual.codigo == codigo:
-            act = True
-            break
-    if act == False: 
-        "No se encontro el estante"
-    else:
-        borrar_estantes()
-        for estante in todos_los_estantes:
-            almacenar_estante(estante)
+    @libros.setter
+    def libros(self, libros: list['Libro']):
+        self.__libros = libros

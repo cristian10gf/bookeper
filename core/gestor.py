@@ -1,6 +1,5 @@
 from config.config import *
 
-
 def traer_datos() -> dict:
     info = db()
     todo = {
@@ -10,6 +9,8 @@ def traer_datos() -> dict:
     }
     return todo
 
+def guardar_datos() -> None:
+    pass
 class Bookeeper:
 
     def __init__(
@@ -26,15 +27,16 @@ class Bookeeper:
             self.__administradores.append(admin)
 
         for cliente in traer_datos()['clientes']:
-            cl = Cliente(cliente[1], cliente[2], cliente[0])
-            self.__clientes.append(cl)
+            self.__clientes.append(cliente)
 
-        es = traer_datos()['estantes']
-        self.__estantes.append(es)
+        for admin in self.__administradores:
+            for estante in admin.estantes:
+                self.__estantes.append(estante)
 
 
     def agregar_administrador(self, administrador: 'administrador') -> None:
         self.__administradores.append(administrador)
+        guardar_datos()
 
     def agregar_Cliente(self, cliente: 'Cliente'):
         self.__clientes.append(cliente)
@@ -74,5 +76,3 @@ class Bookeeper:
         self.__estantes.append(estante)
 
 book = Bookeeper()
-print(book.administradores[0].estantes[0].libros[1].nombre)
-
