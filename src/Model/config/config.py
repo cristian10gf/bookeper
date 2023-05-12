@@ -1,5 +1,5 @@
 import pyodbc
-from Usuarios.admin import administrador, Prestamo
+from .Usuarios.admin import administrador, Prestamo
 from Usuarios.cliente import Cliente
 from core.estante_libros import EstanteDeLibros, Libro
 
@@ -185,6 +185,7 @@ class db:
             self.actualizar_prestamo(prestamo)
         for cliente in todos_datos['clientes']:
             self.actualizar_cliente(cliente)
+
 
 db1 = db()
 for estantes in db1.get_estantes():
