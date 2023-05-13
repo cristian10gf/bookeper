@@ -1,6 +1,0 @@
-1234,1234,admin,3217
-andres,4566,usuario,3764
-cristian,1256,admin,1459
-brainer,hulu,admin,7936
-carlos123,1234567,usuario,4682
-324,234,24,7250

@@ -60,6 +60,12 @@ class EstanteDeLibros:
                 libros_encontrados.append(libro)
         return libros_encontrados
 
+    def get_libro(self, codigo: int) -> 'Libro':
+        for libro in self.__libros:
+            if libro.codigo == codigo:
+                return libro
+        return None
+
     @property
     def libros(self):
         return self.__libros

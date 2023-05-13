@@ -1,7 +1,8 @@
 import pyodbc
-from .Usuarios.admin import administrador, Prestamo
+from Usuarios.admin import administrador, Prestamo
 from Usuarios.cliente import Cliente
 from core.estante_libros import EstanteDeLibros, Libro
+from Usuarios.usuario import Usuario
 
 info = {
     'server': 'proyecto-bookeeper.database.windows.net',
@@ -9,6 +10,12 @@ info = {
     'username': 'cristian',
     'password': 'Franco14*',
 }
+
+# table_admin = id_admin, nombre, contraseña
+# table_estantes = id_estante, administrador, genero, max_libros
+# table_libros = id_libro, nombre, autor, editorial, genero, estante, prestamo, fecha_lanzamiento
+# table_prestamo = id_prestamo, cliente, libro, fecha_prestamo, fecha_devolucion, devuelto
+# table_cliente = id_cliente, nombre, contraseña
 
 class db:
     try:
@@ -82,6 +89,7 @@ class db:
     def get_prestamo(self, id) -> 'Prestamo':
         self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE id = ?', id)
         prestamo = self.cursor.fetchone()
+        print(prestamo)
         nuevo_prestamo = Prestamo(prestamo[1], prestamo[2], prestamo[3], prestamo[0])
         return nuevo_prestamo
 
@@ -188,5 +196,4 @@ class db:
 
 
 db1 = db()
-for estantes in db1.get_estantes():
-    print(estantes.admin.nombre)
+db1.get_prestamo(1)

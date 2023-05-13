@@ -1,4 +1,4 @@
-from Usuarios.user import *
+from Models.Usuarios.cliente import *
 import Libros.libro as libro
 from core import estante_libros
 from Usuarios.admin import administrador
