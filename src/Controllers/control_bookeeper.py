@@ -1,5 +1,5 @@
-from Models.core.gestor import Bookeeper
-
+from src.Models.core.gestor import Bookeeper
+from datetime import date, datetime
 
 class ControlBookeeper:
     __bookeeper = Bookeeper()
@@ -103,5 +103,9 @@ class ControlBookeeper:
     @staticmethod
     def new_estante() -> None:
         pass
+
+    @staticmethod
+    def new_admin(nombre: str, contraseña: str) -> None:
+        ControlBookeeper.__bookeeper.new_admin(nombre, contraseña)
 
 

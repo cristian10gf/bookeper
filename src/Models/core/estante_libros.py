@@ -1,5 +1,5 @@
-from Libros.libro import *
-from Usuarios.admin import administrador
+from src.Models.Libros.libro import *
+from src.Models.Usuarios.admin import administrador
 
 class EstanteDeLibros:
     __id = 0

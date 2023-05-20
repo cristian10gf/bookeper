@@ -1,6 +1,6 @@
 from multipledispatch import dispatch
-from Files.file_manager import FileManager
-from core.prestamos import Prestamo
+from src.Models.Files.file_manager import FileManager
+from src.Models.core.prestamos import Prestamo
 from datetime import date
 
 class Libro:

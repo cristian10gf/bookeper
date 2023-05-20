@@ -1,4 +1,5 @@
-from config.config import *
+from src.Models.config.config import *
+from src.Models.Libros.recomendacio import Recomendacion
 
 def traer_datos() -> dict:
     info = db()
@@ -14,8 +15,8 @@ def guardar_datos(self: 'Bookeeper') -> None:
     todos_datos = {
         'admins': self.administradores,
         'estantes': self.estantes,
-        'libros': [libro for libro in estante.libros for  estante in self.estantes],
-        'prestamos': [prestam for prestam in cliente.prestamos for cliente in self.clientes],
+        'libros': [libro for estante in self.estantes for libro in estante.libros],
+        'prestamos': [prestamo for cliente in self.clientes for prestamo in cliente.prestamos],
         'clientes': self.clientes
     }
     info.actualizar( todos_datos )
@@ -171,4 +172,6 @@ class Bookeeper:
                 break
         guardar_datos(self)
 
-book = Bookeeper()
+    def generate_recomendacion(self, libro: int, cliente: Cliente) -> None:
+        recomendacion = Recomendacion(1, libro, cliente, datetime.now())
+        guardar_datos(self)

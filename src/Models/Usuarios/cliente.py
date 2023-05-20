@@ -1,6 +1,5 @@
-from core.prestamos import *
-from Usuarios.usuarios import Usuario
-from Files.file_manager import FileManager
+from src.Models.core.prestamos import *
+from src.Models.Usuarios.usuarios import Usuario
 from multipledispatch import dispatch
 
 class Cliente(Usuario):

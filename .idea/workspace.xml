@@ -5,33 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8e9252f9-33d1-4f8c-a781-cd1aece85cc2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Models/Libros/recomendacio.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Models/Usuarios/cliente.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Models/core/gestor.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Models/core/prestamos.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Datos/estante.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Datos/libros.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Datos/prestamos.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Datos/sesion.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Datos/usuarios.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controllers/control_bookeeper.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controllers/control_bookeeper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Files/file_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Files/file_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Libros/libro.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Libros/libro.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Libros/resumen.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Libros/resumen.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Usuarios/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Usuarios/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Usuarios/cliente.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Usuarios/usuarios.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Usuarios/usuarios.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/config/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/core/estante_libros.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/core/estante_libros.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/core/gestor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/core/prestamos.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Libros/libro.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Libros/libro.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Usuarios/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Usuarios/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Usuarios/cliente.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Usuarios/cliente.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/config/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/core/estante_libros.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/core/estante_libros.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/core/gestor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/core/gestor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,14 +38,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "develop__cristian",
-    "last_opened_file_path": "E:/app exe/anaconda/pythonw.exe",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop__cristian&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/app exe/anaconda/pythonw.exe&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\proyecto\bookeper\core" />

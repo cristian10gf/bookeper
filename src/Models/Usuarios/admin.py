@@ -1,6 +1,6 @@
 from multipledispatch import dispatch
-from Usuarios.usuarios import Usuario
-from core.prestamos import Prestamo
+from ..Usuarios.usuarios import Usuario
+from ..core.prestamos import Prestamo
 
 class administrador(Usuario):
     @dispatch(str, str)
