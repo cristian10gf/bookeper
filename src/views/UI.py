@@ -41,7 +41,7 @@ class LoginWindow(QWidget):
         bg = QLabel(self)
         bg.resize(self.width, self.height)
         bg.setStyleSheet("""background-color:#594E3F; border-radius: 20px;
-                        background-image: url(PooProyect/images/Backimage.jpg)""")
+                        background-image: url(src/views/images/Backimage.jpg)""")
         lg = QLabel(self)
         lg.move(945, 0)
         lg.resize(self.width-945, self.height)
@@ -165,6 +165,10 @@ class LoginWindow(QWidget):
     def login_clicked(self):
         userData = self.user_line.text()
         passData = self.pass_line.text()
+        if self.control.verificar_admin(userData, passData):
+            print('admin')
+        else:
+            print('cliente')
 
 
 # _____________________________________________________________________________________
@@ -186,7 +190,7 @@ class SignUpWindow(QWidget):
         bg = QLabel(self)
         bg.resize(self.width, self.height)
         bg.setStyleSheet("""background-color:#A69073; border-radius: 20px;
-                        background-image: url(PooProyect/images/Backimage.jpg)""")
+                        background-image: url(src/views/images/Backimage.jpg)""")
         sg = QLabel(self)
         sg.move(545, 0)
         sg.resize(self.width-545, self.height)
@@ -279,10 +283,10 @@ class SignUpWindow(QWidget):
                 "height: 30px;"
             "}"
             "QCheckBox::indicator::unchecked""{"
-                "image: url(PooProyect/images/uncheckmark.png);"
+                "image: url(src/views/images/uncheckmark.png);"
             "}"
             "QCheckBox::indicator::checked""{"
-                "image: url(PooProyect/images/checkmark.png);"
+                "image: url(src/views/images/checkmark.png);"
             "}")
 
     def signUp_Button(self):
@@ -344,7 +348,7 @@ class SignUpWindow(QWidget):
         else:
             if isAdmin:
                 pass
-                #self.control.crear_admin(adress, name, user, password)
+                self.control.new_admin(name, password)
             else:
                 self.control.new_cliente(user, password)
 
@@ -392,9 +396,5 @@ class SignUpWindow(QWidget):
 
 def Main():  # ________________________________________________________________________________________________________
     app = QApplication(sys.argv)
-    LogWin = SignUpWindow()
+    LogWin = LoginWindow()
     app.exec()
-
-
-'''if __name__ == "__main__":
-    Main()'''

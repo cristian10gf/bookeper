@@ -3,8 +3,14 @@ from src.Models.Usuarios.usuarios import Usuario
 from multipledispatch import dispatch
 
 class Cliente(Usuario):
+    @dispatch(str, str)
     def __init__(self, nombre: str, contraseña: str):
         super().__init__(nombre, contraseña)
+        self.__prestamos: list['Prestamo'] = []
+
+    @dispatch(str, str, int)
+    def __init__(self, nombre: str, contraseña: str, codigo_usuario: int):
+        super().__init__(nombre, contraseña, codigo_usuario)
         self.__prestamos: list['Prestamo'] = []
 
     def prestar_libro(self, libro: 'Libro') -> None:

@@ -3,7 +3,7 @@ from multipledispatch import dispatch
 
 
 class Usuario(ABC):
-    __id_Usuario = 1
+    __id_Usuario = 0
 
     """    @dispatch(str, str)
     def __init__(self, nombre: str, contrasena: str, biblioteca: 'Bookeeper' = None) -> None:

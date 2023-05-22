@@ -62,7 +62,6 @@ class Libro:
                f"{self.__autores}," \
                f"{self.__fecha_lanzamiento}," \
                f"{self.__editorial}," \
-               f"{self.__formato}," \
                f"{self.__genero}," \
                f"{self.__ubicacion}," \
                f"{self.__estado}," \
@@ -77,12 +76,25 @@ class Libro:
     def ubicacion(self, ubicacion: 'EstanteDeLibros'): self.__ubicacion = ubicacion
     @property
     def nombre(self): return self.__nombre
-    def prestar(self): self.__estado = "prestado"
-    def devolver(self): self.__estado = "disponible"
+    def prestar(self, prestamo: 'Prestamo'): self.__estado = prestamo
+    def devolver(self): self.__estado = None 
     @property
     def codigo(self): return self.__codigo
     @property
     def autores(self): return self.__autores
     @property
     def fecha_lanzamiento(self): return self.__fecha_lanzamiento
+    @property
+    def genero(self): return self.__genero
+    @property
+    def editorial(self): return self.__editorial
+    @property
+    def estado(self): return self.__estado
+
+    def guardar_autores(self) -> str:
+        autores = ""
+        for autor in self.__autores:
+            autores += autor + ","
+        return autores[:-1]
+
 

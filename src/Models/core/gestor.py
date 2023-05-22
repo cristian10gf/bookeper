@@ -39,8 +39,7 @@ class Bookeeper:
             self.__clientes.append(cliente)
 
         for admin in self.__administradores:
-            for estante in admin.estantes:
-                self.__estantes.append(estante)
+            self.__estantes.extend(admin.estantes)
 
 
     def agregar_administrador(self, administrador: 'administrador') -> None:
@@ -49,9 +48,11 @@ class Bookeeper:
 
     def agregar_Cliente(self, cliente: 'Cliente'):
         self.__clientes.append(cliente)
+        guardar_datos()
 
     def agregar_estante(self, estante: 'EstanteDeLibros') -> None:
         self.__estantes.append(estante)
+        guardar_datos()
 
     def get_estante(self, codigo: int) -> 'EstanteDeLibros':
         for estante in self.__estantes:
@@ -92,13 +93,13 @@ class Bookeeper:
 
     def verificar_admin(self, username: str, password: str) -> bool:
         for admin in self.__administradores:
-            if admin.username == username and admin.password == password:
+            if admin.nombre == username and admin.contrasena == password:
                 return True
         return False
 
     def verificar_cliente(self, username: str, password: str) -> bool:
         for cliente in self.__clientes:
-            if cliente.username == username and cliente.password == password:
+            if cliente.nombre == username and cliente.contrasena == password:
                 return True
         return False
 
@@ -117,10 +118,10 @@ class Bookeeper:
 
     def get_prestamos(self, usuario: 'Usuario') -> list['Prestamo']:
         prestamos = []
-        if isinstance(usuario, Cliente):
+        if isinstance(usuario, 'Cliente'):
             for prestamo in usuario.prestamos:
                 prestamos.append(prestamo)
-        elif isinstance(usuario, Administrador):
+        elif isinstance(usuario, 'Administrador'):
             for cliente in self.__clientes:
                 for prestamo in cliente.prestamos:
                     prestamos.append(prestamo)
@@ -174,4 +175,9 @@ class Bookeeper:
 
     def generate_recomendacion(self, libro: int, cliente: Cliente) -> None:
         recomendacion = Recomendacion(1, libro, cliente, datetime.now())
+        guardar_datos(self)
+
+    def new_admin(self, nombre: str, password: str) -> None:
+        admin = administrador(nombre, password)
+        self.__administradores.append(admin)
         guardar_datos(self)

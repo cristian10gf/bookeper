@@ -66,3 +66,9 @@ class administrador(Usuario):
     def prestamos_pendientes(self, prestamo):
         self.__prestamos_pendientes.append(prestamo)
 
+    def get_estante(self,id: int) -> 'EstanteDeLibros':
+        for estante in self.__estantes:
+            if estante.codigo == id:
+                return estante
+        return None
+
