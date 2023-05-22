@@ -1,12 +1,14 @@
 from src.Models.config.config import *
 from src.Models.Libros.recomendacio import Recomendacion
+import random
 
 def traer_datos() -> dict:
     info = db()
     todo = {
         'administradores': info.get_admins(),
         'clientes': info.get_clientes(),
-        'estantes': info.get_estantes()
+        'estantes': info.get_estantes(),
+        'recomendaciones': info.get_recomendaciones()
     }
     return todo
 
@@ -17,9 +19,11 @@ def guardar_datos(self: 'Bookeeper') -> None:
         'estantes': self.estantes,
         'libros': [libro for estante in self.estantes for libro in estante.libros],
         'prestamos': [prestamo for cliente in self.clientes for prestamo in cliente.prestamos],
-        'clientes': self.clientes
+        'clientes': self.clientes,
+        'recomendaciones': self.recomendaciones
     }
     info.actualizar( todos_datos )
+
 class Bookeeper:
 
     def __init__(
@@ -31,6 +35,7 @@ class Bookeeper:
         self.__administradores = administradores
         self.__clientes = clientes
         self.__estantes = estantes
+        self.__recomendaciones = traer_datos()['recomendaciones']
 
         for admin in traer_datos()['administradores']:
             self.__administradores.append(admin)
@@ -40,6 +45,9 @@ class Bookeeper:
 
         for admin in self.__administradores:
             self.__estantes.extend(admin.estantes)
+
+        for admin in self.__administradores:
+            admin.prestamos_pendientes.extend(cliente.prestamos for cliente in self.__clientes)
 
 
     def agregar_administrador(self, administrador: 'administrador') -> None:
@@ -141,6 +149,7 @@ class Bookeeper:
         return None
 
     def new_prestamo(
+            self,
             fecha: datetime,
             nombre_cliente: str,
             username_cliente: str,
@@ -173,9 +182,22 @@ class Bookeeper:
                 break
         guardar_datos(self)
 
-    def generate_recomendacion(self, libro: int, cliente: Cliente) -> None:
-        recomendacion = Recomendacion(1, libro, cliente, datetime.now())
-        guardar_datos(self)
+    def generate_recomendacion(self, cliente: Cliente) -> None:
+        if len(traer_datos()['prestamos']) > 5:
+            libros_prestados = []
+            for prestamo in traer_datos()['prestamos']:
+                if prestamo.cliente.id == cliente.id:
+                    libros_prestados.append(prestamo.libro)
+            genero = random.choice(libros_prestados)
+            libros_genero = [libro for libro in self.get_libros() if libro.genero == genero.genero]
+            libro = random.choice(libros_genero)
+            while libro in genero:
+                libro = random.choice(libros_genero)
+            else:
+                pass
+            recomendacion = Recomendacion(libro, cliente)
+            self.__recomendaciones.append(recomendacion)
+            guardar_datos(self)
 
     def new_admin(self, nombre: str, password: str) -> None:
         admin = administrador(nombre, password)

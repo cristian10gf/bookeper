@@ -1,6 +1,6 @@
 from multipledispatch import dispatch
-from ..Usuarios.usuarios import Usuario
-from ..core.prestamos import Prestamo
+from src.Models.Usuarios.usuarios import Usuario
+from src.Models.core.prestamos import Prestamo
 
 class administrador(Usuario):
     @dispatch(str, str)
@@ -11,10 +11,9 @@ class administrador(Usuario):
 
     @dispatch(str, str, list, int)
     def __init__(self, nombre:str, contrasena: str, estantes: list['EstanteDeLibros'], codigo_usuario: int) -> None:
-        super().__init__(nombre, contrasena)
+        super().__init__(nombre, contrasena, codigo_usuario)
         self.__estantes = estantes
         self.__prestamos_pendientes = []
-        self._codigo_Usuario = codigo_usuario
 
     def agregar_estante(self, estante: 'EstanteDeLibros'):
         self.__estantes.append(estante)

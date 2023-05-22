@@ -1,6 +1,6 @@
 import pyodbc
 from src.Models.Usuarios.admin import administrador, Prestamo
-from src.Models.Usuarios.cliente import Cliente
+from src.Models.Usuarios.cliente import Cliente, Recomendacion
 from src.Models.core.estante_libros import EstanteDeLibros, Libro
 from datetime import date, datetime
 
@@ -14,8 +14,9 @@ info = {
 # table_admin = id_admin, nombre, contraseña
 # table_estantes = id_estante, genero, tamaño, administrador
 # table_libros = id_libro, genero, fecha_publicacion, ubicacion, autores, estado, editorial, nombre
-# table_prestamo = id_prestamo, cliente, fecha_prestamo, fecha_devolucion, devuelto, libro,
+# table_prestamo = id_prestamo, cliente, fecha_prestamo, fecha_devolucion, devuelto, libro
 # table_cliente = id_cliente, nombre, contraseña
+# table_recomendacion = id_recom, libro, cliente, prestamo
 
 class db:
     conn = None
@@ -33,6 +34,15 @@ class db:
 
     def __init__(self):
         self.cursor = db.conn.cursor()
+
+    def get_recomendacion(self, id: int) -> 'Recomendacion':
+        self.cursor.execute('SELECT * FROM dbo.Table_recomendacion WHERE id_recom = ?', id)
+        recomendacion = self.cursor.fetchone()
+        if recomendacion is None:
+            return None
+        else:
+            recomendacion = Recomendacion(recomendacion[0], recomendacion[1], recomendacion[2], True if recomendacion[3] == 1 else False)
+        return recomendacion
 
     def get_admin(self, id) -> 'administrador':
         self.cursor.execute('SELECT * FROM dbo.Table_admin WHERE id_admin = ?', id)
@@ -56,9 +66,7 @@ class db:
                     libro[3],
                     libro[0]
                 )
-                for prestamo in prestamos:
-                    prestamo = Prestamo(prestamo[1], prestamo[2], prestamo[3], prestamo[0])
-                    libro.agregar_prestamo(prestamo)
+                prestamo = Prestamo(prestamo[0], prestamo[1], prestamo[-1], prestamo[2], prestamo[3], True if prestamo[4] == 1 else False)
                 estante_admin.agregar_libro(libro)
         return admid
 
@@ -89,7 +97,7 @@ class db:
         self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE id_prestamo = ?', id)
         prestamo = self.cursor.fetchone()
         print(prestamo)
-        nuevo_prestamo = Prestamo(prestamo[1], prestamo[2], prestamo[3], prestamo[0])
+        nuevo_prestamo = Prestamo(prestamo[0], prestamo[-1], prestamo[1], prestamo[2], prestamo[3])
         return nuevo_prestamo
 
     def get_cliente(self, id: int) -> 'Cliente':
@@ -137,7 +145,18 @@ class db:
     def get_prestamos(self) -> list['Prestamo']:
         self.cursor.execute('SELECT * FROM dbo.Table_prestamo')
         prestamos = self.cursor.fetchall()
-        return prestamos
+        prestamos_convertidos = []
+        for prestamo in prestamos:
+            prestamos_convertidos.append(Prestamo(prestamo[0], prestamo[1], prestamo[-1], prestamo[2], prestamo[3], True if prestamo[4] == 1 else False))
+        return prestamos_convertidos
+
+    def get_recomendaciones(self) -> list['Recomendacion']:
+        self.cursor.execute('SELECT * FROM dbo.Table_recomendacion')
+        recomendaciones = self.cursor.fetchall()
+        recomendaciones_convertidas = []
+        for recomendacion in recomendaciones:
+            recomendaciones_convertidas.append(Recomendacion(recomendacion[0], recomendacion[1], recomendacion[2], True if recomendacion[3] == 1 else False))
+        return recomendaciones_convertidas
 
     def get_clientes(self) -> list['Cliente']:
         self.cursor.execute('SELECT * FROM dbo.Table_cliente')
@@ -197,6 +216,15 @@ class db:
             self.cursor.execute('UPDATE dbo.Table_cliente SET nombre = ?, contraseña = ? WHERE id_cliente = ?', (cliente.nombre, cliente.contrasena, cliente.codigo_Usuario))
         self.conn.commit()
 
+    def actualizar_recomendacion(self, recomendacion: 'Recomendacion'):
+        # table_recomendacion = id_recomendacion, libro, cliente, prestamo
+        self.cursor.execute('SELECT * FROM dbo.Table_recomendacion WHERE id_recom = ?', recomendacion.id)
+        if self.cursor.fetchone() is None:
+            self.cursor.execute('INSERT INTO dbo.Table_recomendacion VALUES(?, ?, ?, ?)', (recomendacion.id, recomendacion.libro.codigo, recomendacion.cliente.codigo_Usuario, 1 if recomendacion.prestamo == True else 0))
+        else:
+            self.cursor.execute('UPDATE dbo.Table_recomendacion SET libro = ?, cliente = ?, prestamo = ? WHERE id_recom = ?', (recomendacion.libro.codigo, recomendacion.cliente.codigo_Usuario,1 if recomendacion.prestamo == True else 0, recomendacion.id))
+        self.conn.commit()
+
     def actualizar(self, todos_datos: dict):
         for admin in todos_datos['admins']:
             self.actualizar_admin(admin)
@@ -208,4 +236,9 @@ class db:
             self.actualizar_prestamo(prestamo)
         for cliente in todos_datos['clientes']:
             self.actualizar_cliente(cliente)
+        for recomendacion in todos_datos['recomendaciones']:
+            self.actualizar_recomendacion(recomendacion)
 
+    def eliminar_recomendacion(self, recomendacion: 'Recomendacion'):
+        self.cursor.execute('DELETE FROM dbo.Table_recomendacion WHERE id_recom = ?', recomendacion.id)
+        self.conn.commit()
