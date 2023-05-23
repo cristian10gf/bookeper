@@ -12,6 +12,7 @@ class CustomEdit(QLineEdit):
         if event.button() == Qt.MouseButton.LeftButton and text == 'Buscar Libro':
             self.setText('')
 
+
 class LoginWindow(QWidget):
     def __init__(self):
         super(LoginWindow, self).__init__()
@@ -89,7 +90,7 @@ class LoginWindow(QWidget):
     def labels(self):
         #   title
         title_label = QLabel(' BooKeeper', self)
-        title_label.setFont(QFont('Nickainley', 92,))
+        title_label.setFont(QFont('Nickainley', 80,))
         title_label.move(1000, 30)
         title_label.resize(580, 200)
         title_label.setStyleSheet("""color:#594E3F""")
@@ -288,7 +289,7 @@ class SignUpWindow(QWidget):
         #   confirm pass
         # cuando haces click sobre confirm_line debe verificar q lo de arriba es igual
         self.confirm_line = QLineEdit(self)
-        self.confirm_line.textChanged.connect(self.confirmLineClick)
+        self.confirm_line.textChanged.connect(self.confirmLineTyping)
         self.config_linesEdit_pass(
             self.confirm_line, 545+61+450+63, 540, 450, 40)
 
@@ -340,6 +341,25 @@ class SignUpWindow(QWidget):
         button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         button.clicked.connect(closeAction)
 
+    def minimize_button(self):
+        label = QLabel('', self)
+        label.resize(70, 50)
+        label.move(self.width-98, 0)
+        label.setStyleSheet(
+            """background-color:#6B6051 ;border-bottom-left-radius: 20px""")
+        button = QPushButton('-', self)
+        button.resize(48, 50)
+        button.move(self.width-98, 0)
+        button.setFont(QFont('Now', 20))
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setStyleSheet(
+            """color: #FFF9F2; background-color: none ;border-style:solid""")
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.showMinimized)
+
     def back_button(self):
         button = QPushButton('«', self)
         button.resize(50, 50)
@@ -377,7 +397,7 @@ class SignUpWindow(QWidget):
             else:
                 self.control.new_cliente(user, password)
 
-    def confirmLineClick(self):  # arreglar(para validar igualdad de password)
+    def confirmLineTyping(self):  # arreglar(para validar igualdad de password)
         password = self.pass_line.text()
         passconfirm = self.confirm_line.text()
         if password != passconfirm:
