@@ -1,7 +1,7 @@
-from src.Models.core.prestamos import *
+from src.Models.core.prestamos import Prestamo
 from src.Models.Usuarios.usuarios import Usuario
 from multipledispatch import dispatch
-from src.Models.Libros.recomendacio import Recomendacion
+#from src.Models.Libros.recomendacio import Recomendacion
 
 class Cliente(Usuario):
     @dispatch(str, str)

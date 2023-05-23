@@ -46,8 +46,11 @@ class Bookeeper:
         for admin in self.__administradores:
             self.__estantes.extend(admin.estantes)
 
+        prestamos_pendientes = []
+        for cliente in self.__clientes:
+            prestamos_pendientes.extend(cliente.prestamos)
         for admin in self.__administradores:
-            admin.prestamos_pendientes.extend(cliente.prestamos for cliente in self.__clientes)
+            admin.prestamos_pendientes = prestamos_pendientes
 
 
     def agregar_administrador(self, administrador: 'administrador') -> None:
