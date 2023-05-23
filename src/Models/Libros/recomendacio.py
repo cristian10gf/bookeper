@@ -1,22 +1,19 @@
-
+from multipledispatch import dispatch
+from src.Models.Libros.libro import Libro
+from src.Models.Usuarios.cliente import Cliente
 
 class Recomendacion:
     __id: int = 0
 
-    @dispatch(int, 'Libro', 'Cliente', bool)
-    def __init__(self, id: int, libro: 'Libro', usuario: 'Ciente', prestamo: bool = False):
-        self.__id = id
+    def __init__(self, id: int = None, libro: 'Libro' = None, usuario: 'Ciente' = None, prestamo: bool = False):
+        if id is None:
+            self.__id = Recomendacion.__id
+            Recomendacion.__id += 1
+        else:
+            self.__id = id
         self.__libro = libro
         self.__usuario = usuario
         self.__usuario.agregar_recomendacion(self)
-        self.__prestamo = prestamo
-
-    @dispatch('Libro', 'Cliente', bool)
-    def __init__(self, libro: 'Libro', usuario: 'Ciente', prestamo: bool = False):
-        self.__id = Recomendacion.__id
-        Recomendacion.__id += 1
-        self.__libro = libro
-        self.__usuario = usuario
         self.__prestamo = prestamo
 
     @property

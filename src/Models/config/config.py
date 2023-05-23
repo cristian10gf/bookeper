@@ -1,8 +1,9 @@
 import pyodbc
 from src.Models.Usuarios.admin import administrador, Prestamo
-from src.Models.Usuarios.cliente import Cliente, Recomendacion
+from src.Models.Usuarios.cliente import Cliente
 from src.Models.core.estante_libros import EstanteDeLibros, Libro
 from datetime import date, datetime
+from src.Models.Libros.recomendacio import Recomendacion
 
 info = {
     'server': 'proyecto-bookeeper.database.windows.net',
@@ -56,17 +57,21 @@ class db:
             libros = self.cursor.fetchall()
             for libro in libros:
                 self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE libro = ?',libro[0])
-                prestamos = self.cursor.fetchall()
-                libro = Libro(
-                    libro[-1],
-                    libro[4],
-                    libro[2],
-                    libro[1],
-                    libro[-2],
-                    libro[3],
-                    libro[0]
-                )
-                prestamo = Prestamo(prestamo[0], prestamo[1], prestamo[-1], prestamo[2], prestamo[3], True if prestamo[4] == 1 else False)
+                prestamo = self.cursor.fetchall()
+                print(prestamo)
+                if prestamo is None or len(prestamo) == 0:
+                    prestamo = None
+                else:
+                    libro = Libro(
+                        libro[-1],
+                        libro[4],
+                        libro[2],
+                        libro[1],
+                        libro[-2],
+                        libro[3],
+                        libro[0]
+                    )
+                    prestamo = Prestamo(prestamo[0], self.get_cliente(prestamo[1]), libro, prestamo[2], prestamo[3], True if prestamo[4] == 1 else False)
                 estante_admin.agregar_libro(libro)
         return admid
 
@@ -153,15 +158,22 @@ class db:
     def get_recomendaciones(self) -> list['Recomendacion']:
         self.cursor.execute('SELECT * FROM dbo.Table_recomendacion')
         recomendaciones = self.cursor.fetchall()
-        recomendaciones_convertidas = []
-        for recomendacion in recomendaciones:
-            recomendaciones_convertidas.append(Recomendacion(recomendacion[0], recomendacion[1], recomendacion[2], True if recomendacion[3] == 1 else False))
-        return recomendaciones_convertidas
+        if recomendaciones is None:
+            return None
+        else:
+            recomendaciones_convertidas = []
+            for recomendacion in recomendaciones:
+                recomendaciones_convertidas.append(Recomendacion(recomendacion[0],self.get_libro(recomendacion[1]),self.get_cliente(recomendacion[2]), True if recomendacion[3] == 1 else False))
+            return recomendaciones_convertidas
 
     def get_clientes(self) -> list['Cliente']:
         self.cursor.execute('SELECT * FROM dbo.Table_cliente')
         clientes = self.cursor.fetchall()
-        return clientes
+        clientes_convertidos = []
+        for cliente in clientes:
+            cliente_nuevo = Cliente(cliente[1], cliente[2], cliente[0])
+            clientes_convertidos.append(cliente_nuevo)
+        return clientes_convertidos
 
     def actualizar_admin(self, admin: 'administrador'):
         self.cursor.execute('SELECT * FROM dbo.Table_admin WHERE id_admin = ?', admin.codigo_Usuario)
