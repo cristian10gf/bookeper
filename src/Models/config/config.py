@@ -23,7 +23,7 @@ class db:
     conn = None
     try:
         conn = pyodbc.connect(
-            'DRIVER={ODBC Driver 17 for SQL Server};'
+            'DRIVER={SQL Server};'
             'SERVER=proyecto-bookeeper.database.windows.net;'
             'DATABASE=bookeeper;'
             'UID=cristian;'
@@ -58,7 +58,6 @@ class db:
             for libro in libros:
                 self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE libro = ?',libro[0])
                 prestamo = self.cursor.fetchall()
-                print(prestamo)
                 if prestamo is None or len(prestamo) == 0:
                     prestamo = None
                 else:
