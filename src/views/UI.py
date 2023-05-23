@@ -2,25 +2,15 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import Qt, QRect, pyqtSignal, QObject, QEvent, QTimer, QTime
 from PyQt6.QtGui import QFont, QPixmap, QCursor
 from PyQt6.QtWidgets import (QApplication, QToolTip, QWidget, QMainWindow, QPushButton, QTextEdit, QLineEdit, QCheckBox, QLabel,
-                             QFrame, QDialog)
+                             QScrollArea, QVBoxLayout, QHBoxLayout, QGridLayout, QGroupBox, QSpacerItem)
 import sys
 from src.Controllers.control_bookeeper import ControlBookeeper
 
-def clickableQLineEdit(widget):
-    class Filter(QObject):
-        clicked = pyqtSignal()
-
-        def eventFilter(self, obj, event):
-            if obj == widget and event.type() == QEvent.Type.MouseButtonRelease and obj.rect().contains(event.pos()):
-                self.clicked.emit()
-                return True
-            else:
-                return False
-    filter = Filter(widget)
-    widget.installEventFilter(filter)
-    return filter.clicked
-# clickableQLineEdit(self.confirm_line).connect(self.confirmLineClick)
-
+class CustomEdit(QLineEdit):
+    def mousePressEvent(self, event):
+        text = self.text()
+        if event.button() == Qt.MouseButton.LeftButton and text == 'Buscar Libro':
+            self.setText('')
 
 class LoginWindow(QWidget):
     def __init__(self):
@@ -66,35 +56,35 @@ class LoginWindow(QWidget):
     def linesEdits(self):
         #   user
         self.user_line = QLineEdit(self)
-        self.user_line.setFont(QFont('Now', 18))
+        self.user_line.setFont(QFont('Now', 20))
         self.user_line.setStyleSheet("""background-color: transparent; border-style: solid ;border-width: 2px; 
                                     border-color: transparent; border-bottom-color: #868179""")
         font = self.user_line.font()
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         self.user_line.setFont(font)
         self.user_line.resize(485, 40)
-        self.user_line.move(1045, 470)
+        self.user_line.move(1045, 475)
         #   password
         self.pass_line = QLineEdit(self)
-        self.pass_line.setFont(QFont('Now', 18))
+        self.pass_line.setFont(QFont('Now', 20))
         self.pass_line.setEchoMode(QLineEdit.EchoMode.Password)
         self.pass_line.setStyleSheet("""background-color: transparent; border-style: solid ;border-width: 2px; 
                                     border-color: transparent; border-bottom-color: #868179""")
         self.pass_line.resize(485, 40)
-        self.pass_line.move(1045, 625)
+        self.pass_line.move(1045, 630)
 
     def newCount_button(self):
         Ncount = QPushButton('¿Nueva Cuenta?', self)
-        Ncount.setFont(QFont('Now', 15))
+        Ncount.setFont(QFont('Now', 18))
         font = Ncount.font()
         font.setBold(True)
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         Ncount.setFont(font)
         Ncount.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        Ncount.move(1200, 840)
-        Ncount.resize(173, 30)
+        Ncount.move(1180, 840)
+        Ncount.resize(213, 30)
         Ncount.setStyleSheet("""color:#868179; background-color:transparent""")
-        Ncount.clicked.connect(self.signUp_clicked)
+        Ncount.clicked.connect(self.newCount_clicked)
 
     def labels(self):
         #   title
@@ -105,15 +95,15 @@ class LoginWindow(QWidget):
         title_label.setStyleSheet("""color:#594E3F""")
         #   welcome
         welcome_label = QLabel('¡Bienvenido a BooKeeper!', self)
-        welcome_label.setFont(QFont('Now', 28))
+        welcome_label.setFont(QFont('Now', 32))
         font = welcome_label.font()
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         welcome_label.setFont(font)
-        welcome_label.move(1045, 220)
+        welcome_label.move(1015, 220)
         welcome_label.setStyleSheet("""color:#868179""")
         #   user or address
         user_label = QLabel('Usuario o Correo', self)
-        user_label.setFont(QFont('Now', 20))
+        user_label.setFont(QFont('Now', 24))
         font = user_label.font()
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         user_label.setFont(font)
@@ -121,7 +111,7 @@ class LoginWindow(QWidget):
         user_label.setStyleSheet("""color:#868179""")
         #   password
         pass_label = QLabel('Contraseña', self)
-        pass_label.setFont(QFont('Now', 20))
+        pass_label.setFont(QFont('Now', 24))
         font = pass_label.font()
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         pass_label.setFont(font)
@@ -141,6 +131,25 @@ class LoginWindow(QWidget):
         loginB.setStyleSheet(
             """color:#FFF9F2; background-color:#594E3F; border-radius: 30px""")
         loginB.clicked.connect(self.login_clicked)
+
+    def minimize_button(self):
+        label = QLabel('', self)
+        label.resize(70, 50)
+        label.move(self.width-98, 0)
+        label.setStyleSheet(
+            """background-color:#6B6051 ;border-bottom-left-radius: 20px""")
+        button = QPushButton('-', self)
+        button.resize(48, 50)
+        button.move(self.width-98, 0)
+        button.setFont(QFont('Now', 20))
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setStyleSheet(
+            """color: #FFF9F2; background-color: none ;border-style:solid""")
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.showMinimized)
 
     def close_button(self):
         closeAction = QApplication.instance().quit
@@ -167,9 +176,25 @@ class LoginWindow(QWidget):
         passData = self.pass_line.text()
         if self.control.verificar_admin(userData, passData):
             print('admin')
+            self.UserWin = UserWindow()
+            self.UserWin.show()
+            timer = QTimer(self)
+            timer.start(5)
+            timer.timeout.connect(self.close)
         else:
             print('cliente')
+            self.UserWin = UserWindow()
+            self.UserWin.show()
+            timer = QTimer(self)
+            timer.start(5)
+            timer.timeout.connect(self.close)
 
+    def newCount_clicked(self):
+        self.SignWin = SignUpWindow()
+        self.SignWin.show()
+        timer = QTimer(self)
+        timer.start(5)
+        timer.timeout.connect(self.close)
 
 # _____________________________________________________________________________________
 class SignUpWindow(QWidget):
@@ -392,6 +417,411 @@ class SignUpWindow(QWidget):
         lineEdit.setEchoMode(QLineEdit.EchoMode.Password)
         lineEdit.resize(width, height)
         lineEdit.move(x, y)
+
+
+# _____________________________________________________________________________________
+class UserWindow(QWidget):
+    def __init__(self) -> None:
+        super(UserWindow, self).__init__()
+        self.width = 1630
+        self.height = 980
+        self.searchMode = 'Nombre'  # para saber si se buscar por nombre de libro, autor, genero
+        self.StartUp()
+
+    def StartUp(self):
+        self.setWindowTitle('BooKeeper')
+        self.setFixedSize(self.width, self.height)
+        self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+        # | QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        # background
+        bg = QLabel(self)
+        bg.resize(self.width, self.height)
+        bg.setStyleSheet("""background-color:#8C7662; border-radius: 20px;""")
+        lg = QLabel(self)
+        lg.move(1205, 0)
+        lg.resize(self.width-1205, self.height)
+        lg.setStyleSheet("""background-color:#FFF9F2; border-radius: 20px""")
+        ######################
+        self.searchBar()
+        self.logOut_button()
+        self.shelves_box()
+        self.addShelve_button()
+        self.tagButtons()
+        ########################
+        self.minimize_button()
+        self.close_button()    #
+        self.center()          #
+        self.show()            #
+        ########################
+
+    def shelves_box(self):
+        self.shelve_bx = QScrollArea(self)
+        self.shelve_bx.move(20, 150)
+        self.shelve_bx.resize(1175, 780)  # -1186,780
+        self.shelve_bx.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.shelve_bx.setWidgetResizable(True)
+        self.shelve_bx.setStyleSheet(
+            """
+            QScrollArea{
+                background-color: transparent;
+                border:none;
+                }
+            QScrollBar:vertical{
+                background-color: transparent;
+                margin: 17px 1 17px 1;
+                border-radius: 0px;
+            }
+            QScrollBar::handle:vertical{
+                background-color:#FFF9F2;
+                border-radius: 7px;
+            }
+            QScrollBar::sub-line:vertical{
+                border:none;
+                background-color:transparent;
+                height:15px;
+                border-top-left-radius: 7px;
+                border-top-right-radius: 7px;
+                border-bottom-left-radius: 7px;
+                border-bottom-right-radius: 7px;
+                margin:0px 1 0px 1;
+                subcontrol-position: top;
+                subcontrol-origin: margin;
+            }
+            QScrollBar::sub-line:vertical:hover{
+                background-color:#FFF9F2;
+            }
+            QScrollBar::add-line:vertical{
+                border:none;
+                background-color:transparent;
+                height:15px;
+                border-top-left-radius: 7px;
+                border-top-right-radius: 7px;
+                border-bottom-left-radius: 7px;
+                border-bottom-right-radius: 7px;
+                margin:0px 1 0px 1;
+                subcontrol-position: bottom;
+                subcontrol-origin: margin;
+            }
+            QScrollBar::add-line:vertical:hover{
+                background-color:#FFF9F2;
+            }
+            QScrollBar::up-arrow:vertical,QScrollBar::down-arrow:vertical{
+                background-color: none;
+            }
+            QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{
+                background-color: none;
+            }
+            """)
+        self.shelveWidget = QWidget()
+        self.shelveWidget.setGeometry(QRect(0, 0, 1188, 779))
+        self.shelveWidget.setStyleSheet("""background-color: transparent;""")
+        self.shelveLayout = QVBoxLayout(self.shelveWidget)
+        self.shelveLayout.addItem(QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding))
+        # al final revisar si el add spaceritem servia
+        self.shelve_bx.setWidget(self.shelveWidget)
+
+    def config_BookBox(self, GBox, libro):
+        GBox.setMaximumSize(200, 210)
+        GBox.setStyleSheet(
+            """background-color: #594E3F ;border-radius: 20px """)
+        layV = QVBoxLayout(GBox)
+        layV.addSpacing(20)
+        # item
+        space = QSpacerItem(20, 30)
+        # 4
+        label_4 = QLabel('Calificación')
+        label_4.setStyleSheet(
+            """background-color: none;color: #FFF9F2 ;font:20px Now""")
+        font = label_4.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        label_4.setFont(font)
+        # 3
+        label_3 = QLabel('Género')
+        label_3.setStyleSheet(
+            """background-color: none;color: #FFF9F2 ;font:20px Now""")
+        font = label_3.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        label_3.setFont(font)
+        # 2
+        label_2 = QLabel('Autor')
+        label_2.setStyleSheet(
+            """background-color: none;color: #FFF9F2 ;font:20px Now""")
+        font = label_2.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        label_2.setFont(font)
+        # 1
+        label_1 = QLabel(libro)
+        label_1.setStyleSheet(
+            """background-color: none;color: #FFF9F2 ;font:28px Now""")
+        font = label_1.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        text_length = label_1.fontMetrics().horizontalAdvance(libro)
+        print(text_length)
+        if text_length > 60:
+            label_1.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        else:
+            label_1.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        label_1.setFont(font)
+        #
+        layV.addWidget(label_1)
+        layV.addWidget(label_2)
+        layV.addWidget(label_3)
+        layV.addWidget(label_4)
+        layV.addItem(space)
+
+    def logOut_button(self):  # al abrir la app debe mostrar login
+        button = QPushButton('Cerrar Sesión', self)
+        button.setFont(QFont('Now', 24))
+        button.resize(245, 60)
+        button.move(1295, 800)
+        font = button.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.setStyleSheet(
+            """color:#FFF9F2 ;background-color:#594E3F ;border-radius: 30px""")
+        button.clicked.connect(self.logOut_clicked)
+
+    def logOut_clicked(self):
+        self.logwin = LoginWindow()
+        self.logwin.show()
+        timer = QTimer(self)
+        timer.start(5)
+        timer.timeout.connect(self.close)
+
+    def addShelve_button(self):
+        button = QPushButton('Agregar Estante', self)
+        button.setFont(QFont('Now', 24))
+        button.resize(295, 60)
+        button.move(1185+85, 600)
+        font = button.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        font.setBold(True)
+        button.setFont(font)
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.setStyleSheet("""color:#FFF9F2 ;background-color:#594E3F ;border-radius: 30px; padding-left: 14px
+                            ;padding-right: 12px""")
+        button.clicked.connect(self.addShelve_clicked)
+
+    def addShelve_clicked(self):
+        count = self.shelveLayout.count()-1
+        shelveGroup = QGroupBox('', self.shelveWidget)
+        shelveGroup.setStyleSheet(
+            """background-color: none;border-style:solid; """)
+        self.shelveLayout.insertWidget(count, shelveGroup)
+        ################################
+        grid = QGridLayout(shelveGroup)
+        # label
+        shelve_label = QLabel('Estante ' + str(count+1), shelveGroup)
+        shelve_label.setStyleSheet(
+            """color: #FFF9F2 ;font:34px Now ;border-bottom: 3px solid #594E3F""")
+        font = shelve_label.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        shelve_label.setFont(font)
+        # seeMore
+        seeMore = QPushButton('Ver todo')
+        seeMore.setStyleSheet(
+            """color: #FFF9F2 ;background-color:none ;font: 24px Now ;text-align: center""")
+        seeMore.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        font = seeMore.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        seeMore.setFont(font)
+        # Addbook
+        addBook_button = QPushButton('Agregar libro')
+        addBook_button.setStyleSheet(
+            """color: #FFF9F2 ;background-color:none ;font: 24px Now ;text-align: center""")
+        addBook_button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        font = addBook_button.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        addBook_button.setFont(font)
+        # delete
+        delete = QPushButton('X', shelveGroup)
+        delete.setStyleSheet(
+            """color: #FFF9F2 ;background-color:none ;font: 24px Now ;text-align: center""")
+        delete.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        font = delete.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        font.setBold(True)
+        delete.setFont(font)
+        delete.clicked.connect(self.deleteShelve)
+        #
+        book1 = QGroupBox('')
+        self.config_BookBox(book1, 'caperucita')
+        book2 = QGroupBox('')
+        self.config_BookBox(book2, 'los 3 cerditos')
+        book3 = QGroupBox('')
+        self.config_BookBox(book3, 'batman y superman')
+        book4 = QGroupBox('')
+        self.config_BookBox(book4, 'Libro 4')
+        #############################################
+        grid.addWidget(shelve_label,     0, 0, 1, 15)
+        grid.addWidget(seeMore,    0, 0, 1, 15,
+                       Qt.AlignmentFlag.AlignRight)
+        grid.addWidget(book1,            1, 0, 1, 3)
+        grid.addWidget(book2,            1, 4, 1, 3)
+        grid.addWidget(book3,            1, 8, 1, 3)
+        grid.addWidget(book4,            1, 12, 1, 3)
+        grid.addWidget(shelveGroup,      1, 14, 1, 4)
+        grid.addWidget(addBook_button,   2, 0, 1, 15,
+                       Qt.AlignmentFlag.AlignCenter)
+        grid.addWidget(delete,           2, 14, 1, 1,
+                       Qt.AlignmentFlag.AlignRight)
+
+    def deleteShelve(self):
+        button = self.sender()
+        padre = self.sender().parent()
+        padre.deleteLater()
+
+    def tagButton1_clicked(self):
+        self.searchMode = 'Nombre'
+        self.button1.setStyleSheet(
+            """color:#FFF9F2 ;background-color:#594E3F ;border-style: solid ;border-radius: 30px""")
+        self.button2.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ;border-style: solid ;border-radius: 30px""")
+        self.button3.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ;border-style: solid ;border-radius: 30px""")
+
+    def tagButton2_clicked(self):
+        self.searchMode = 'Género'
+        self.button2.setStyleSheet(
+            """color:#FFF9F2 ;background-color:#594E3F ;border-style: solid ;border-radius: 30px""")
+        self.button1.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ;border-style: solid ;border-radius: 30px""")
+        self.button3.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ;border-style: solid ;border-radius: 30px""")
+
+    def tagButton3_clicked(self):
+        self.searchMode = 'Autor'
+        self.button3.setStyleSheet(
+            """color:#FFF9F2 ;background-color:#594E3F ;border-style: solid ;border-radius: 30px""")
+        self.button2.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ;border-style: solid ;border-radius: 30px""")
+        self.button1.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ;border-style: solid ;border-radius: 30px""")
+
+    def tagButtons(self):
+        # 1
+        self.button1 = QPushButton('Nombre', self)
+        self.button1.setFont(QFont('Now', 20))
+        self.button1.resize(150, 60)
+        self.button1.move(327, 100)
+        self.button1.setStyleSheet(
+            """color:#FFF9F2 ;background-color:#594E3F ;border-style: solid ;border-radius: 30px""")
+        font = self.button1.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        self.button1.setFont(font)
+        self.button1.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+
+        # 2
+        self.button2 = QPushButton('Género', self)
+        self.button2.setFont(QFont('Now', 20))
+        self.button2.resize(151, 60)
+        self.button2.move(527, 100)
+        self.button2.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ; border-style: solid ;border-radius: 30px""")
+        font = self.button2.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        self.button2.setFont(font)
+        self.button2.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+
+        # 3
+        self.button3 = QPushButton('Autor', self)
+        self.button3.setFont(QFont('Now', 20))
+        self.button3.resize(151, 60)
+        self.button3.move(728, 100)
+        self.button3.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ; border-style: solid ;border-radius: 30px""")
+        font = self.button3.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        self.button3.setFont(font)
+        self.button3.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.button1.clicked.connect(self.tagButton1_clicked)
+        self.button2.clicked.connect(self.tagButton2_clicked)
+        self.button3.clicked.connect(self.tagButton3_clicked)
+
+    def searchBar(self):  # terminar la busqueda
+        self.bar = CustomEdit('Buscar Libro', self)
+        self.bar.setFont(QFont('Now', 20))
+        self.bar.resize(905, 60)
+        self.bar.move(150, 20)
+        self.bar.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.bar.setStyleSheet("""color: #594E3F;background-color:#FFF9F2; border-style: solid ;border-radius: 30px; 
+                        border-bottom-color: #FFF9F2; padding-left: 30px; padding-right: 30px""")
+        font = self.bar.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        self.bar.setFont(font)
+        button = QPushButton(self)
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.setStyleSheet(
+            """background-color:none ;border-style:none; border-radius: 20px ;image: url("PooProyect/images/len.png")""")
+        button.resize(50, 50)
+        button.move(995, 25)
+        button.move(995, 25)
+
+    def search(self):#must be valided
+        if self.searchMode == 'Libro':
+            pass
+        elif self.searchMode == 'Género':
+            pass
+        else:
+            pass
+
+    def mousePressEvent(self, event):
+        text = self.bar.text()
+        if event.button() == Qt.MouseButton.LeftButton and event.pos() not in self.bar.geometry():
+            self.bar.clearFocus()
+            if text == '':
+                self.bar.setText('Buscar Libro')
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = self.screen().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def minimize_button(self):
+        label = QLabel('', self)
+        label.resize(70, 50)
+        label.move(self.width-98, 0)
+        label.setStyleSheet(
+            """background-color:#6B6051 ;border-bottom-left-radius: 20px""")
+        button = QPushButton('-', self)
+        button.resize(48, 50)
+        button.move(self.width-98, 0)
+        button.setFont(QFont('Now', 20))
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setStyleSheet(
+            """color: #FFF9F2; background-color: none ;border-style:solid""")
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.showMinimized)
+
+    def close_button(self):
+        closeAction = QApplication.instance().quit
+        button = QPushButton("x", self)
+        button.resize(50, 50)
+        button.move(self.width-49, 0)
+        button.setFont(QFont('Now', 20))
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setStyleSheet(
+            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px;
+            change-cursor: cursor('PointingHand')""")
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(closeAction)
 
 
 def Main():  # ________________________________________________________________________________________________________
