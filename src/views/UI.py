@@ -20,7 +20,7 @@ class LoginWindow(QWidget):
         super(LoginWindow, self).__init__()
         self.width = 1630
         self.height = 980
-        if open('src/views/holdSesion.txt', 'r').read() != '':
+        if open('src/views/user_active.txt', 'r').read() != '':
             self.holdSesion = True
         else:
             self.holdSesion = False

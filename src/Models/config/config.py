@@ -164,7 +164,7 @@ class db:
     def actualizar_admin(self, admin: 'administrador'):
         self.cursor.execute('SELECT * FROM dbo.Table_admin WHERE id_admin = ?', admin.codigo_Usuario)
         if self.cursor.fetchone() is None:
-            self.cursor.execute('INSERT INTO dbo.Table_admin VALUES(?, ?, ?)', (admin.nombre, admin.contrasena, admin.codigo_Usuario))
+            self.cursor.execute('INSERT INTO dbo.Table_admin VALUES(?, ?, ?)', (admin.codigo_Usuario, admin.nombre, admin.contrasena))
         else:
             self.cursor.execute('UPDATE dbo.Table_admin SET nombre = ?, contraseña = ? WHERE id_admin = ?', (admin.nombre, admin.contrasena, admin.codigo_Usuario))
         self.conn.commit()
