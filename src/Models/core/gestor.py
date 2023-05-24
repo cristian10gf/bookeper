@@ -79,15 +79,15 @@ class Bookeeper:
         return None
 
     @property
-    def administradores(self):
+    def administradores(self) -> list['administrador']:
         return self.__administradores
 
     @property
-    def clientes(self):
+    def clientes(self) -> list['Cliente']:
         return self.__clientes
 
     @property
-    def estantes(self):
+    def estantes(self) -> list['EstanteDeLibros']:
         return self.__estantes
 
     @administradores.setter
@@ -102,22 +102,30 @@ class Bookeeper:
     def estantes(self, estante):
         self.__estantes.append(estante)
 
-    def verificar_admin(self, username: str, password: str) -> bool:
+    @property
+    def recomendaciones(self) -> list['Recomendacion']:
+        return self.__recomendaciones
+    
+    def verificar_admin(self, username: str, password: str, metodo: int = 1) -> bool:
         for admin in self.__administradores:
-            if admin.nombre == username and admin.contrasena == password:
+            if admin.nombre == username and admin.contrasena == password and metodo == 1:
+                return True
+            elif admin.nombre == username and metodo == 2:
                 return True
         return False
 
-    def verificar_cliente(self, username: str, password: str) -> bool:
+    def verificar_cliente(self, username: str, password: str, metodo: int == 1) -> bool:
         for cliente in self.__clientes:
-            if cliente.nombre == username and cliente.contrasena == password:
+            if cliente.nombre == username and cliente.contrasena == password and metodo == 1:
+                return True
+            elif cliente.nombre == username and metodo == 2:
                 return True
         return False
 
     def get_libros(self) -> list['Libro']:
         libros = []
         for estante in self.__estantes:
-            libros += estante.libros
+            libros.extend(estante.libros)
         return libros
 
     def get_libro(self, codigo: int) -> 'Libro':
@@ -206,3 +214,14 @@ class Bookeeper:
         admin = administrador(nombre, password)
         self.__administradores.append(admin)
         guardar_datos(self)
+
+    def new_estante(self, genero: str, numero: int, admin: 'administrador'):
+        estante = EstanteDeLibros([], admin, genero, numero)
+        self.__estantes.append(estante)
+        guardar_datos(self)
+
+    def verificar_genero(self, genero: str) -> bool:
+        for estante in self.__estantes:
+            if estante.genero == genero:
+                return True
+        return False

@@ -6,12 +6,12 @@ from datetime import date
 class Libro:
     todos_libros = FileManager("libros.txt").generate_path()
     __codigo = 0
-    @dispatch(str, str, date, str, str, str, int, Prestamo or None)
+    @dispatch(str, str, int, str, str, str, int, Prestamo or None)
     def __init__(self,
                  nombre: str,
                  autores: str,
-                 fecha_lanzamiento:
-                 date, genero: str,
+                 fecha_lanzamiento:int, 
+                 genero: str,
                  editorial:str,
                  ubicacion: int,
                  estado: 'Prestamo' = None
@@ -26,11 +26,11 @@ class Libro:
         Libro.__codigo += 1
         self.__estado = estado
 
-    @dispatch(str, str, date, str, str, int,int,Prestamo or None)
+    @dispatch(str, str, int, str, str, int,int,Prestamo or None)
     def __init__(self,
                  nombre: str,
                  autores: str,
-                 fecha_lanzamiento: date,
+                 fecha_lanzamiento: int,
                  genero: str,
                  editorial:str,
                  ubicacion: int,
@@ -46,8 +46,8 @@ class Libro:
         self.__codigo = codigo
         self.__estado = estado
 
-    @dispatch(str, str, date, str, str, int, int)
-    def __init__(self, nombre: str, autores: str, fecha_lanzamiento: date, genero: str, editorial: str, ubicacion: int,codigo: int):
+    @dispatch(str, str, int, str, str, int, int)
+    def __init__(self, nombre: str, autores: str, fecha_lanzamiento: int, genero: str, editorial: str, ubicacion: int,codigo: int):
         self.__nombre = nombre
         self.__autores = autores.split(",")
         self.__fecha_lanzamiento = fecha_lanzamiento

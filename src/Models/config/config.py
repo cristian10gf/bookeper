@@ -56,22 +56,15 @@ class db:
             self.cursor.execute('SELECT * FROM dbo.Table_libros WHERE ubicacion = ?',str(estante[0]))
             libros = self.cursor.fetchall()
             for libro in libros:
+                libro_new: Libro
                 self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE libro = ?',libro[0])
                 prestamo = self.cursor.fetchall()
+                libro_new = Libro(str(libro[-1]), str(libro[4]), int(libro[2]),  str(libro[1]),  str(libro[6]),  int(libro[3]), int(libro[0]))
                 if prestamo is None or len(prestamo) == 0:
                     prestamo = None
                 else:
-                    libro = Libro(
-                        libro[-1],
-                        libro[4],
-                        libro[2],
-                        libro[1],
-                        libro[-2],
-                        libro[3],
-                        libro[0]
-                    )
-                    prestamo = Prestamo(prestamo[0], self.get_cliente(prestamo[1]), libro, prestamo[2], prestamo[3], True if prestamo[4] == 1 else False)
-                estante_admin.agregar_libro(libro)
+                    prestamo_new = Prestamo(prestamo[0], self.get_cliente(prestamo[1]), libro_new, prestamo[2], prestamo[3], True if prestamo[4] == 1 else False)
+                estante_admin.agregar_libro(libro_new)
         return admid
 
     def get_estante(self, id) -> 'EstanteDeLibros':
@@ -118,8 +111,8 @@ class db:
         all = {}
         admins = self.cursor.fetchall()
         for admin in admins:
-            if admin[1] not in all:
-                all[admin[1]] = self.get_admin(admin[0])
+            if admin[0] not in all:
+                all[admin[0]] = self.get_admin(admin[0])
         return all.values()
 
     def get_estantes(self) -> list['EstanteDeLibros']:

@@ -5,7 +5,7 @@ from src.Models.Usuarios.cliente import Cliente
 class Recomendacion:
     __id: int = 0
 
-    def __init__(self, id: int = None, libro: 'Libro' = None, usuario: 'Ciente' = None, prestamo: bool = False):
+    def __init__(self, id: int = None, libro: 'Libro' = None, usuario: 'Cliente' = None, prestamo: bool = False):
         if id is None:
             self.__id = Recomendacion.__id
             Recomendacion.__id += 1

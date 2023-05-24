@@ -5,9 +5,13 @@ class ControlBookeeper:
     __bookeeper = Bookeeper()
 
     @staticmethod
-    def verificar_admin(usuario: str, contrasena: str) -> bool:
-        return ControlBookeeper.__bookeeper.verificar_admin(usuario, contrasena)
+    def verificar_admin(usuario: str, contrasena: str, metodo: int = 1) -> bool:
+        return ControlBookeeper.__bookeeper.verificar_admin(usuario, contrasena, metodo)
 
+    @staticmethod
+    def verificar_cliente(usuario: str, contrasena: str, metodo: int = 1) -> bool:
+        return ControlBookeeper.__bookeeper.verificar_cliente(usuario, contrasena, metodo)
+    
     @staticmethod
     def get_estante(id: int) -> 'Estante':
         return ControlBookeeper.__bookeeper.get_estante(id)
@@ -17,8 +21,21 @@ class ControlBookeeper:
         return ControlBookeeper.__bookeeper.estantes
 
     @staticmethod
-    def get_libros() -> list['Libro']:
-        return ControlBookeeper.__bookeeper.get_libros()
+    def get_libros() -> dict:
+        libros_info = {}
+        libros =  ControlBookeeper.__bookeeper.get_libros()
+        print(type(libros))
+        for libro in libros:
+            libros_info[libro.codigo] = {
+                "nombre": libro.nombre,
+                "autores": libro.autores,
+                "fecha_lanzamiento": libro.fecha_lanzamiento,
+                "genero": libro.genero,
+                "editorial": libro.editorial,
+                "ubicacion": libro.ubicacion,
+                "estado": libro.estado
+            }
+        return libros_info
 
     @staticmethod
     def get_libro(id: int) -> 'Libro':
@@ -101,11 +118,15 @@ class ControlBookeeper:
         )
 
     @staticmethod
-    def new_estante() -> None:
-        pass
+    def new_estante(genero: str, max: int, admin: 'administrador') -> None:
+        ControlBookeeper.__bookeeper.new_estante(genero, max, admin)
 
     @staticmethod
     def new_admin(nombre: str, contraseña: str) -> None:
         ControlBookeeper.__bookeeper.new_admin(nombre, contraseña)
+
+    @staticmethod
+    def verificar_genero(nombre: str) -> bool:
+        return ControlBookeeper.__bookeeper.verificar_genero(nombre)
 
 
