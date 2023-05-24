@@ -5,13 +5,6 @@ from multipledispatch import dispatch
 class Usuario(ABC):
     __id_Usuario = 0
 
-    """    @dispatch(str, str)
-    def __init__(self, nombre: str, contrasena: str, biblioteca: 'Bookeeper' = None) -> None:
-        self._contrasena = contrasena
-        self._nombre = nombre
-        self._codigo_Usuario = Usuario.__id_Usuario
-        Usuario.__id_Usuario += 1
-        self._biblioteca = biblioteca"""
     @dispatch(str, str)
     def __init__(self, nombre: str, contrasena: str) -> None:
         self._contrasena = contrasena
@@ -41,6 +34,10 @@ class Usuario(ABC):
     def contrasena(self, contrasena: str) -> None:
         self._contrasena = contrasena
 
+    @nombre.setter
+    def nombre(self, nombre: str) -> None:
+        self._nombre = nombre
+
     @abstractmethod
     def buscar_libro_por_nombre(self, nombre):
         pass
@@ -56,10 +53,6 @@ class Usuario(ABC):
     @abstractmethod
     def devolver_libro(self, libro):
         pass
-
-    @property
-    def biblioteca(self) -> 'Bookeeper':
-        return self._biblioteca
 
 
 

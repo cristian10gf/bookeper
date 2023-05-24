@@ -13,11 +13,11 @@ class ControlBookeeper:
         return ControlBookeeper.__bookeeper.verificar_cliente(usuario, contrasena, metodo)
     
     @staticmethod
-    def get_estante(id: int) -> 'Estante':
+    def get_estante(id: int) -> 'EstanteDeLibros':
         return ControlBookeeper.__bookeeper.get_estante(id)
 
     @staticmethod
-    def get_estantes() -> list['Estante']:
+    def get_estantes() -> list['EstanteDeLibros']:
         return ControlBookeeper.__bookeeper.estantes
 
     @staticmethod
@@ -58,12 +58,12 @@ class ControlBookeeper:
         return ControlBookeeper.__bookeeper.get_cliente(id)
 
     @staticmethod
-    def get_admins() -> list['Administrador']:
+    def get_admins() -> list['administrador']:
         return ControlBookeeper.__bookeeper.administradores
 
     @staticmethod
     def get_libro_by_name(name: str) -> 'Libro':
-        return ControlBookeeper.__bookeeper.bucar_libro_por_nombre(name)
+        return ControlBookeeper.__bookeeper.buscar_libro_por_nombre(name)
 
     @staticmethod
     def new_prestamo(
@@ -129,4 +129,7 @@ class ControlBookeeper:
     def verificar_genero(nombre: str) -> bool:
         return ControlBookeeper.__bookeeper.verificar_genero(nombre)
 
+    @staticmethod
+    def cambiar_info(nombre: str = None, password: str = None, segundo: str = None) -> None:
+        ControlBookeeper.__bookeeper.cambiar_info(nombre, password, segundo)
 

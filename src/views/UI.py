@@ -5,7 +5,6 @@ from PyQt6.QtWidgets import (QApplication, QToolTip, QWidget, QMainWindow, QPush
                              QLabel,
                              QScrollArea, QVBoxLayout, QHBoxLayout, QGridLayout, QGroupBox, QSpacerItem)
 import sys
-from functools import partial
 from src.Controllers.control_bookeeper import ControlBookeeper
 
 
@@ -21,6 +20,10 @@ class LoginWindow(QWidget):
         super(LoginWindow, self).__init__()
         self.width = 1630
         self.height = 980
+        if open('src/views/holdSesion.txt', 'r').read() != '':
+            self.holdSesion = True
+        else:
+            self.holdSesion = False
         self.StartUp()
         self.control = ControlBookeeper()
 
@@ -28,7 +31,6 @@ class LoginWindow(QWidget):
         self.setWindowTitle('BooKeeper')
         self.setFixedSize(self.width, self.height)
         self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
-        # | QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         # background
         bg = QLabel(self)
@@ -44,6 +46,14 @@ class LoginWindow(QWidget):
         self.linesEdits()
         self.loggin_button()
         self.newCount_button()
+        if self.holdSesion:  # antes de esto se debe ejecutar un codigo para saber cual usuario tiene la sesion activa
+            user_active = open('src/views/user_active.txt', 'r').read()
+            self.UserWin = UserWindow(user_active)
+            self.UserWin.show()
+            timer = QTimer(self)
+            timer.start(5)
+            timer.timeout.connect(self.close)
+            user_active.close()
         #####################
         self.minimize_button()
         self.close_button()
@@ -210,6 +220,10 @@ class LoginWindow(QWidget):
                 timer = QTimer(self)
                 timer.start(5)
                 timer.timeout.connect(self.close)
+                user_active = open('src/views/user_active.txt', 'w')
+                user_active.write(userData)
+                user_active.close()
+                self.holdSesion = True
             elif self.control.verificar_cliente(userData, passData):
                 print('cliente')
                 self.UserWin = UserWindow(userData)
@@ -217,6 +231,11 @@ class LoginWindow(QWidget):
                 timer = QTimer(self)
                 timer.start(5)
                 timer.timeout.connect(self.close)
+                # crea un archivo para guardar el usuario
+                user_active = open('src/views/user_active.txt', 'w')
+                user_active.write(userData)
+                user_active.close()
+                self.holdSesion = True
             else:
                 print('no existe')
                 self.user_line.setText('')
@@ -321,7 +340,6 @@ class SignUpWindow(QWidget):
         self.pass_line = QLineEdit(self)
         self.config_linesEdit_pass(self.pass_line, 545 + 61 + 450 + 63, 410, 450, 40)
         #   confirm pass
-        # cuando haces click sobre confirm_line debe verificar q lo de arriba es igual
         self.confirm_line = QLineEdit(self)
         self.confirm_line.textChanged.connect(self.confirmLineTyping)
         self.config_linesEdit_pass(
@@ -369,9 +387,12 @@ class SignUpWindow(QWidget):
         button.resize(50, 50)
         button.move(self.width - 49, 0)
         button.setFont(QFont('Now', 20))
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
         button.setStyleSheet(
-            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px;
-            change-cursor: cursor('PointingHand')""")
+             """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px""")
         button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         button.clicked.connect(closeAction)
 
@@ -400,10 +421,11 @@ class SignUpWindow(QWidget):
         button.move(545, 0)
         button.setFont(QFont('Now', 20))
         button.setStyleSheet(
-            """color: #FFF9F2; background-color:#594E3F; border-top-left-radius:20px; border-bottom-right-radius:20px;
-            change-cursor: cursor('PointingHand')""")
+            """color: #FFF9F2; background-color:#594E3F; border-top-left-radius:20px; border-bottom-right-radius:20px""")
         font = button.font()
         font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
         button.setFont(font)
         button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         button.clicked.connect(self.back_clicked)
@@ -428,9 +450,10 @@ class SignUpWindow(QWidget):
         else:
             if isAdmin and self.control.verificar_admin(user, password, 2) is False and user != '' and password != '':
                 self.control.new_admin(name, password)
-            elif isAdmin is False and self.control.verificar_cliente(user, password,
-                                                                     2) is False and user != '' and password != '':
+                self.back_clicked()
+            elif isAdmin is False and self.control.verificar_cliente(user, password, 2) is False and user != '' and password != '':
                 self.control.new_cliente(user, password)
+                self.back_clicked()
             else:
                 # se requiere mostrar un mensaje de diciendo que el usuario ya existe o que se requieren campos llenos
                 self.user_line.setText('')
@@ -535,25 +558,25 @@ class UserWindow(QWidget):
     def userInfo(self):  # cambiar a label circular
         image = QLabel(self)
         image.resize(305, 305)
-        image.move(self.width - 305 - 60, 40)
+        image.move(self.width-305-60, 40)
         image.setScaledContents(True)
         image.setPixmap(self.userImage)
         image.setStyleSheet("""background-color:none""")
-        name = QLabel(self.userName, self)
-        name.setFont(QFont('Now', 24))
-        font = name.font()
+        self.Labelname = QLabel(self.userName, self)
+        self.Labelname.setFont(QFont('Now', 24))
+        font = self.Labelname.font()
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-        name.setFont(font)
-        name.setStyleSheet(
+        self.Labelname.setFont(font)
+        self.Labelname.setStyleSheet(
             """color:#594E3F ;background-color:none ;border-radius: 30px""")
-        name.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.Labelname.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         #
         widget = QWidget(self)
         widget.resize(425, 50)
         widget.move(1205, 320)
         widget.setStyleSheet("""background-color:none""")
         layout = QHBoxLayout(widget)
-        layout.addWidget(name)
+        layout.addWidget(self.Labelname)
 
     def shelves_box(self):
         self.shelve_bx = QScrollArea(self)
@@ -643,6 +666,9 @@ class UserWindow(QWidget):
         timer = QTimer(self)
         timer.start(5)
         timer.timeout.connect(self.close)
+        user_active = open('src/views/user_active.txt', 'w')
+        user_active.write('')
+        user_active.close()
 
     def viewProfile_button(self):
         label = QLabel(self)
@@ -663,17 +689,15 @@ class UserWindow(QWidget):
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.profile_but.setStyleSheet(
             """color:#FFF9F2 ;background-color:#594E3F ;border-radius: 30px""")
-        self.profile_but.clicked.connect(
-            partial(self.viewProfile_clicked, self))
+        self.profile_but.clicked.connect(self.viewProfile_clicked)
 
-    def viewProfile_clicked(self, win):  # agregar le ventana
-        self.profilewin = ProfileWinndow(win)
+    def viewProfile_clicked(self):
+        print(self.userName)
+        self.profilewin = ProfileWindow(parent=self, user=self.usuario)
+        self.hide()
         self.profilewin.show()
-        timer = QTimer(self)
-        timer.start(5)
-        timer.timeout.connect(self.hide)
 
-    def seeBooks_Button(self):  # hacer la transiscion
+    def seeBooks_Button(self):
         button = QPushButton('Ver mis libros', self)
         button.setFont(QFont('Now', 24))
         button.resize(295, 60)
@@ -686,7 +710,6 @@ class UserWindow(QWidget):
         button.setStyleSheet("""color:#FFF9F2 ;background-color:#594E3F ;border-radius: 30px; padding-left: 14px
                             ;padding-right: 12px""")
         # button.clicked.connect()
-
     # falta clicked
 
     def seeBorroweds_button(self):
@@ -702,14 +725,13 @@ class UserWindow(QWidget):
         button.setStyleSheet("""color:#FFF9F2 ;background-color:#594E3F ;border-radius: 30px; padding-left: 14px
                             ;padding-right: 12px""")
         # button.clicked.connect()
-
     # falta clicked
 
     def seeBooksOf_button(self):
         button = QPushButton('Ver libros de', self)
         button.setFont(QFont('Now', 24))
         button.resize(295, 60)
-        button.move(1185 + 85, 410)
+        button.move(1185+85, 410)
         font = button.font()
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         font.setBold(True)
@@ -804,7 +826,9 @@ class UserWindow(QWidget):
 
     def confirmAdd(self):
         self.logwin = AddShelveWindow(win=self, usuario=self.usuario)
+        self.logwin.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.logwin.show()
+        # ↑ este codigo hace aparecer la ventana para crear la estanteria
 
     def config_BookBox(self, GBox, libro: 'Libro'):
         GBox.setMaximumSize(200, 210)
@@ -873,9 +897,10 @@ class UserWindow(QWidget):
         layV.addItem(space)
 
     def deleteShelve(self):
-        button = self.sender()
         padre = self.sender().parent()
         padre.deleteLater()
+
+        # ↑internamente tambien se debe eliminar la estanteria
 
     def tagButton1_clicked(self):
         self.searchMode = 'Nombre'
@@ -968,11 +993,17 @@ class UserWindow(QWidget):
 
     def search(self):  # validar el tipo de busqueda
         if self.searchMode == 'Libro':
-            pass
+            libro = self.control.get_libro_by_name(self.bar.text())
+            if libro != None:
+                pass
+            else:
+                pass
         elif self.searchMode == 'Género':
             pass
         else:
             pass
+    # ↑se debe ejecutar un codigo para que busque los libros por los requisitos
+    # ↑falta terminar la aparicion de libros
 
     def mousePressEvent(self, event):
         text = self.bar.text()
@@ -980,6 +1011,11 @@ class UserWindow(QWidget):
             self.bar.clearFocus()
             if text == '':
                 self.bar.setText('Buscar Libro')
+            else:
+                self.search()
+
+    def mostrar(self):
+        self.show()
 
     def center(self):
         qr = self.frameGeometry()
@@ -1025,7 +1061,7 @@ class UserWindow(QWidget):
     def init_Shelve(self):
         estantes = self.control.get_estantes()
         for estante in estantes:
-            if len(estante.libros) >= 4:
+            if len(estante.libros) == 4:
                 self.addShelve_clicked(estante=estante.genero, bk1=estante.libros[0], bk2=estante.libros[1],
                                        bk3=estante.libros[2], bk4=estante.libros[3], no_guardar=True)
             elif len(estante.libros) == 3:
@@ -1149,7 +1185,7 @@ class AddShelveWindow(QWidget):
                 self.name.setText('')
                 self.gender.setText('')
             except Exception:
-                if self.control.verificar_genero(genero):
+                if self.control.verificar_genero(genero) == False:
                     pasa = True
                 else:
                     self.gender.setText('')
@@ -1162,6 +1198,7 @@ class AddShelveWindow(QWidget):
                             self.control.new_estante(genero, int(max), admin)
                             self.win.addShelve_clicked(estante=self.name.text())
                             self.close()
+        # ↑internamente tambien se debe agregar la libreria con los datos obtenidos
 
     def center(self):
         qr = self.frameGeometry()
@@ -1172,46 +1209,198 @@ class AddShelveWindow(QWidget):
     def close_button(self):
         button = QPushButton("x", self)
         button.resize(50, 50)
-        button.move(self.width - 49, 0)
+        button.move(self.width-49, 0)
         button.setFont(QFont('Now', 20))
         font = button.font()
         font.setBold(True)
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         button.setFont(font)
         button.setStyleSheet(
-            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px;
-                change-cursor: cursor('PointingHand')""")
+            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px""")
         button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         button.clicked.connect(self.close)
 
 
 # ______________________________________________________________________________________
-class ProfileWinndow(QWidget):
-    def __init__(self, win) -> None:
-        super(ProfileWinndow, self).__init__()
-        self.win = win
-        self.control = ControlBookeeper()
+class ProfileWindow(QMainWindow):
+    def __init__(self, user, parent=None) -> None:
+        super().__init__(parent)
         self.control = ControlBookeeper()
         self.width = 1630
         self.height = 980
+        self.userName = user
+        self.image = QPixmap("src/views/images/usuario.png")
+        self.image = self.image.scaled(self.image.size(
+        ), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         self.StartUp()
 
     def StartUp(self):
         self.setWindowTitle('BooKeeper')
         self.setFixedSize(self.width, self.height)
-        self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint |
-                            QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         # background
         bg = QLabel(self)
         bg.resize(self.width, self.height)
         bg.setStyleSheet("""background-color:#FFF9F2; border-radius: 20px;""")
         ########################
+        self.back_button()
+        self.UserImage()
+        self.MainLine()
+        self.otherLines()
+        self.saveChanges_button()
         ########################
-        self.close_button()  #
-        self.center()  #
-        self.show()  #
+        self.minimize_button()
+        self.close_button()    #
+        self.center()          #
+        self.show()            #
         ########################
+
+    def UserImage(self):  # cambiar a label circular solo si se implementa lo de cambiar foto
+        image = QLabel(self)
+        image.resize(350, 350)
+        image.move(40, 40)
+        image.setScaledContents(True)
+        image.setPixmap(self.image)
+        image.setStyleSheet("""background-color:none""")
+
+    def MainLine(self):
+        self.user_line = QLineEdit(self.userName, self)
+        self.user_line.resize(1100, 100)
+        self.user_line.move(400, 200)
+        self.user_line.setReadOnly(True)
+        self.user_line.setFont(QFont('Now', 50))
+        self.user_line.setStyleSheet("""color:#594E3F ;background-color: transparent; border-style: solid ;border-width: 4px;
+                                    border-color: transparent; border-bottom-color: #868179""")
+        font = self.user_line.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        self.user_line.setFont(font)
+        widget = QWidget(self)
+        widget.resize(300, 100)
+        widget.move(1200, 195)
+        widget.setStyleSheet("""background-color:#FFF9F2""")
+        # button
+        changeUser = QPushButton('Cambiar', self)
+        changeUser.setFont(QFont('Now', 25))
+        changeUser.resize(155, 50)
+        changeUser.move(1270, 230)
+        changeUser.setStyleSheet(
+            """backgroun-color: none; color:#868179; border-style: solid""")
+        font = changeUser.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        changeUser.setFont(font)
+        changeUser.setFont(font)
+        changeUser.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        changeUser.clicked.connect(self.changeUser_clicked)
+
+    def changeUser_clicked(self):
+        self.user_line.setReadOnly(False)
+        self.user_line.setFocus()
+
+    def otherLines(self):
+        dic = {'1': 'Nombre Completo',
+               '2': 'Contraseña', '3': 'Correo electrónico'}
+        widget = QWidget(self)
+        widget.resize(1200, 400)
+        widget.move(70, 350)
+        widget.setStyleSheet("""background-color:none""")
+        self.grid = QGridLayout(widget)
+        for i in range(3):
+            line = QLineEdit(dic[str(i+1)], self)
+            line.resize(100, 60)
+            line.setReadOnly(True)
+            line.setFont(QFont('Now', 30))
+            line.setStyleSheet(
+                """color:#594E3F ;background-color: transparent; border-style: solid""")
+            font = line.font()
+            font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+            line.setFont(font)
+            #
+            button = QPushButton('Cambiar', self)
+            button.setFont(QFont('Now', 25))
+            button.setStyleSheet(
+                """color:#868179 ;background-color: none; border-style: solid""")
+            font = button.font()
+            font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+            button.setFont(font)
+            button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+            button.clicked.connect(self.change_clicked)
+            ######
+            self.grid.addWidget(line, i, 0, 1, 1)
+            self.grid.addWidget(button, i, 1, 1, 1)
+
+    def change_clicked(self):
+        button = self.sender()
+        position = self.grid.indexOf(button)
+        row = position//2
+        column = position % 2
+        item = self.grid.itemAtPosition(row, column-1).widget()
+        item.setStyleSheet("""color:#594E3F ;background-color: transparent; border-style: solid ;border-width: 2px;
+                                    border-color: transparent; border-bottom-color: #868179""")
+        item.setReadOnly(False)
+        item.setFocus()
+
+    def saveChanges_button(self):
+        button = QPushButton('Guardar cambios', self)
+        button.resize(300, 60)
+        button.move(665, 800)
+        button.setFont(QFont('Now', 24))
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setStyleSheet(
+            """color: #FFF9F2; background-color:#594E3F ;border-radius:30px; """)
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.saveChanges_clicked)
+
+    def saveChanges_clicked(self):
+        self.user_line.setReadOnly(True)
+        user = self.user_line.text()
+        #
+        line1 = self.grid.itemAtPosition(0, 0).widget()
+        line1.setReadOnly(True)
+        line1.setStyleSheet(
+            """color:#594E3F ;background-color: transparent; border-style: solid""")
+        name = line1.text()
+        #
+        line2 = self.grid.itemAtPosition(1, 0).widget()
+        line2.setReadOnly(True)
+        line2.setStyleSheet(
+            """color:#594E3F ;background-color: transparent; border-style: solid""")
+        password = line2.text()
+        #
+        line3 = self.grid.itemAtPosition(2, 0).widget()
+        line3.setReadOnly(True)
+        line3.setStyleSheet(
+            """color:#594E3F ;background-color: transparent; border-style: solid""")
+        adress = line3.text()
+        #####
+        if (user != self.parent().userName and user != 'Nombre de usuario' and user != ''):
+            # cambiar en la base de datos
+            self.control.cambiar_info(nombre = self.parent().userName, password= password, segundo= user )
+            self.parent().userName = user
+            self.parent().Labelname.setText(user)
+    # se deben cambiar internamente los datos y cambiar el nombre de usuario en la ventana principal
+
+    def back_button(self):
+        button = QPushButton('«', self)
+        button.resize(50, 50)
+        button.move(0, 0)
+        button.setFont(QFont('Now', 30))
+        button.setStyleSheet(
+            """color: #594E3F; background-color:none; border-top-left-radius:20px; border-bottom-right-radius:20px""")
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.back_clicked)
+
+    def back_clicked(self):
+        self.hide()
+        self.parent().show()
+        self.deleteLater()
 
     def minimize_button(self):
         label = QLabel('', self)
@@ -1258,4 +1447,4 @@ class ProfileWinndow(QWidget):
 def Main():  # ________________________________________________________________________________________________________
     app = QApplication(sys.argv)
     LogWin = LoginWindow()
-    app.exec()
+    sys.exit(app.exec())

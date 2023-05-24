@@ -59,7 +59,8 @@ class db:
                 libro_new: Libro
                 self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE libro = ?',libro[0])
                 prestamo = self.cursor.fetchall()
-                libro_new = Libro(str(libro[-2]), str(libro[4]), int(libro[-1]),  str(libro[1]),  str(libro[6]),  int(libro[3]), int(libro[0]))
+                # table_libros = id_libro, genero, ubicacion, autores, estado, editorial, nombre, fecha_lanzamiento
+                libro_new = Libro(str(libro[-2]), str(libro[3]), int(libro[-1]),  str(libro[1]),  str(libro[5]),   int(libro[2]), int(libro[0]))
                 if prestamo is None or len(prestamo) == 0:
                     prestamo = None
                 else:
@@ -79,7 +80,7 @@ class db:
     def get_libro(self, id) -> 'Libro':
         self.cursor.execute('SELECT * FROM dbo.Table_libros WHERE id_libro = ?', id)
         libro = self.cursor.fetchone()
-        neolibro = Libro(str(libro[-2]), str(libro[4]), int(libro[-1]),  str(libro[1]),  str(libro[6]),  int(libro[3]), int(libro[0]))
+        neolibro = Libro(str(libro[-2]), str(libro[3]), int(libro[-1]),  str(libro[1]),  str(libro[5]),   int(libro[2]), int(libro[0]))
         return neolibro
 
 

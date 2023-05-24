@@ -194,7 +194,7 @@ class Bookeeper:
         guardar_datos(self)
 
     def generate_recomendacion(self, cliente: Cliente) -> None:
-        if len(traer_datos()['prestamos']) > 5:
+        if len(traer_datos()['prestamos']) > 4:
             libros_prestados = []
             for prestamo in traer_datos()['prestamos']:
                 if prestamo.cliente.id == cliente.id:
@@ -225,3 +225,30 @@ class Bookeeper:
             if estante.genero == genero:
                 return True
         return False
+
+    def cambiar_info(self, nombre: str, password: str, nombre2: str) -> None:
+        if self.verificar_admin(nombre, password, 2) == True and self.verificar_admin(nombre2, None, 2) == False:
+            for admin in self.__administradores:
+                if password == None:
+                    if admin.nombre == nombre:
+                        admin.nombre = nombre2
+                elif nombre == None:
+                    if admin.contrasena == password:
+                        admin.contrasena = nombre2
+                else:
+                    if admin.nombre == nombre:
+                        admin.nombre = nombre2
+                        admin.contrasena = password
+        elif self.verificar_cliente(nombre, password, 2) == True and self.verificar_cliente(nombre2, None, 2) == False:
+            for cliente in self.__clientes:
+                if password == None:
+                    if cliente.nombre == nombre:
+                        cliente.nombre = nombre2
+                elif nombre == None:
+                    if cliente.contrasena == password:
+                        cliente.contrasena = nombre2
+                else:
+                    if cliente.nombre == nombre:
+                        cliente.nombre = nombre2
+                        cliente.contrasena = password
+        guardar_datos(self)
