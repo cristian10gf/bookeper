@@ -1,2 +1,2 @@
-# bookeeper
-proyecto de programacion orientada a objetos que permite una mejor administracion bibliotecaria
+# BooKeeper
+Proyecto de programacion orientada a objetos junto a estrcutura de datos que permite realizar una eficiente gestion bibliotecaria
