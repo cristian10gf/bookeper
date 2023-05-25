@@ -66,6 +66,13 @@ class ControlBookeeper:
         return ControlBookeeper.__bookeeper.buscar_libro_por_nombre(name)
 
     @staticmethod
+    def get_libro_by_author(author: str) -> 'Libro':
+        return ControlBookeeper.__bookeeper.buscar_libro_por_autor(author)
+    @staticmethod
+    def get_libro_by_genre(genre: str) -> 'Libro':
+        return ControlBookeeper.__bookeeper.buscar_libro_por_genero(genre)
+
+    @staticmethod
     def new_prestamo(
             fecha: datetime,
             nombre_cliente: str,

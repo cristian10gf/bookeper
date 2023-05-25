@@ -2,6 +2,7 @@ from src.Models.config.config import *
 from src.Models.Libros.recomendacio import Recomendacion
 import random
 
+
 def traer_datos() -> dict:
     info = db()
     todo = {
@@ -11,6 +12,7 @@ def traer_datos() -> dict:
         'recomendaciones': info.get_recomendaciones()
     }
     return todo
+
 
 def guardar_datos(self: 'Bookeeper') -> None:
     info = db()
@@ -22,7 +24,8 @@ def guardar_datos(self: 'Bookeeper') -> None:
         'clientes': self.clientes,
         'recomendaciones': self.recomendaciones
     }
-    info.actualizar( todos_datos )
+    info.actualizar(todos_datos)
+
 
 class Bookeeper:
 
@@ -31,7 +34,7 @@ class Bookeeper:
             administradores: list['administrador'] = [],
             clientes: list['Cliente'] = [],
             estantes: list['EstanteDeLibros'] = []
-    )-> None:
+    ) -> None:
         self.__administradores = administradores
         self.__clientes = clientes
         self.__estantes = estantes
@@ -52,7 +55,6 @@ class Bookeeper:
         for admin in self.__administradores:
             admin.prestamos_pendientes = prestamos_pendientes
 
-
     def agregar_administrador(self, administrador: 'administrador') -> None:
         self.__administradores.append(administrador)
         guardar_datos()
@@ -71,9 +73,39 @@ class Bookeeper:
                 return estante
         return None
 
+    def buscar_libro_por_autor(self, autor: str) -> list['Libro']:
+        libros = []
+        for estante in self.__estantes:
+            if len(estante.buscar_libros_por_autor(autor)) > 0:
+                libros.extend(estante.buscar_libros_por_autor(autor))
+        return libros
+
+    def buscar_libro_por_nombre(self, nombre: str) -> list['Libro']:
+        libros = []
+        for estante in self.__estantes:
+            if len(estante.buscar_libros_por_nombre(nombre)) > 0:
+                libros.extend(estante.buscar_libros_por_nombre(nombre))
+        return libros
+
+    def buscar_libro_por_genero(self, genero: str) -> list['Libro']:
+        libros = []
+        for estante in self.__estantes:
+            if len(estante.buscar_libros_por_genero(genero)) > 0:
+                libros.extend(estante.buscar_libros_por_genero(genero))
+        return libros
+
+    """
     def buscar_libro_por_nombre(self, nombre: str) -> 'Libro':
         for estante in self.__estantes:
             libro = estante.buscar_libro_por_nombre(nombre)
+            if libro is not None:
+                return libro
+        return None
+    """
+
+    def buscar_libro_por_genero(self, genero: str) -> 'Libro':
+        for estante in self.__estantes:
+            libro = estante.buscar_libro_por_nombre(genero)
             if libro is not None:
                 return libro
         return None
@@ -105,7 +137,7 @@ class Bookeeper:
     @property
     def recomendaciones(self) -> list['Recomendacion']:
         return self.__recomendaciones
-    
+
     def verificar_admin(self, username: str, password: str, metodo: int = 1) -> bool:
         for admin in self.__administradores:
             if admin.nombre == username and admin.contrasena == password and metodo == 1:
@@ -185,7 +217,8 @@ class Bookeeper:
         self.__clientes.append(cliente)
         guardar_datos(self)
 
-    def new_libro(self, nombre: str, autores: str, fecha_lanzamiento: date, genero: str, editorial: str, ubicacion: int, codigo: int) -> None:
+    def new_libro(self, nombre: str, autores: str, fecha_lanzamiento: date, genero: str, editorial: str, ubicacion: int,
+                  codigo: int) -> None:
         libro = Libro(nombre, autores, fecha_lanzamiento, genero, editorial, ubicacion, codigo)
         for estante in self.__estantes:
             if estante.codigo == ubicacion:

@@ -996,25 +996,34 @@ class UserWindow(QWidget):
         button.move(995, 25)
         button.move(995, 25)
 
-    # crear una funcion que busque en la base de datos el libro en base al nombre del libro
-    # y que retorne el libro, si no lo encuentra que retorne None
-    #que al escribir en la barra y el metodo de busqueda sea nombre, busque todos los libros que contengan ese texto en su nombre
-
-    def search(self):
+    def search(self):  # validar el tipo de busqueda
         if self.searchMode == 'Libro':
-            libro = self.control.get_libro_by_name(self.bar.text())
-            if libro != None:
-                pass
+            libros = self.control.get_libro_by_name(self.bar.text())
+            if len(libros) > 0:
+                for lib in libros:
+                    print("se encontro el libro ", lib.nombre)
             else:
-                pass
+                print("no se encontro el libro")
+
         elif self.searchMode == 'Género':
-            pass
-        else:
-            pass
+            libros = self.control.get_libro_by_genre(self.bar.text())
+            if len(libros) > 0:
+                for lib in libros:
+                    print("se encontro el libro ", lib.nombre)
+            else:
+                print("no se encontro el libro")
 
-    # Crea una funcion que verifique si un str dado esta dentro de otro str dado
-    # y retorne True si esta y False si no esta
+        elif self.searchMode == 'Autor':
+            libros = self.control.get_libro_by_author(self.bar.text())
+            if len(libros) > 0:
+                for lib in libros:
+                    print("se encontro el libro ", lib.nombre)
+            else:
+                print("no se encontro el libro")
 
+
+    # ↑se debe ejecutar un codigo para que busque los libros por los requisitos
+    # ↑falta terminar la aparicion de libros
 
     def mousePressEvent(self, event):
         text = self.bar.text()
