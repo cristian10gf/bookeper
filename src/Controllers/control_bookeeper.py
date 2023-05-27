@@ -21,7 +21,7 @@ class ControlBookeeper:
         return ControlBookeeper.__bookeeper.estantes
 
     @staticmethod
-    def get_libros() -> dict:
+    def get_libros() -> list['Libro']:
         libros_info = {}
         libros =  ControlBookeeper.__bookeeper.get_libros()
         print(type(libros))
@@ -35,7 +35,7 @@ class ControlBookeeper:
                 "ubicacion": libro.ubicacion,
                 "estado": libro.estado
             }
-        return libros_info
+        return libros
 
     @staticmethod
     def get_libro(id: int) -> 'Libro':
@@ -54,42 +54,50 @@ class ControlBookeeper:
         return ControlBookeeper.__bookeeper.clientes
 
     @staticmethod
-    def get_cliente(id) -> 'Cliente':
-        return ControlBookeeper.__bookeeper.get_cliente(id)
+    def get_cliente(id, name = None) -> 'Cliente':
+        if name is not None:
+            for cliente in ControlBookeeper.__bookeeper.clientes:
+                if cliente.nombre == name:
+                    return cliente
+            return ControlBookeeper.__bookeeper.get_cliente(cliente.codigo_Usuario)
+        else:
+            return ControlBookeeper.__bookeeper.get_cliente(id)
 
     @staticmethod
     def get_admins() -> list['administrador']:
         return ControlBookeeper.__bookeeper.administradores
 
     @staticmethod
-    def get_libro_by_name(name: str) -> 'Libro':
+    def get_libro_by_name(name: str) -> {'Libro'}:
         return ControlBookeeper.__bookeeper.buscar_libro_por_nombre(name)
 
     @staticmethod
-    def get_libro_by_author(author: str) -> 'Libro':
+    def get_libro_by_author(author: str) -> {'Libro'}:
         return ControlBookeeper.__bookeeper.buscar_libro_por_autor(author)
     @staticmethod
-    def get_libro_by_genre(genre: str) -> 'Libro':
+    def get_libro_by_genre(genre: str) -> {'Libro'}:
         return ControlBookeeper.__bookeeper.buscar_libro_por_genero(genre)
 
     @staticmethod
     def new_prestamo(
-            fecha: datetime,
-            nombre_cliente: str,
-            username_cliente: str,
-            nombre: str,
-            autores: str,
-            fecha_lanzamiento: date,
-            genero: str,
-            editorial: str,
-            ubicacion: int,
-            codigo: int,
+            fecha: datetime = None,
+            nombre_cliente: str = None,
+            username_cliente: str = None,
+            id_cliente: int = None,
+            nombre: str = None,
+            autores: str  = None,
+            fecha_lanzamiento: date = None,
+            genero: str = None,
+            editorial: str  = None,
+            ubicacion: int = None,
+            codigo: int = None,
             estado: 'Prestamo' = None
     ) -> None:
         ControlBookeeper.__bookeeper.new_prestamo(
             fecha,
             nombre_cliente,
             username_cliente,
+            id_cliente,
             nombre,
             autores,
             fecha_lanzamiento,
@@ -140,3 +148,22 @@ class ControlBookeeper:
     def cambiar_info(nombre: str = None, password: str = None, segundo: str = None) -> None:
         ControlBookeeper.__bookeeper.cambiar_info(nombre, password, segundo)
 
+    @staticmethod
+    def actualizar_todo() -> None:
+        ControlBookeeper.__bookeeper.uptade_todo()
+
+    @staticmethod
+    def devolder_libro(name_libro: str, name_cliente) -> None:
+        libro = ControlBookeeper.__bookeeper.buscar_libro_por_nombre(name_libro) 
+        clientes = ControlBookeeper.__bookeeper.clientes
+        for cliente in clientes:
+            if cliente.nombre == name_cliente:
+                cliente.devolver_libro(libro[0])
+                break
+
+    @staticmethod
+    def get_libros_prestados() -> list['Libro']:
+        libros_prestados = []
+        for libro in ControlBookeeper.__bookeeper.libros_prestatos():
+            libros_prestados.append(libro.libro)
+        return libros_prestados

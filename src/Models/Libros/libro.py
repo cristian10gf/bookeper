@@ -2,6 +2,7 @@ from multipledispatch import dispatch
 from src.Models.Files.file_manager import FileManager
 from src.Models.core.prestamos import Prestamo
 from datetime import date
+import random
 
 class Libro:
     todos_libros = FileManager("libros.txt").generate_path()
@@ -22,8 +23,7 @@ class Libro:
         self.__genero = genero
         self.__editorial = editorial
         self.__ubicacion = ubicacion
-        self.__codigo = Libro.__codigo
-        Libro.__codigo += 1
+        self.__codigo = random.randint(1000, 9999)
         self.__estado = estado
 
     @dispatch(str, str, int, str, str, int,int,Prestamo or None)
@@ -90,7 +90,9 @@ class Libro:
     def editorial(self): return self.__editorial
     @property
     def estado(self): return self.__estado
-
+    @estado.setter
+    def estado(self, estado: 'Prestamo'): self.__estado = estado
+    
     def guardar_autores(self) -> str:
         autores = ""
         for autor in self.__autores:

@@ -9,7 +9,8 @@ def traer_datos() -> dict:
         'administradores': info.get_admins(),
         'clientes': info.get_clientes(),
         'estantes': info.get_estantes(),
-        'recomendaciones': info.get_recomendaciones()
+        'recomendaciones': info.get_recomendaciones(),
+        'prestamos': info.get_prestamos()
     }
     return todo
 
@@ -46,26 +47,23 @@ class Bookeeper:
         for cliente in traer_datos()['clientes']:
             self.__clientes.append(cliente)
 
-        for admin in self.__administradores:
-            self.__estantes.extend(admin.estantes)
+        #for admin in self.__administradores: self.__estantes.extend(admin.estantes)
+        self.__estantes = traer_datos()['estantes']
 
-        prestamos_pendientes = []
-        for cliente in self.__clientes:
-            prestamos_pendientes.extend(cliente.prestamos)
+        prestamos_pendientes = traer_datos()['prestamos']
+        #for cliente in self.__clientes: prestamos_pendientes.extend(cliente.prestamos)
+
         for admin in self.__administradores:
-            admin.prestamos_pendientes = prestamos_pendientes
+            admin.prestamos_pendientes.extend(prestamos_pendientes)
 
     def agregar_administrador(self, administrador: 'administrador') -> None:
         self.__administradores.append(administrador)
-        guardar_datos()
 
     def agregar_Cliente(self, cliente: 'Cliente'):
         self.__clientes.append(cliente)
-        guardar_datos()
 
     def agregar_estante(self, estante: 'EstanteDeLibros') -> None:
         self.__estantes.append(estante)
-        guardar_datos()
 
     def get_estante(self, codigo: int) -> 'EstanteDeLibros':
         for estante in self.__estantes:
@@ -93,22 +91,6 @@ class Bookeeper:
             if len(estante.buscar_libros_por_genero(genero)) > 0:
                 libros.extend(estante.buscar_libros_por_genero(genero))
         return libros
-
-    """
-    def buscar_libro_por_nombre(self, nombre: str) -> 'Libro':
-        for estante in self.__estantes:
-            libro = estante.buscar_libro_por_nombre(nombre)
-            if libro is not None:
-                return libro
-        return None
-    """
-
-    def buscar_libro_por_genero(self, genero: str) -> 'Libro':
-        for estante in self.__estantes:
-            libro = estante.buscar_libro_por_nombre(genero)
-            if libro is not None:
-                return libro
-        return None
 
     @property
     def administradores(self) -> list['administrador']:
@@ -169,10 +151,10 @@ class Bookeeper:
 
     def get_prestamos(self, usuario: 'Usuario') -> list['Prestamo']:
         prestamos = []
-        if isinstance(usuario, 'Cliente'):
+        if self.verificar_cliente(usuario.nombre, usuario.contrasena, 1):
             for prestamo in usuario.prestamos:
                 prestamos.append(prestamo)
-        elif isinstance(usuario, 'Administrador'):
+        elif self.verificar_admin(usuario.nombre, usuario.contrasena, 1):
             for cliente in self.__clientes:
                 for prestamo in cliente.prestamos:
                     prestamos.append(prestamo)
@@ -187,31 +169,30 @@ class Bookeeper:
 
     def get_cliente(self, id: int) -> 'Cliente':
         for cliente in self.__clientes:
-            if cliente.id == id:
+            if cliente.codigo_Usuario == id:
                 return cliente
         return None
 
     def new_prestamo(
             self,
-            fecha: datetime,
-            nombre_cliente: str,
-            username_cliente: str,
-            id_cliente: int,
-            nombre: str,
-            autores: str,
-            fecha_lanzamiento: date,
-            genero: str,
-            editorial: str,
-            ubicacion: int,
-            codigo: int,
+            fecha: datetime = None,
+            nombre_cliente: str = None,
+            username_cliente: str = None,
+            id_cliente: int = None,
+            nombre: str = None,
+            autores: str = None,
+            fecha_lanzamiento: date = None,
+            genero: str = None,
+            editorial: str = None,
+            ubicacion: int = None,
+            codigo: int = None,
             estado: 'Prestamo' = None
     ) -> None:
         libro = book.buscar_libro_por_nombre(nombre)
         cliente = book.get_cliente(id_cliente)
-        if libro is not None and cliente is not None:
-            prestamo = Prestamo(cliente, libro, fecha)
-            guardar_datos(self)
-
+        if libro[0] is not None and cliente is not None:
+            prestamo = Prestamo(cliente, libro[0], fecha)
+    
     def new_cliente(self, nombre: str, password: str) -> None:
         cliente = Cliente(nombre, password)
         self.__clientes.append(cliente)
@@ -224,7 +205,6 @@ class Bookeeper:
             if estante.codigo == ubicacion:
                 estante.libros.append(libro)
                 break
-        guardar_datos(self)
 
     def generate_recomendacion(self, cliente: Cliente) -> None:
         if len(traer_datos()['prestamos']) > 4:
@@ -241,7 +221,6 @@ class Bookeeper:
                 pass
             recomendacion = Recomendacion(libro, cliente)
             self.__recomendaciones.append(recomendacion)
-            guardar_datos(self)
 
     def new_admin(self, nombre: str, password: str) -> None:
         admin = administrador(nombre, password)
@@ -251,7 +230,6 @@ class Bookeeper:
     def new_estante(self, genero: str, numero: int, admin: 'administrador'):
         estante = EstanteDeLibros([], admin, genero, numero)
         self.__estantes.append(estante)
-        guardar_datos(self)
 
     def verificar_genero(self, genero: str) -> bool:
         for estante in self.__estantes:
@@ -285,3 +263,11 @@ class Bookeeper:
                         cliente.nombre = nombre2
                         cliente.contrasena = password
         guardar_datos(self)
+
+    def uptade_todo(self):
+        guardar_datos(self)
+
+    def libros_prestatos(self) -> list['Prestamo']:
+        return self.administradores[0].prestamos_pendientes
+    
+book = Bookeeper()

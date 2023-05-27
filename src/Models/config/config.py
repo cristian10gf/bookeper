@@ -58,13 +58,13 @@ class db:
             for libro in libros:
                 libro_new: Libro
                 self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE libro = ?',libro[0])
-                prestamo = self.cursor.fetchall()
-                # table_libros = id_libro, genero, ubicacion, autores, estado, editorial, nombre, fecha_lanzamiento
-                libro_new = Libro(str(libro[-2]), str(libro[3]), int(libro[-1]),  str(libro[1]),  str(libro[5]),   int(libro[2]), int(libro[0]))
-                if prestamo is None or len(prestamo) == 0:
+                prestamos = self.cursor.fetchall()
+                libro_new = self.get_libro(libro[0])
+                if prestamos is None or len(prestamos) == 0:
                     prestamo = None
                 else:
-                    prestamo_new = Prestamo(prestamo[0], self.get_cliente(prestamo[1]), libro_new, prestamo[2], prestamo[3], True if prestamo[4] == 1 else False)
+                    for prestamo in prestamos:
+                        prestamo_new = self.get_prestamo(prestamo[0])
                 estante_admin.agregar_libro(libro_new)
         return admid
 
@@ -80,15 +80,13 @@ class db:
     def get_libro(self, id) -> 'Libro':
         self.cursor.execute('SELECT * FROM dbo.Table_libros WHERE id_libro = ?', id)
         libro = self.cursor.fetchone()
-        neolibro = Libro(str(libro[-2]), str(libro[3]), int(libro[-1]),  str(libro[1]),  str(libro[5]),   int(libro[2]), int(libro[0]))
+        neolibro = Libro(str(libro[-2]), str(libro[3]), int(libro[-1]),  str(libro[1]),  str(libro[5]), int(libro[2]), int(libro[0]))
         return neolibro
-
 
     def get_prestamo(self, id) -> 'Prestamo':
         self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE id_prestamo = ?', id)
         prestamo = self.cursor.fetchone()
-        print(prestamo)
-        nuevo_prestamo = Prestamo(prestamo[0], prestamo[-1], prestamo[1], prestamo[2], prestamo[3])
+        nuevo_prestamo = Prestamo(self.get_cliente(prestamo[1]), self.get_libro(prestamo[-1]),prestamo[3], prestamo[4], True if prestamo[5] == 1 else False, prestamo[0])
         return nuevo_prestamo
 
     def get_cliente(self, id: int) -> 'Cliente':
@@ -98,6 +96,7 @@ class db:
             return None
         else:
             nuevo_cliente = Cliente(cliente[1], cliente[2], cliente[0])
+            self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE cliente = ?', cliente[0])
             return nuevo_cliente
 
     def get_admins(self) -> list['administrador']:
@@ -138,7 +137,7 @@ class db:
         prestamos = self.cursor.fetchall()
         prestamos_convertidos = []
         for prestamo in prestamos:
-            prestamos_convertidos.append(Prestamo(prestamo[0], prestamo[1], prestamo[-1], prestamo[2], prestamo[3], True if prestamo[4] == 1 else False))
+            prestamos_convertidos.append(Prestamo(self.get_cliente(prestamo[1]), self.get_libro(prestamo[-1]),prestamo[3], prestamo[4], True if prestamo[5] == 1 else False, prestamo[0]))
         return prestamos_convertidos
 
     def get_recomendaciones(self) -> list['Recomendacion']:
@@ -191,18 +190,20 @@ class db:
 
         self.cursor.execute('SELECT * FROM dbo.Table_libros WHERE id_libro = ?', libro.codigo)
         if self.cursor.fetchone() is None:
-            self.cursor.execute('INSERT INTO dbo.Table_libros VALUES(?, ?, ?, ?, ?, ?, ?, ?)', (libro.codigo, libro.genero, libro.ubicacion, libro.guardar_autores(), libro.estado, libro.editorial, libro.nombre, libro.fecha_lanzamiento))
+            self.cursor.execute('INSERT INTO dbo.Table_libros VALUES(?, ?, ?, ?, ?, ?, ?, ?)', (libro.codigo, libro.genero, libro.ubicacion, libro.guardar_autores(), libro.estado.codigo, libro.editorial, libro.nombre, libro.fecha_lanzamiento))
+        elif libro.estado is not None:
+            self.cursor.execute('UPDATE dbo.Table_libros SET genero = ?, fecha_lanzamiento = ?, ubicacion = ?, autores = ?, estado = ?, editorial = ?, nombre = ? WHERE id_libro = ?', (libro.genero, libro.fecha_lanzamiento, libro.ubicacion, libro.guardar_autores(), libro.estado.codigo, libro.editorial, libro.nombre, libro.codigo))
         else:
             self.cursor.execute('UPDATE dbo.Table_libros SET genero = ?, fecha_lanzamiento = ?, ubicacion = ?, autores = ?, estado = ?, editorial = ?, nombre = ? WHERE id_libro = ?', (libro.genero, libro.fecha_lanzamiento, libro.ubicacion, libro.guardar_autores(), libro.estado, libro.editorial, libro.nombre, libro.codigo))
         self.conn.commit()
 
     def actualizar_prestamo(self, prestamo: 'Prestamo'):
         # table_prestamo = id_prestamo, cliente, fecha_prestamo, fecha_devolucion, devuelto, libro
-        self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE id = ?', prestamo.codigo)
+        self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE id_prestamo = ?', prestamo.codigo)
         if self.cursor.fetchone() is None:
-            self.cursor.execute('INSERT INTO dbo.Table_prestamo VALUES(?, ?, ?, ?, ?)', (prestamo.cliente.codigo_Usuario, prestamo.fecha_prestamo, prestamo.fecha_devolucion, prestamo.devuelto, prestamo.libro.codigo))
+            self.cursor.execute('INSERT INTO dbo.Table_prestamo VALUES(?, ?, ?, ?, ?, ?)', (prestamo.codigo, prestamo.cliente.codigo_Usuario, prestamo.fecha_prestamo, prestamo.fecha_devolucion, prestamo.devuelto, prestamo.libro.codigo))
         else:
-            self.cursor.execute('UPDATE dbo.Table_prestamo SET cliente = ?, libro = ?, fecha_prestamo = ?, fecha_devolucion = ?, devuelto = ? WHERE id = ?', (prestamo.cliente.codigo_Usuario, prestamo.libro.codigo, prestamo.fecha_prestamo, prestamo.fecha_devolucion, prestamo.devuelto, prestamo.codigo))
+            self.cursor.execute('UPDATE dbo.Table_prestamo SET cliente = ?, libro = ?, fecha_prestamo = ?, fecha_devolucion = ?, devuelto = ? WHERE id_prestamo = ?', (prestamo.cliente.codigo_Usuario, prestamo.libro.codigo, prestamo.fecha_prestamo, prestamo.fecha_devolucion, prestamo.devuelto, prestamo.codigo))
         self.conn.commit()
 
     def actualizar_cliente(self, cliente: 'Cliente'):

@@ -1,16 +1,15 @@
 from abc import ABC, abstractmethod
 from multipledispatch import dispatch
+import random
 
 
 class Usuario(ABC):
-    __id_Usuario = 0
 
     @dispatch(str, str)
     def __init__(self, nombre: str, contrasena: str) -> None:
         self._contrasena = contrasena
         self._nombre = nombre
-        self._codigo_Usuario = Usuario.__id_Usuario
-        Usuario.__id_Usuario += 1
+        self._codigo_Usuario = random.randint(1000, 9999)
 
     @dispatch(str, str, int)
     def __init__(self, nombre: str, contrasena: str, codigo_Usuario: int) -> None:

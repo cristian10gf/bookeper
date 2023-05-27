@@ -1,14 +1,13 @@
 from src.Models.Libros.libro import *
 from src.Models.Usuarios.admin import administrador
+import random
 
 
 class EstanteDeLibros:
-    __id = 0
 
     @dispatch(list, administrador, str, int)
     def __init__(self, libros: list['libro'], admin: 'administrador', genero: str, tamano: int):
-        self.__codigo = EstanteDeLibros.__id
-        EstanteDeLibros.__id += 1
+        self.__codigo = random.randint(1000, 9999)
         if libros is None or len(libros) == 0:
             self.__libros = []
         else:
@@ -46,31 +45,37 @@ class EstanteDeLibros:
         else:
             self.__libros.remove(libro)
 
-    def buscar_libros_por_nombre(self, nombre: str) -> list['Libro']:
+    def buscar_libros_por_nombre(self, nombre: str) -> {'Libro'}:
         if len(self.__libros) == 0:
-            libros_encontrados = []
+            libros_encontrados = set()
             return libros_encontrados
 
         else:
-            libros_encontrados = []
+            libros_encontrados = set()
             for libro in self.__libros:
-                if nombre in libro.nombre:
-                    libros_encontrados.append(libro)
+                nm = libro.nombre.upper()
+                nn = nombre.upper()
+                if nn in nm:
+                    libros_encontrados.add(libro)
             return libros_encontrados
 
-    def buscar_libros_por_autor(self, autor) -> list['Libro']:
-        libros_encontrados = []
+    def buscar_libros_por_autor(self, autor) -> {'Libro'}:
+        libros_encontrados = set()
         for libro in self.libros:
             for nautor in libro.autores:
-                if autor in nautor:
-                    libros_encontrados.append(libro)
+                nm = nautor.upper()
+                nn = autor.upper()
+                if nn in nm:
+                    libros_encontrados.add(libro)
         return libros_encontrados
 
-    def buscar_libros_por_genero(self, genero) -> list['Libro']:
-        libros_encontrados = []
+    def buscar_libros_por_genero(self, genero) -> {'Libro'}:
+        libros_encontrados = set()
         for libro in self.libros:
-            if genero in libro.genero:
-                libros_encontrados.append(libro)
+            nm = libro.genero.upper()
+            nn = genero.upper()
+            if nn in nm:
+                libros_encontrados.add(libro)
         return libros_encontrados
 
     def get_libro(self, codigo: int) -> 'Libro':
@@ -78,6 +83,7 @@ class EstanteDeLibros:
             if libro.codigo == codigo:
                 return libro
         return None
+    
     def get_nombre_libro(self, codigo: int) -> str:
         for libro in self.__libros:
             if libro.codigo == codigo:

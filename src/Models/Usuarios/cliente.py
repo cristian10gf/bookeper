@@ -47,7 +47,7 @@ class Cliente(Usuario):
         self.__recomendaciones.append(recomendacion)
         
     @property
-    def prestamos(self):
+    def prestamos(self) -> list['Prestamo']:
         return self.__prestamos
 
     @prestamos.setter
@@ -57,3 +57,6 @@ class Cliente(Usuario):
     @property
     def recomendaciones(self):
         return self.__recomendaciones
+    
+    def add_prestamo(self, prestamo: 'Prestamo'):
+        self.__prestamos.append(prestamo)
