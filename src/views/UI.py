@@ -23,7 +23,6 @@ class LoginWindow(QWidget):
         super(LoginWindow, self).__init__()
         self.width = 1630
         self.height = 980
-        print(open('src/views/user_active.txt', 'r').read())
         if open('src/views/user_active.txt', 'r').read() != '':
             self.holdSesion = True
         else:
@@ -546,6 +545,7 @@ class UserWindow(QWidget):
         self.userImage = QPixmap("src/views/images/usuario.png")
         self.userImage = self.userImage.scaled(self.userImage.size(
         ), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        self.infoArea=None
         self.StartUp()
 
     def StartUp(self):
@@ -686,6 +686,9 @@ class UserWindow(QWidget):
         button.clicked.connect(self.seeBooks_clicked)
 
     def seeBooks_clicked(self):
+        if not self.infoArea is None:
+            self.infoArea.deleteLater()
+            self.infoArea=None
         self.secondBox()
         todos_los_libros = self.control.get_libros()
         for libro in todos_los_libros:
@@ -706,6 +709,9 @@ class UserWindow(QWidget):
         button.clicked.connect(self.seeBorroweds_clicked)
 
     def seeBorroweds_clicked(self):
+        if not self.infoArea is None:
+            self.infoArea.deleteLater()
+            self.infoArea=None
         self.secondBox()
         self.init_books_prestados()
 
@@ -722,6 +728,18 @@ class UserWindow(QWidget):
         button.setStyleSheet("""color:#FFF9F2 ;background-color:#594E3F ;border-radius: 30px; padding-left: 14px
                             ;padding-right: 12px""")
         button.clicked.connect(self.seeBooksOf_clicked)
+
+    def seeBooksOf(self, user):
+        if not self.infoArea is None:
+            self.infoArea.deleteLater()
+            self.infoArea=None
+        self.secondBox()
+        self.showbook(name=f'Libro de {user}', autor=user, gender='unknown')
+# ↑se deben mbuscar los libros del usuario para mostrarlos
+
+    def seebooksOfConfirm(self):
+        self.seebookWin = SeeBooksSomeone(self)
+        self.seebookWin.show()
 
     def seeBooksOf_clicked(self):
         self.secondBox()
@@ -864,6 +882,7 @@ class UserWindow(QWidget):
         font = seeMore.font()
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         seeMore.setFont(font)
+        seeMore.clicked.connect(self.seeMore_clicked)
         # Addbook
         addBook_button = QPushButton('Agregar libro')
         addBook_button.setStyleSheet(
@@ -873,6 +892,7 @@ class UserWindow(QWidget):
         font = addBook_button.font()
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         addBook_button.setFont(font)
+        addBook_button.clicked.connect(self.addbookconfirm)
         # delete
         delete = QPushButton(shelveGroup)
         delete.setStyleSheet(
@@ -883,7 +903,7 @@ class UserWindow(QWidget):
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         font.setBold(True)
         delete.setFont(font)
-        delete.clicked.connect(self.deleteShelve)
+        delete.clicked.connect(self.deleteConfirm)
         #
         book1 = QGroupBox('')
         self.config_BookBox(book1, bk1)
@@ -909,11 +929,10 @@ class UserWindow(QWidget):
     # ↑se debe mandar como parametro el genero y el numero maximo de libros(tmb se deben agregar los parametros)
     # ↑este codigo se debe meter en un ciclo que lo ejecute cada vez que encuentra un estante del usuario
 
-    def confirmAdd(self):
-        self.logwin = AddShelveWindow(win=self, usuario=self.usuario)
-        self.logwin.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.logwin.show()
-        # ↑ este codigo hace aparecer la ventana para crear la estanteria
+    def confirmAddShelve(self):
+        if self.shelveScroll.isVisible():
+            self.addwin = AddShelveWindow(win=self, user=self.usuario)
+            self.addwin.show()
 
     def config_BookBox(self, GBox, libro: 'Libro'):
         GBox.setMaximumSize(200, 210)
@@ -980,6 +999,57 @@ class UserWindow(QWidget):
         layV.addWidget(label_3)
         layV.addWidget(label_4)
         layV.addItem(space)
+
+    def seeMore_clicked(self):
+        box = self.sender().parent()
+        layout = box.layout()
+        item = layout.itemAtPosition(0, 0).widget()
+        itemName = item.text()
+        self.secondBox()
+        self.showbook(name='libro de'+itemName, autor='yo', gender='idk')
+# ↑internamente se deben buscar los libro de que estan en la estanteria con ese nombre
+
+    def addbook(self, shelve, book, bookBox):
+        libro = bookBox.itemAt(1).widget()
+        libro.setText(book)
+        #
+        autor = bookBox.itemAt(2).widget()
+        autor.setText('juan lucas')
+        #
+        Genero = bookBox.itemAt(3).widget()
+        Genero.setText('aventura')
+        #
+        calificacion = bookBox.itemAt(4).widget()
+        calificacion.setText('5')
+# ↑ internamente de debe añadir el libro a al estante
+
+    def addbookconfirm(self):
+        box = self.sender().parent()
+        layout = box.layout()
+        shelveName = layout.itemAtPosition(0, 0).widget().text()
+        # se debe saber cuantos libros tiene el estante para cambiar la estetica del estante
+        # esto es un ejemplo de como deberia ser
+        # if numBooks < 4:
+        #   if numBooks < 3:
+        #       pos = numBooks*4
+        #   elif numBooks = 3:
+        #       pos = 14
+        # esto de abajo debe estar dentro del primer if
+        pos = 0
+        book = layout.itemAtPosition(1, pos).widget()
+        bookBox = book.layout()
+        # esto de abajo ya no debe estar dentro del if
+        self.addbookWin = AddBookToShelve(
+            win=self, bookBox=bookBox, shelve=shelveName)
+        self.addbookWin.show()
+
+    def deleteShelve(self, shelve):
+        shelve.deleteLater()
+# ↑ internamente tambien se debe eliminar la estanteria
+
+    def deleteConfirm(self):
+        shelve = self.sender().parent()
+        self.deleteWin = Delete(win=self, shelve=shelve)
 
     def deleteShelve(self):
         padre = self.sender().parent()
@@ -1140,6 +1210,49 @@ class UserWindow(QWidget):
         self.boxScroll.setWidget(self.searchWidget)
         self.boxScroll.show()
 
+
+    def bookInfo(self):
+        labels=[]
+        book=self.sender().text()
+        self.boxScroll.hide()
+        self.infoArea = QWidget(self)
+        self.infoArea.setGeometry(QRect(20, 175, 1180, 700))
+        self.infoArea.setStyleSheet("""background-color: #8C7662 """)
+        name=QLabel(book, self.infoArea)
+        name.move(60, 60)
+        name.setStyleSheet(
+        """color: #FFF9F2 ;border: solid transparent""")
+        name.setFont(QFont('Now', 38))
+        font = name.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        name.setFont(font)
+        #
+        autor=QLabel('Autor/es', self.infoArea)
+        labels.append(autor)
+        gender=QLabel('Género', self.infoArea)
+        labels.append(gender)
+        date=QLabel('Fecha', self.infoArea)
+        labels.append(date)
+        state=QLabel('Estado', self.infoArea)
+        labels.append(state)
+        owner=QLabel('Dueño actual', self.infoArea)
+        labels.append(owner)
+        rate=QLabel('Calificación', self.infoArea)
+        labels.append(rate)
+        i=1
+        for label in labels:
+            i=i+1
+            label.move(120, i*70)
+            label.setStyleSheet(
+            """color: #FFF9F2 ;border: solid transparent""")
+            label.setFont(QFont('Now', 32))
+            font = label.font()
+            font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+            label.setFont(font)
+        self.backButton2(padre=self.infoArea)
+        self.infoArea.show()
+
     def lending(self, book):
         botton = self.sender()
         botton.deleteLater()
@@ -1187,6 +1300,7 @@ class UserWindow(QWidget):
         bookname.setFont(font)
         bookname.setCursor(
         QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        bookname.clicked.connect(self.bookInfo)
         # autor
         bookautor = QLabel('      '+autor, groupbox)
         bookautor.setStyleSheet("""color: #FFF9F2""")
@@ -1277,6 +1391,31 @@ class UserWindow(QWidget):
         self.shelveScroll.show()
         self.shelveScroll.setEnabled(True)
 
+    def backButton2(self, padre):
+        button = QPushButton('«', padre)
+        button.resize(30, 30)
+        button.move(20, 0)
+        button.setFont(QFont('Now', 30))
+        button.setStyleSheet(
+            """color: #FFF9F2 ; background-color:none ;border-style: solid""")  # FFF9F2
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.back_2_clicked)
+        button.show()
+        if not self.infoArea.isVisible:
+            button.deleteLater()
+
+    def back_2_clicked(self):
+        button = self.sender()
+        button.deleteLater()
+        self.infoArea.deleteLater()
+        self.infoArea=None
+        self.boxScroll.show()
+        self.boxScroll.setEnabled(True)
+        
     def mousePressEvent(self, event):
         text = self.bar.text()
         if event.button() == Qt.MouseButton.LeftButton and event.pos() not in self.bar.geometry():
@@ -1683,6 +1822,311 @@ class LendBookTo(QWidget):
         button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         button.clicked.connect(self.close)
 
+
+
+class SeeBooksSomeone(QWidget):
+    def __init__(self, win=None) -> None:
+        super(SeeBooksSomeone, self).__init__()
+        self.win = win
+        self.width = 400
+        self.height = 300
+        self.StartUp()
+
+    def StartUp(self):
+        self.setWindowTitle('BooKeeper')
+        self.setFixedSize(self.width, self.height)
+        self.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint |
+                           QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        # background
+        bg = QLabel(self)
+        bg.resize(self.width, self.height)
+        bg.setStyleSheet("""background-color:#FFF9F2; border-radius: 20px;""")
+        title = QLabel('Ver libros de:', self)
+        title.setFont(QFont('Now', 24))
+        title.move(30, 10)
+        title.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ;border-style: solid ;border-radius: 30px""")
+        font = title.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        title.setFont(font)
+        ########################
+        self.booksOf()
+        self.accept_button()
+        ########################
+        self.close_button()    #
+        self.center()          #
+        self.show()            #
+        ########################
+
+    def booksOf(self):
+        # name
+        user = QLabel('Usuario', self)
+        user.setFont(QFont('Now', 22))
+        font = user.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        user.setFont(font)
+        user.move(60, 85)
+        user.setStyleSheet("""color:#594E3F""")
+        # lineEdit
+        self.user = QLineEdit(self)
+        self.user.setFont(QFont('Now', 20))
+        self.user.setStyleSheet("""color:#868179 ;background-color: transparent; border-style: solid ;border-width: 2px;
+                                    border-color: transparent; border-bottom-color: #868179""")
+        font = self.user.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        self.user.setFont(font)
+        self.user.resize(280, 40)
+        self.user.move(60, 120)
+
+    def accept_button(self):
+        button = QPushButton('Aceptar', self)
+        button.setFont(QFont('Now', 24))
+        button.resize(200, 60)
+        button.move(100, 200)
+        button.setStyleSheet(
+            """color:#FFF9F2 ;background-color:#594E3F ;border-style: solid ;border-radius: 30px""")
+        font = button.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        font.setBold(True)
+        button.setFont(font)
+        button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.accept_clicked)
+
+    def accept_clicked(self):
+        self.win.seeBooksOf(user=self.user.text())
+        self.close()
+    # ↑internamente tambien se debe agregar el libro al usuario
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = self.screen().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def close_button(self):
+        button = QPushButton("x", self)
+        button.resize(50, 50)
+        button.move(self.width-49, 0)
+        button.setFont(QFont('Now', 20))
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setStyleSheet(
+            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px""")
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.close)
+# ______________________________________________________________________________________
+
+
+class AddBookToShelve(QWidget):
+    def __init__(self, shelve, bookBox, win=None) -> None:
+        super(AddBookToShelve, self).__init__()
+        self.win = win
+        # esto es el nombre que se va a reeemplazar por el nombre del nuevo libro
+        self.bookBox = bookBox
+        self.shelve = shelve
+        self.width = 400
+        self.height = 300
+        self.StartUp()
+
+    def StartUp(self):
+        self.setWindowTitle('BooKeeper')
+        self.setFixedSize(self.width, self.height)
+        self.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint |
+                           QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        # background
+        bg = QLabel(self)
+        bg.resize(self.width, self.height)
+        bg.setStyleSheet("""background-color:#FFF9F2; border-radius: 20px;""")
+        title = QLabel('Agregar libro:', self)
+        title.setFont(QFont('Now', 24))
+        title.move(30, 10)
+        title.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ;border-style: solid ;border-radius: 30px""")
+        font = title.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        title.setFont(font)
+        ########################
+        self.addBook()
+        self.accept_button()
+        ########################
+        self.close_button()    #
+        self.center()          #
+        self.show()            #
+        ########################
+
+    def addBook(self):
+        # name
+        book = QLabel('Libro', self)
+        book.setFont(QFont('Now', 22))
+        font = book.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        book.setFont(font)
+        book.move(60, 85)
+        book.setStyleSheet("""color:#594E3F""")
+        # lineEdit
+        self.book = QLineEdit(self)
+        self.book.setFont(QFont('Now', 20))
+        self.book.setStyleSheet("""color:#868179 ;background-color: transparent; border-style: solid ;border-width: 2px;
+                                    border-color: transparent; border-bottom-color: #868179""")
+        font = self.book.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        self.book.setFont(font)
+        self.book.resize(280, 40)
+        self.book.move(60, 120)
+
+    def accept_button(self):
+        button = QPushButton('Aceptar', self)
+        button.setFont(QFont('Now', 24))
+        button.resize(200, 60)
+        button.move(100, 200)
+        button.setStyleSheet(
+            """color:#FFF9F2 ;background-color:#594E3F ;border-style: solid ;border-radius: 30px""")
+        font = button.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        font.setBold(True)
+        button.setFont(font)
+        button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.accept_clicked)
+
+    def accept_clicked(self):
+        self.win.addbook(book=self.book.text(),
+                         bookBox=self.bookBox, shelve=self.shelve)
+        self.close()
+    # ↑internamente tambien se debe agregar el libro al usuario
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = self.screen().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def close_button(self):
+        button = QPushButton("x", self)
+        button.resize(50, 50)
+        button.move(self.width-49, 0)
+        button.setFont(QFont('Now', 20))
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setStyleSheet(
+            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px""")
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.close)
+# ______________________________________________________________________________________
+
+
+class Delete(QWidget):
+    def __init__(self, shelve, win=None) -> None:
+        super(Delete, self).__init__()
+        self.win = win
+        self.shelve = shelve
+        self.width = 400
+        self.height = 300
+        self.StartUp()
+
+    def StartUp(self):
+        self.setWindowTitle('BooKeeper')
+        self.setFixedSize(self.width, self.height)
+        self.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint |
+                           QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        # background
+        bg = QLabel(self)
+        bg.resize(self.width, self.height)
+        bg.setStyleSheet("""background-color:#FFF9F2; border-radius: 20px;""")
+        title = QLabel('Eliminar', self)
+        title.setFont(QFont('Now', 24))
+        title.move(30, 10)
+        title.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ;border-style: solid ;border-radius: 30px""")
+        font = title.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        title.setFont(font)
+        ########################
+        self.addBook()
+        self.yes_button()
+        self.no_button()
+        ########################
+        self.close_button()    #
+        self.center()          #
+        self.show()            #
+        ########################
+
+    def addBook(self):
+        # name
+        book = QLabel(' ¿Seguro que quieres\neliminar este Estante?', self)
+        book.setFont(QFont('Now', 22))
+        font = book.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        book.setFont(font)
+        book.move(40, 85)
+        book.setStyleSheet("""color:#594E3F""")
+
+    def yes_button(self):
+        button = QPushButton('si', self)
+        button.setFont(QFont('Now', 24))
+        button.resize(100, 60)
+        button.move(50, 200)
+        button.setStyleSheet(
+            """color:#FFF9F2 ;background-color:#594E3F ;border-style: solid ;border-radius: 30px""")
+        font = button.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        font.setBold(True)
+        button.setFont(font)
+        button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.yes_clicked)
+
+    def no_button(self):
+        button = QPushButton('no', self)
+        button.setFont(QFont('Now', 24))
+        button.resize(100, 60)
+        button.move(self.width-155, 200)
+        button.setStyleSheet(
+            """color:#FFF9F2 ;background-color:#594E3F ;border-style: solid ;border-radius: 30px""")
+        font = button.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        font.setBold(True)
+        button.setFont(font)
+        button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.close)
+
+    def yes_clicked(self):
+        self.win.deleteShelve(shelve=self.shelve)
+        self.close()
+    # ↑internamente tambien se debe agregar el libro al usuario
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = self.screen().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def close_button(self):
+        button = QPushButton("x", self)
+        button.resize(50, 50)
+        button.move(self.width-49, 0)
+        button.setFont(QFont('Now', 20))
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setStyleSheet(
+            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px""")
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.close)
+# ______________________________________________________________________________________
 
 # ______________________________________________________________________________________
 class ProfileWindow(QMainWindow):

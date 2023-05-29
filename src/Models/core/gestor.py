@@ -1,10 +1,10 @@
 from src.Models.config.config import *
 from src.Models.Libros.recomendacio import Recomendacion
 import random
-
+info = db()
 
 def traer_datos() -> dict:
-    info = db()
+    #info = db()
     todo = {
         'administradores': info.get_admins(),
         'clientes': info.get_clientes(),
@@ -16,7 +16,7 @@ def traer_datos() -> dict:
 
 
 def guardar_datos(self: 'Bookeeper') -> None:
-    info = db()
+    #info = db()
     todos_datos = {
         'admins': self.administradores,
         'estantes': self.estantes,
@@ -36,22 +36,23 @@ class Bookeeper:
             clientes: list['Cliente'] = [],
             estantes: list['EstanteDeLibros'] = []
     ) -> None:
+        todos_los_datos = traer_datos()
         self.__administradores = administradores
         self.__clientes = clientes
         self.__estantes = estantes
-        self.__recomendaciones = traer_datos()['recomendaciones']
+        self.__recomendaciones = todos_los_datos['recomendaciones']
 
-        for admin in traer_datos()['administradores']:
+        for admin in todos_los_datos['administradores']:
             self.__administradores.append(admin)
 
-        for cliente in traer_datos()['clientes']:
+        for cliente in todos_los_datos['clientes']:
             self.__clientes.append(cliente)
 
         #for admin in self.__administradores: self.__estantes.extend(admin.estantes)
-        self.__estantes = traer_datos()['estantes']
+        self.__estantes = todos_los_datos['estantes']
 
-        prestamos_pendientes = traer_datos()['prestamos']
-        #for cliente in self.__clientes: prestamos_pendientes.extend(cliente.prestamos)
+        prestamos_pendientes = []
+        for cliente in self.__clientes: prestamos_pendientes.extend(cliente.prestamos)
 
         for admin in self.__administradores:
             admin.prestamos_pendientes.extend(prestamos_pendientes)
@@ -188,8 +189,8 @@ class Bookeeper:
             codigo: int = None,
             estado: 'Prestamo' = None
     ) -> None:
-        libro = book.buscar_libro_por_nombre(nombre)
-        cliente = book.get_cliente(id_cliente)
+        libro = self.buscar_libro_por_nombre(nombre)
+        cliente = self.get_cliente(id_cliente)
         if libro[0] is not None and cliente is not None:
             prestamo = Prestamo(cliente, libro[0], fecha)
     
@@ -273,4 +274,3 @@ class Bookeeper:
     def libros_prestatos(self) -> list['Prestamo']:
         return self.administradores[0].prestamos_pendientes
     
-book = Bookeeper()
