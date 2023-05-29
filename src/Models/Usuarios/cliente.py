@@ -40,10 +40,10 @@ class Cliente(Usuario):
                 return libro
         return None
     
-    def eliminar_recomendacion(self, recomendacion: 'Recomendacion'):
+    def eliminar_recomendacion(self, recomendacion: 'Recomendacion') -> None:
         self.__recomendaciones.remove(recomendacion)
 
-    def agregar_recomendacion(self, recomendacion: 'Recomendacion'):
+    def agregar_recomendacion(self, recomendacion: 'Recomendacion') -> None:
         self.__recomendaciones.append(recomendacion)
         
     @property

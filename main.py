@@ -4,6 +4,6 @@ import src.views.UI as UI
 def main() -> None:
     #inicio_UI.Main()
     UI.Main()
-            
+
 if __name__ == "__main__":
     main()

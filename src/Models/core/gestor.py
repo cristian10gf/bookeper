@@ -206,7 +206,7 @@ class Bookeeper:
                 estante.libros.append(libro)
                 break
 
-    def generate_recomendacion(self, cliente: Cliente) -> None:
+    def generate_recomendacion(self, cliente: Cliente) -> bool:
         if len(traer_datos()['prestamos']) > 4:
             libros_prestados = []
             for prestamo in traer_datos()['prestamos']:
@@ -221,6 +221,9 @@ class Bookeeper:
                 pass
             recomendacion = Recomendacion(libro, cliente)
             self.__recomendaciones.append(recomendacion)
+            return True
+        else:
+            return False
 
     def new_admin(self, nombre: str, password: str) -> None:
         admin = administrador(nombre, password)

@@ -86,8 +86,11 @@ class db:
     def get_prestamo(self, id) -> 'Prestamo':
         self.cursor.execute('SELECT * FROM dbo.Table_prestamo WHERE id_prestamo = ?', id)
         prestamo = self.cursor.fetchone()
-        nuevo_prestamo = Prestamo(self.get_cliente(prestamo[1]), self.get_libro(prestamo[-1]),prestamo[3], prestamo[4], True if prestamo[5] == 1 else False, prestamo[0])
-        return nuevo_prestamo
+        if prestamo is None:
+            return None
+        else:
+            nuevo_prestamo = Prestamo(self.get_cliente(prestamo[1]), self.get_libro(prestamo[-1]),prestamo[3], prestamo[4], True if prestamo[5] == 1 else False, prestamo[0])
+            return nuevo_prestamo
 
     def get_cliente(self, id: int) -> 'Cliente':
         self.cursor.execute('SELECT * FROM dbo.Table_cliente WHERE id_cliente = ?', id)
@@ -121,12 +124,12 @@ class db:
         libros_convertidos = []
         for libro in libros:
             libro_nuevo = Libro(
-                libro[-1],
-                libro[4],
-                libro[2],
-                libro[1],
                 libro[-2],
                 libro[3],
+                libro[-1],
+                libro[1],
+                libro[-3],
+                libro[2],
                 libro[0]
             )
             libros_convertidos.append(libro_nuevo)

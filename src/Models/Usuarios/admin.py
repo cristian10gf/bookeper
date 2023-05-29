@@ -28,7 +28,7 @@ class administrador(Usuario):
                 return libro
         return None
 
-    def buscar_libros_por_autor(self, autor):
+    def buscar_libros_por_autor(self, autor) -> list['Libro']:
         libros_encontrados = []
         for estante in self.estantes:
             libros_en_estante = estante.buscar_libros_por_autor(autor)
@@ -36,14 +36,18 @@ class administrador(Usuario):
         return libros_encontrados
 
     def prestar_libro(self, libro: 'Libro', Cliente: 'Cliente') -> None:
-        prestamo = Prestamo(libro, Cliente)
-        self.__prestamos_pendientes.append()
+        prestamo = Prestamo(Cliente, libro)
+        self.__prestamos_pendientes.append(prestamo)
 
     def devolver_libro(self, libro: 'Libro', Cliente: 'Cliente') -> None:
         Cliente.devolver_libro(libro)
-        self.__prestamos_pendientes.remove(libro)
+        for prestamo in self.__prestamos_pendientes:
+            if prestamo.libro.codigo == libro.codigo:
+                self.__prestamos_pendientes.remove(prestamo)
+                return
+        print("No se encontro el prestamo")
 
-    def ver_libros_prestados(self) -> list['Libro']:
+    def ver_libros_prestados(self) -> list['Prestamo']:
         return self.__prestamos_pendientes
 
     def verificar_libro_prestado(self, libro: 'Libro') -> bool:
