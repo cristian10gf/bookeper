@@ -199,9 +199,8 @@ class Bookeeper:
         self.__clientes.append(cliente)
         guardar_datos(self)
 
-    def new_libro(self, nombre: str, autores: str, fecha_lanzamiento: date, genero: str, editorial: str, ubicacion: int,
-                  codigo: int) -> None:
-        libro = Libro(nombre, autores, fecha_lanzamiento, genero, editorial, ubicacion, codigo)
+    def new_libro(self, nombre: str, autores: str, fecha_lanzamiento: date, genero: str, editorial: str, ubicacion: int) -> None:
+        libro = Libro(nombre, autores, fecha_lanzamiento, genero, editorial, ubicacion)
         for estante in self.__estantes:
             if estante.codigo == ubicacion:
                 estante.libros.append(libro)

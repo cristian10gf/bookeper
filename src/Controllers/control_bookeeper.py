@@ -15,6 +15,12 @@ class ControlBookeeper:
     @staticmethod
     def get_estante(id: int) -> 'EstanteDeLibros':
         return ControlBookeeper.__bookeeper.get_estante(id)
+    
+    @staticmethod
+    def get_estante_by_genero(genero: str) -> 'EstanteDeLibros':
+        for estante in ControlBookeeper.__bookeeper.estantes:
+            if estante.genero == genero:
+                return estante
 
     @staticmethod
     def get_estantes() -> list['EstanteDeLibros']:
@@ -52,6 +58,12 @@ class ControlBookeeper:
     @staticmethod
     def get_clientes() -> list['Cliente']:
         return ControlBookeeper.__bookeeper.clientes
+    
+    @staticmethod
+    def get_admin_by_name(name: str) -> 'administrador':
+        for admin in ControlBookeeper.__bookeeper.administradores:
+            if admin.nombre == name:
+                return admin
 
     @staticmethod
     def get_cliente(id, name = None) -> 'Cliente':
@@ -59,7 +71,6 @@ class ControlBookeeper:
             for cliente in ControlBookeeper.__bookeeper.clientes:
                 if cliente.nombre == name:
                     return cliente
-            return ControlBookeeper.__bookeeper.get_cliente(cliente.codigo_Usuario)
         else:
             return ControlBookeeper.__bookeeper.get_cliente(id)
 
@@ -120,7 +131,6 @@ class ControlBookeeper:
             genero: str,
             editorial: str,
             ubicacion: int,
-            codigo: int
     ) -> None:
         ControlBookeeper.__bookeeper.new_libro(
             nombre,
@@ -128,8 +138,7 @@ class ControlBookeeper:
             fecha_lanzamiento,
             genero,
             editorial,
-            ubicacion,
-            codigo
+            ubicacion
         )
 
     @staticmethod

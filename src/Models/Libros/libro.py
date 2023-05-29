@@ -5,9 +5,7 @@ from datetime import date
 import random
 
 class Libro:
-    todos_libros = FileManager("libros.txt").generate_path()
-    __codigo = 0
-    @dispatch(str, str, int, str, str, str, int, Prestamo or None)
+    @dispatch(str, str, int, str, str, int, Prestamo or None)
     def __init__(self,
                  nombre: str,
                  autores: str,
@@ -25,6 +23,25 @@ class Libro:
         self.__ubicacion = ubicacion
         self.__codigo = random.randint(1000, 9999)
         self.__estado = estado
+
+
+    @dispatch(str, str, int, str, str, int)
+    def __init__(self,
+                 nombre: str,
+                 autores: str,
+                 fecha_lanzamiento:int, 
+                 genero: str,
+                 editorial:str,
+                 ubicacion: int,
+    ) -> None:
+        self.__nombre = nombre
+        self.__autores = autores.split(",")
+        self.__fecha_lanzamiento = fecha_lanzamiento
+        self.__genero = genero
+        self.__editorial = editorial
+        self.__ubicacion = ubicacion
+        self.__codigo = random.randint(1000, 9999)
+        self.__estado = None
 
     @dispatch(str, str, int, str, str, int,int,Prestamo or None)
     def __init__(self,

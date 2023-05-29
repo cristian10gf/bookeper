@@ -533,6 +533,7 @@ class SignUpWindow(QWidget):
 
 # _____________________________________________________________________________________
 class UserWindow(QWidget):
+# ____________________funciones escenciales_________________________
     def __init__(self, usuario: str) -> None:
         super(UserWindow, self).__init__()
         self.control = ControlBookeeper()
@@ -563,20 +564,23 @@ class UserWindow(QWidget):
         lg.resize(self.width - 1205, self.height)  # 405, 980
         lg.setStyleSheet("""background-color:#FFF9F2; border-radius: 20px""")
         ######################
-        self.searchBar()
-        self.tagButtons()
+        self.searchBar()                      # barra de busqueda
+        self.tagButtons()                     # botones de busqueda
         self.shelves_box()
-        self.seeBooksOf_button()
+        
         if self.boolAdmin:
-            
-            self.addShelve_button()
-            self.seeBorroweds_button()
+            self.addShelve_button()           # add estante
+            self.seeBorroweds_button()        # ver libros prestados
+            self.admin = self.control.get_admin_by_name(self.userName)
+            self.todos_libros_button()         # ver todos los libros
         else:
-            self.prestamo_button()
-        self.userInfo()
-        self.viewProfile_button()
-        self.logOut_button()
-        self.init_Shelve()
+            self.prestamo_button()            # ver mis prestamos totales
+            self.cliente = self.control.get_cliente(1, self.userName)
+            self.seeBooksOf_button()      # ver todos los libros con prestamo activo
+        self.userInfo()                       # muestra el nombre del usuario
+        self.viewProfile_button()             # ver perfil
+        self.logOut_button()                  # cerrar sesion
+        self.init_Shelve()                    # Mostrar Estantes Creados
         ########################
         self.minimize_button()
         self.close_button()  #
@@ -672,6 +676,11 @@ class UserWindow(QWidget):
         self.hide()
         self.profilewin.show()
 
+    def ver_libros_totales(self):
+        libros = self.control.get_libros()
+        for libro in libros:
+            self.showbook(libro.nombre, libro.autores[0], libro.genero, libro.estado)
+
     def seeBooks_button(self):
         button = QPushButton('Ver mis libros', self)
         button.setFont(QFont('Now', 24))
@@ -730,7 +739,24 @@ class UserWindow(QWidget):
                             ;padding-right: 12px""")
         button.clicked.connect(self.seebooksOfConfirm)
 
-    def seeBooksOf_clicked(self):
+    def todos_libros_button(self):
+        button = QPushButton('Ver libros', self)
+        button.setFont(QFont('Now', 24))
+        button.resize(295, 60)
+        button.move(1185 + 85, 410)
+        font = button.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        font.setBold(True)
+        button.setFont(font)
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.setStyleSheet("""color:#FFF9F2 ;background-color:#594E3F ;border-radius: 30px; padding-left: 14px
+                            ;padding-right: 12px""")
+        button.clicked.connect(self.ver_libros_totales)
+
+    def seeBooksOf(self, user):
+        if not self.infoArea is None:
+            self.infoArea.deleteLater()
+            self.infoArea=None
         self.secondBox()
         self.showbook(name=f'Libro de {user}', autor=user, gender='unknown',estado =None)
 # ↑se deben mbuscar los libros del usuario para mostrarlos
@@ -739,7 +765,7 @@ class UserWindow(QWidget):
         self.seebookWin = SeeBooksSomeone(self)
         self.seebookWin.show()
 
-    def shelves_box(self):
+    def shelves_box(self):  # caja de estantes
         self.shelveScroll = QScrollArea(self)
         self.shelveScroll.move(20, 200)
         self.shelveScroll.resize(1175, 730)  # -1186,780
@@ -806,7 +832,7 @@ class UserWindow(QWidget):
             20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding))
         self.shelveScroll.setWidget(self.shelveWidget)
 
-    def addShelve_button(self):
+    def addShelve_button(self):  # boton de agregar estante
         button = QPushButton('Agregar Estante', self)
         button.setFont(QFont('Now', 24))
         button.resize(295, 60)
@@ -855,9 +881,17 @@ class UserWindow(QWidget):
         box = self.sender().parent()
         layout = box.layout()
         item = layout.itemAtPosition(0, 0).widget()
-        itemName = item.text()
+        estante = self.control.get_estante_by_genero(item.text())
         self.secondBox()
-        self.showbook(name='libro de'+itemName, autor='yo', gender='idk', estado = None)
+        if len(estante.libros) == 0:
+            pass
+        else:
+            for libro in estante.libros:
+                if libro is None:
+                    pass
+                else:
+                    self.showbook(libro.nombre, libro.guardar_autores(), libro.genero, libro.estado)
+    
     def addShelve_clicked(self, estante, bk1='Libro 1', bk2='Libro 2', bk3='Libro 3', bk4='Libro 4', no_guardar=False):
         count = self.shelveLayout.count() - 1
         shelveGroup = QGroupBox('', self.shelveWidget)
@@ -896,7 +930,7 @@ class UserWindow(QWidget):
         # delete
         delete = QPushButton(shelveGroup)
         delete.setStyleSheet(
-            """background-color:none ;border-style:none; border-radius: 20px ;image: url("PooProyect/images/cancelar.png")""")
+            """background-color:none ;border-style:none; border-radius: 20px ;image: url("src/views/images/cancelar.png")""")
         delete.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         font = delete.font()
@@ -926,13 +960,12 @@ class UserWindow(QWidget):
                        Qt.AlignmentFlag.AlignCenter)
         grid.addWidget(delete, 2, 14, 1, 1,
                        Qt.AlignmentFlag.AlignRight)
-    # ↑se debe mandar como parametro el genero y el numero maximo de libros(tmb se deben agregar los parametros)
-    # ↑este codigo se debe meter en un ciclo que lo ejecute cada vez que encuentra un estante del usuario
 
-    def confirmAddShelve(self):
-        if self.shelveScroll.isVisible():
-            self.addwin = AddShelveWindow(win=self, user=self.usuario)
-            self.addwin.show()
+    def confirmAdd(self):
+        self.logwin = AddShelveWindow(win=self, usuario=self.usuario)
+        self.logwin.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.logwin.show()
+        # ↑ este codigo hace aparecer la ventana para crear la estanteria
 
     def config_BookBox(self, GBox, libro: 'Libro'):
         GBox.setMaximumSize(200, 210)
@@ -1000,11 +1033,50 @@ class UserWindow(QWidget):
         layV.addWidget(label_4)
         layV.addItem(space)
 
-    def deleteShelve(self):
-        padre = self.sender().parent()
-        padre.deleteLater()
-    # ↑internamente tambien se debe eliminar la estanteria
+    def addbook(self, shelve, book, bookBox, author, date, editorial):
+        libro = bookBox.itemAt(1).widget()
+        libro.setText(book)
+        #
+        autor = bookBox.itemAt(2).widget()
+        autor.setText(author)
+        #
+        Genero = bookBox.itemAt(3).widget()
+        Genero.setText(shelve)#se debe buscar el genero del libro
+        #
+        fecha = bookBox.itemAt(4).widget()
+        fecha.setText(date)
 
+        estante = self.control.get_estante_by_genero(shelve)
+        self.control.new_libro(book, author,int(date), shelve, editorial, estante.codigo)
+
+    def addbookconfirm(self):
+        box = self.sender().parent()
+        layout = box.layout()
+        shelveName = layout.itemAtPosition(0, 0).widget().text()
+        # se debe saber cuantos libros tiene el estante para cambiar la estetica del estante
+        # esto es un ejemplo de como deberia ser
+        # if numBooks < 4:
+        #   if numBooks < 3:
+        #       pos = numBooks*4
+        #   elif numBooks = 3:
+        #       pos = 14
+        # esto de abajo debe estar dentro del primer if
+        pos = 0
+        book = layout.itemAtPosition(1, pos).widget()
+        bookBox = book.layout()
+        # esto de abajo ya no debe estar dentro del if
+        self.addbookWin = AddBookToShelve(
+            win=self, bookBox=bookBox, shelve=shelveName)
+        self.addbookWin.show()
+
+    def deleteConfirm(self):
+        shelve = self.sender().parent()
+        self.deleteWin = Delete(win=self, shelve=shelve)    
+
+    def deleteShelve(self, shelve):
+        shelve.deleteLater()
+
+# _______________busqueda de libros ________________________________________
     def searchBar(self):  # terminar la busqueda
         self.bar = CustomEdit('Buscar Libro', self)
         self.bar.setFont(QFont('Now', 20))
@@ -1025,32 +1097,10 @@ class UserWindow(QWidget):
         button.move(995, 25)
         button.clicked.connect(self.search)
 
-    """
-    def search(self):
+    def search(self):# validar el tipo de busqueda
         if not self.infoArea is None:
             self.infoArea.deleteLater()
-            self.infoArea=None
-        # validar el tipo de busqueda
-        self.secondBox()
-        if self.searchMode == 'Nombre':
-            self.showbook(name='Tokyo Ghoul',
-                          autor='Sui Ishida ', gender='Horror')
-            self.showbook(name='El principito',
-                          autor='Antoine de Saint-Exupéry ', gender='Ficción')
-        elif self.searchMode == 'Género':
-            self.showbook(name='El principito',
-                          autor='Antoine de Saint-Exupéry ', gender='Ficción')
-        else:
-            self.showbook(name='Nada de nada',
-                          autor='Quien sabe', gender='El que tu quieras')
-    # ↑se debe ejecutar un codigo para que busque los libros por los requisitos
-    """
-
-    # crear una funcion que busque en la base de datos el libro en base al nombre del libro
-    # y que retorne el libro, si no lo encuentra que retorne None
-    #que al escribir en la barra y el metodo de busqueda sea nombre, busque todos los libros que contengan ese texto en su nombre
-
-    def search(self):  # validar el tipo de busqueda
+            self.infoArea = None  
         self.secondBox()
         if self.searchMode == 'Nombre':
             libros = list(set(self.control.get_libro_by_name(self.bar.text())))
@@ -1164,6 +1214,58 @@ class UserWindow(QWidget):
         self.boxScroll.setWidget(self.searchWidget)
         self.boxScroll.show()
 
+    def bookInfo(self, name):
+        libro = self.control.get_libro_by_name(name)
+        labels = []
+        book = self.sender().text()
+        self.boxScroll.hide()
+        self.infoArea = QWidget(self)
+        self.infoArea.setGeometry(QRect(20, 175, 1180, 700))
+        self.infoArea.setStyleSheet("""background-color: #8C7662 """)
+        name = QLabel(book, self.infoArea)
+        name.move(60, 60)
+        name.setStyleSheet(
+            """color: #FFF9F2 ;border: solid transparent""")
+        name.setFont(QFont('Now', 38))
+        font = name.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        name.setFont(font)
+        ######
+        autor = QLabel('Autor/es: '+ libro[-1].guardar_autores() , self.infoArea)
+        labels.append(autor)
+        gender = QLabel('Género: '+libro[-1].genero, self.infoArea)
+        labels.append(gender)
+        date = QLabel('Fecha: ' + str(libro[-1].fecha_lanzamiento), self.infoArea)
+        labels.append(date)
+        editorial = QLabel('Editorial: '+libro[-1].editorial, self.infoArea)
+        labels.append(editorial)
+        ubi = QLabel('Ubicación: '+libro[-1].ubicacion, self.infoArea)
+        labels.append(ubi)
+        if libro[0].estado != None:
+            state = QLabel('Estado: Prestado', self.infoArea)
+            owner = QLabel(f'Dueño actual: {libro[-1].estado.cliente}', self.infoArea)
+            labels.append(owner)
+        else:
+            state = QLabel('Estado: Disponible', self.infoArea)
+        labels.append(state)
+        
+        
+        # rate=QLabel('Calificación', self.infoArea)
+        # labels.append(rate)
+        i = 1
+        for label in labels:
+            i = i + 1
+            label.move(120, i * 70)
+            label.setStyleSheet(
+                """color: #FFF9F2 ;border: solid transparent""")
+            label.setFont(QFont('Now', 32))
+            font = label.font()
+            font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+            label.setFont(font)
+        self.backButton2(padre=self.infoArea)
+        self.infoArea.show()
+
     def lending(self, book):
         botton = self.sender()
         botton.deleteLater()
@@ -1188,10 +1290,8 @@ class UserWindow(QWidget):
         padre.deleteLater()
 # ↑internamente tambien se debe eliminar el libro del usuario
 
-    def showbook(self, name, autor, gender, estado):
+    def showbook(self, name, autor, gender, estado)-> None:
         count = self.searchLayout.count()-1
-        # exits = self.searchWidget.findChild(QGroupBox)
-        # if exits is None:
         groupbox = QGroupBox('', self.searchWidget)
         groupbox.setStyleSheet(
             """background-color: none ;border-style:solid """)
@@ -1211,7 +1311,7 @@ class UserWindow(QWidget):
         bookname.setFont(font)
         bookname.setCursor(
         QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        bookname.clicked.connect(self.bookInfo)
+        bookname.clicked.connect(partial(self.bookInfo, name))
         # autor
         bookautor = QLabel('      '+autor, groupbox)
         bookautor.setStyleSheet("""color: #FFF9F2""")
@@ -1302,6 +1402,31 @@ class UserWindow(QWidget):
         self.shelveScroll.show()
         self.shelveScroll.setEnabled(True)
 
+    def backButton2(self, padre):
+        button = QPushButton('«', padre)
+        button.resize(30, 30)
+        button.move(20, 0)
+        button.setFont(QFont('Now', 30))
+        button.setStyleSheet(
+            """color: #FFF9F2 ; background-color:none ;border-style: solid""")  # FFF9F2
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.back_2_clicked)
+        button.show()
+        if not self.infoArea.isVisible:
+            button.deleteLater()
+
+    def back_2_clicked(self):
+        button = self.sender()
+        button.deleteLater()
+        self.infoArea.deleteLater()
+        self.infoArea=None
+        self.boxScroll.show()
+        self.boxScroll.setEnabled(True)
+
     def mousePressEvent(self, event):
         text = self.bar.text()
         if event.button() == Qt.MouseButton.LeftButton and event.pos() not in self.bar.geometry():
@@ -1379,15 +1504,6 @@ class UserWindow(QWidget):
         self.button2.clicked.connect(self.tagButton2_clicked)
         self.button3.clicked.connect(self.tagButton3_clicked)
 
-    def mousePressEvent(self, event):
-        text = self.bar.text()
-        if event.button() == Qt.MouseButton.LeftButton and event.pos() not in self.bar.geometry():
-            self.bar.clearFocus()
-            if text == '':
-                self.bar.setText('Buscar Libro')
-            else:
-                self.search()
-
     def mostrar(self):
         self.show()
 
@@ -1457,7 +1573,7 @@ class UserWindow(QWidget):
 
 
 # _____________________________________________________________________________________
-class AddShelveWindow(QWidget):
+class AddShelveWindow(QWidget):  # ventana agregar estante
     def __init__(self, win: UserWindow, usuario) -> None:
         super(AddShelveWindow, self).__init__()
         self.control = ControlBookeeper()
@@ -1600,7 +1716,7 @@ class AddShelveWindow(QWidget):
 
 
 # ______________________________________________________________________________________
-class LendBookTo(QWidget):
+class LendBookTo(QWidget):   # ventana prestar libro
     def __init__(self, bookname, win=None) -> None:
         super(LendBookTo, self).__init__()
         self.win = win
@@ -1710,10 +1826,105 @@ class LendBookTo(QWidget):
 # ______________________________________________________________________________________
 
 
+class SeeBooksSomeone(QWidget):   # ventana ver libros de alguien
+    def __init__(self, win=None) -> None:
+        super(SeeBooksSomeone, self).__init__()
+        self.win = win
+        self.width = 400
+        self.height = 300
+        self.StartUp()
+
+    def StartUp(self):
+        self.setWindowTitle('BooKeeper')
+        self.setFixedSize(self.width, self.height)
+        self.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint |
+                           QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        # background
+        bg = QLabel(self)
+        bg.resize(self.width, self.height)
+        bg.setStyleSheet("""background-color:#FFF9F2; border-radius: 20px;""")
+        title = QLabel('Ver libros de:', self)
+        title.setFont(QFont('Now', 24))
+        title.move(30, 10)
+        title.setStyleSheet(
+            """color:#594E3F ;background-color:#FFF9F2 ;border-style: solid ;border-radius: 30px""")
+        font = title.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        title.setFont(font)
+        ########################
+        self.booksOf()
+        self.accept_button()
+        ########################
+        self.close_button()    #
+        self.center()          #
+        self.show()            #
+        ########################
+
+    def booksOf(self):
+        # name
+        user = QLabel('Usuario', self)
+        user.setFont(QFont('Now', 22))
+        font = user.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        user.setFont(font)
+        user.move(60, 85)
+        user.setStyleSheet("""color:#594E3F""")
+        # lineEdit
+        self.user = QLineEdit(self)
+        self.user.setFont(QFont('Now', 20))
+        self.user.setStyleSheet("""color:#868179 ;background-color: transparent; border-style: solid ;border-width: 2px;
+                                    border-color: transparent; border-bottom-color: #868179""")
+        font = self.user.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        self.user.setFont(font)
+        self.user.resize(280, 40)
+        self.user.move(60, 120)
+
+    def accept_button(self):
+        button = QPushButton('Aceptar', self)
+        button.setFont(QFont('Now', 24))
+        button.resize(200, 60)
+        button.move(100, 200)
+        button.setStyleSheet(
+            """color:#FFF9F2 ;background-color:#594E3F ;border-style: solid ;border-radius: 30px""")
+        font = button.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        font.setBold(True)
+        button.setFont(font)
+        button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.accept_clicked)
+
+    def accept_clicked(self):
+        self.win.seeBooksOf(user=self.user.text())
+        self.close()
+    # ↑internamente tambien se debe agregar el libro al usuario
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = self.screen().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def close_button(self):
+        button = QPushButton("x", self)
+        button.resize(50, 50)
+        button.move(self.width-49, 0)
+        button.setFont(QFont('Now', 20))
+        font = button.font()
+        font.setBold(True)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        button.setFont(font)
+        button.setStyleSheet(
+            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px""")
+        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        button.clicked.connect(self.close)
 # ______________________________________________________________________________________
 
 
-class AddBookToShelve(QWidget):
+class AddBookToShelve(QWidget):  # ventana eliminar libro de estante
     def __init__(self, shelve, bookBox, win=None) -> None:
         super(AddBookToShelve, self).__init__()
         self.win = win
@@ -1721,8 +1932,9 @@ class AddBookToShelve(QWidget):
         self.bookBox = bookBox
         self.shelve = shelve
         self.width = 400
-        self.height = 300
+        self.height = 650
         self.StartUp()
+        self.control = ControlBookeeper()
 
     def StartUp(self):
         self.setWindowTitle('BooKeeper')
@@ -1753,30 +1965,56 @@ class AddBookToShelve(QWidget):
         ########################
 
     def addBook(self):
-        # name
+        # labels
+        # book
         book = QLabel('Libro', self)
-        book.setFont(QFont('Now', 22))
-        font = book.font()
-        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-        book.setFont(font)
-        book.move(60, 85)
-        book.setStyleSheet("""color:#594E3F""")
+        self.config_label(book, 60, 85)
+        # autor
+        author = QLabel('Autores', self)
+        self.config_label(author, 60, 185)
+        # fecha
+        date = QLabel('Fecha', self)
+        self.config_label(date, 60, 285)
+        # editorial
+        editorial = QLabel('Editorial', self)
+        self.config_label(editorial, 60, 385)
         # lineEdit
+        # book
         self.book = QLineEdit(self)
-        self.book.setFont(QFont('Now', 20))
-        self.book.setStyleSheet("""color:#868179 ;background-color: transparent; border-style: solid ;border-width: 2px;
+        self.config_linesEdit_text(self.book, 60, 120, 280, 40)
+        #   autor
+        self.author = QLineEdit(self)
+        self.config_linesEdit_text(self.author, 60, 220, 280, 40)
+        #   fecha
+        self.date = QLineEdit(self)
+        self.config_linesEdit_text(self.date, 60, 320, 280, 40)
+        #   editorial
+        self.edit = QLineEdit(self)
+        self.config_linesEdit_text(self.edit, 60, 420, 280, 40)
+
+    def config_linesEdit_text(self, lineEdit: QLineEdit, x: int, y: int, width: int, height: int):
+        lineEdit.setFont(QFont('Now', 20))
+        lineEdit.setStyleSheet("""color:#868179 ;background-color: transparent; border-style: solid ;border-width: 2px;
                                     border-color: transparent; border-bottom-color: #868179""")
-        font = self.book.font()
+        font = lineEdit.font()
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-        self.book.setFont(font)
-        self.book.resize(280, 40)
-        self.book.move(60, 120)
+        lineEdit.setFont(font)
+        lineEdit.resize(width, height)
+        lineEdit.move(x, y)
+
+    def config_label(self, label: QLabel, x: int, y: int):
+        label.setFont(QFont('Now', 22))
+        font = label.font()
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+        label.setFont(font)
+        label.move(x, y)
+        label.setStyleSheet("""color:#594E3F""")
 
     def accept_button(self):
         button = QPushButton('Aceptar', self)
         button.setFont(QFont('Now', 24))
         button.resize(200, 60)
-        button.move(100, 200)
+        button.move(100, 540)
         button.setStyleSheet(
             """color:#FFF9F2 ;background-color:#594E3F ;border-style: solid ;border-radius: 30px""")
         font = button.font()
@@ -1788,9 +2026,20 @@ class AddBookToShelve(QWidget):
         button.clicked.connect(self.accept_clicked)
 
     def accept_clicked(self):
-        self.win.addbook(book=self.book.text(),
-                         bookBox=self.bookBox, shelve=self.shelve)
-        self.close()
+        if self.book.text() != '' and self.author.text() != '' and self.date.text() != '' and self.edit.text() != '':
+            try:
+                bo =  int(self.book.text())
+                self.book.setText('')
+                date = int(self.date.text())
+                self.date.setText('')
+                edito = int(self.edit.setText(''))
+                self.edit.setText('')
+            except Exception:            
+                if self.control.get_libro_by_name(self.book.text()) == []:
+                    self.win.addbook(book=self.book.text(), author=self.author.text(
+                    ), date=self.date.text(),editorial=self.edit.text(), bookBox=self.bookBox, shelve=self.shelve)
+                    self.close()
+            
     # ↑internamente tambien se debe agregar el libro al usuario
 
     def center(self):
@@ -1815,7 +2064,7 @@ class AddBookToShelve(QWidget):
 # ______________________________________________________________________________________
 
 
-class Delete(QWidget):
+class Delete(QWidget):      # ventana eliminar estante
     def __init__(self, shelve, win=None) -> None:
         super(Delete, self).__init__()
         self.win = win
@@ -1844,7 +2093,7 @@ class Delete(QWidget):
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         title.setFont(font)
         ########################
-        self.addBook()
+        self.delete_shelve()
         self.yes_button()
         self.no_button()
         ########################
@@ -1853,7 +2102,7 @@ class Delete(QWidget):
         self.show()            #
         ########################
 
-    def addBook(self):
+    def delete_shelve(self): # Eliminar estante
         # name
         book = QLabel(' ¿Seguro que quieres\neliminar este Estante?', self)
         book.setFont(QFont('Now', 22))
@@ -1920,7 +2169,7 @@ class Delete(QWidget):
 # ______________________________________________________________________________________
 
 
-class ProfileWindow(QMainWindow):
+class ProfileWindow(QMainWindow):     # ventana perfil de usuario
     def __init__(self, user, parent=None) -> None:
         super().__init__(parent)
         self.control = ControlBookeeper()

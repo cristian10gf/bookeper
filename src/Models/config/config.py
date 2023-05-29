@@ -193,7 +193,10 @@ class db:
 
         self.cursor.execute('SELECT * FROM dbo.Table_libros WHERE id_libro = ?', libro.codigo)
         if self.cursor.fetchone() is None:
-            self.cursor.execute('INSERT INTO dbo.Table_libros VALUES(?, ?, ?, ?, ?, ?, ?, ?)', (libro.codigo, libro.genero, libro.ubicacion, libro.guardar_autores(), libro.estado.codigo, libro.editorial, libro.nombre, libro.fecha_lanzamiento))
+            if libro.estado is None:
+                self.cursor.execute('INSERT INTO dbo.Table_libros VALUES(?, ?, ?, ?, ?, ?, ?, ?)', (libro.codigo, libro.genero, libro.ubicacion, libro.guardar_autores(), libro.estado, libro.editorial, libro.nombre, libro.fecha_lanzamiento))
+            else:
+                self.cursor.execute('INSERT INTO dbo.Table_libros VALUES(?, ?, ?, ?, ?, ?, ?, ?)', (libro.codigo, libro.genero, libro.ubicacion, libro.guardar_autores(), libro.estado.codigo, libro.editorial, libro.nombre, libro.fecha_lanzamiento))
         elif libro.estado is not None:
             self.cursor.execute('UPDATE dbo.Table_libros SET genero = ?, fecha_lanzamiento = ?, ubicacion = ?, autores = ?, estado = ?, editorial = ?, nombre = ? WHERE id_libro = ?', (libro.genero, libro.fecha_lanzamiento, libro.ubicacion, libro.guardar_autores(), libro.estado.codigo, libro.editorial, libro.nombre, libro.codigo))
         else:
