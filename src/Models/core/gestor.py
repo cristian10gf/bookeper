@@ -42,13 +42,14 @@ class Bookeeper:
         self.__estantes = estantes
         self.__recomendaciones = todos_los_datos['recomendaciones']
 
-        for admin in todos_los_datos['administradores']:
-            self.__administradores.append(admin)
+        self.__administradores.extend(todos_los_datos['administradores'])
 
-        for cliente in todos_los_datos['clientes']:
-            self.__clientes.append(cliente)
+        self.__clientes.extend(todos_los_datos['clientes'])
+        for cliente in self.__clientes:
+            for prestamo in todos_los_datos['prestamos']:
+                if prestamo.cliente.codigo_Usuario == cliente.codigo_Usuario and prestamo.devuelto == False:
+                    cliente.prestamos.append(prestamo)
 
-        #for admin in self.__administradores: self.__estantes.extend(admin.estantes)
         self.__estantes = todos_los_datos['estantes']
 
         prestamos_pendientes = todos_los_datos['prestamos']
@@ -175,14 +176,16 @@ class Bookeeper:
 
     def new_prestamo(
             self,
-            fecha: datetime = None,
+            fecha: datetime,
             id_cliente: int = None,
             nombre: str = None
     ) -> None:
         libro = self.buscar_libro_por_nombre(nombre)
         cliente = self.get_cliente(id_cliente)
         if libro[0] is not None and cliente is not None:
-            prestamo = Prestamo(cliente, libro[-1], fecha)
+            prestamo = Prestamo(cliente, libro[0], fecha)
+            for admin in self.administradores:
+                admin.prestamos_pendientes.append(prestamo)
     
     def new_cliente(self, nombre: str, password: str) -> None:
         cliente = Cliente(nombre, password)

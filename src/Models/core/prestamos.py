@@ -10,7 +10,7 @@ class Prestamo:
             self,
             cliente: 'Cliente',
             libro: 'Libro',
-            fecha_prestamo: datetime = datetime.now(),
+            fecha_prestamo: datetime,
             fecha_devolucion: datetime = None,
             devuelto: bool = False,
             codigo: int = None
@@ -48,9 +48,17 @@ class Prestamo:
     def fecha_prestamo(self) -> datetime:
         return self.__fecha_prestamo
     
+    @fecha_prestamo.setter
+    def fecha_prestamo(self,fecha: datetime):
+        self.__fecha_prestamo = fecha
+    
     @property
     def devuelto(self) -> bool:
         return self.__devuelto
+
+    @devuelto.setter
+    def devuelto(self, devuelto: bool) -> None:
+        self.__devuelto = devuelto
     
     @fecha_devolucion.setter
     def fecha_devolucion(self, fecha_devolucion: datetime) -> None:
@@ -60,3 +68,4 @@ class Prestamo:
         self.__cliente.prestamos.remove(self)
         self.__libro.devolver()
         self.__fecha_devolucion = datetime.now()
+        self.__devuelto = True
