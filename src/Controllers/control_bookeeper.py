@@ -66,14 +66,21 @@ class ControlBookeeper:
                 return admin
 
     @staticmethod
-    def get_cliente(id, name = None) -> 'Cliente':
-        if name is not None:
+    def get_cliente(id, name = None | str) -> 'Cliente':
+        print(name)
+        if not name is None:
+            for admin in ControlBookeeper.__bookeeper.administradores:
+                print(admin.nombre)
+                print(admin.contrasena)
+                if admin.nombre == name:
+                    return admin
             for cliente in ControlBookeeper.__bookeeper.clientes:
                 if cliente.nombre == name:
                     return cliente
         else:
+            print('entra 3')
             return ControlBookeeper.__bookeeper.get_cliente(id)
-
+    
     @staticmethod
     def get_admins() -> list['administrador']:
         return ControlBookeeper.__bookeeper.administradores

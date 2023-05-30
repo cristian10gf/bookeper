@@ -567,7 +567,7 @@ class UserWindow(QWidget):
         self.searchBar()                      # barra de busqueda
         self.tagButtons()                     # botones de busqueda
         self.shelves_box()
-        
+        #self.searchLayout
         if self.boolAdmin:
             self.addShelve_button()           # add estante
             self.seeBorroweds_button()        # ver libros prestados
@@ -678,10 +678,16 @@ class UserWindow(QWidget):
         print(self.userName)
         self.profilewin = ProfileWindow(parent=self, user=self.usuario)
         self.hide()
+        print(self.userName)
+        print(self.control.get_cliente(id = 3, name = self.userName))
         self.profilewin.show()
 
     def ver_libros_totales(self):
         libros = self.control.get_libros()
+        if not self.infoArea is None:
+            self.infoArea.deleteLater()
+            self.infoArea=None
+        self.secondBox()
         for libro in libros:
             self.showbook(libro.nombre, libro.autores[0], libro.genero, libro.estado)
 
@@ -2246,6 +2252,7 @@ class ProfileWindow(QMainWindow):     # ventana perfil de usuario
         self.user_line.setFocus()
 
     def otherLines(self):
+        #print(self.userName)# el atributo se llama contrasena
         dic = {'1': 'Nombre Completo',
                '2': f'{self.control.get_cliente(id = 3, name = self.userName).contrasena}', '3': 'Correo electrónico'}
         widget = QWidget(self)
