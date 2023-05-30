@@ -92,31 +92,13 @@ class ControlBookeeper:
     @staticmethod
     def new_prestamo(
             fecha: datetime = None,
-            nombre_cliente: str = None,
-            username_cliente: str = None,
             id_cliente: int = None,
-            nombre: str = None,
-            autores: str  = None,
-            fecha_lanzamiento: date = None,
-            genero: str = None,
-            editorial: str  = None,
-            ubicacion: int = None,
-            codigo: int = None,
-            estado: 'Prestamo' = None
+            nombre: str = None
     ) -> None:
         ControlBookeeper.__bookeeper.new_prestamo(
             fecha,
-            nombre_cliente,
-            username_cliente,
             id_cliente,
             nombre,
-            autores,
-            fecha_lanzamiento,
-            genero,
-            editorial,
-            ubicacion,
-            codigo,
-            estado
         )
 
     @staticmethod

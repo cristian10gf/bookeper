@@ -185,11 +185,7 @@ class db:
         if libro.estado is None:
             pass
         else:
-            existe_estado = self.get_prestamo(libro.estado.codigo)
-            if existe_estado is None:
-                pass
-            else:
-                self.actualizar_prestamo(libro.estado)
+            self.actualizar_prestamo(libro.estado)
 
         self.cursor.execute('SELECT * FROM dbo.Table_libros WHERE id_libro = ?', libro.codigo)
         if self.cursor.fetchone() is None:

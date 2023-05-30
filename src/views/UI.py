@@ -572,11 +572,14 @@ class UserWindow(QWidget):
             self.addShelve_button()           # add estante
             self.seeBorroweds_button()        # ver libros prestados
             self.admin = self.control.get_admin_by_name(self.userName)
+            print(self.admin.nombre)
             self.todos_libros_button()         # ver todos los libros
         else:
             self.prestamo_button()            # ver mis prestamos totales
             self.cliente = self.control.get_cliente(1, self.userName)
-            self.seeBooksOf_button()      # ver todos los libros con prestamo activo
+            print(self.cliente.nombre)
+            #self.seeBooksOf_button()      # ver todos los libros con prestamo activo
+            self.todos_libros_button()
         self.userInfo()                       # muestra el nombre del usuario
         self.viewProfile_button()             # ver perfil
         self.logOut_button()                  # cerrar sesion
@@ -639,15 +642,16 @@ class UserWindow(QWidget):
         self.control.actualizar_todo()
 
     def init_books_prestados(self) -> None:
-        books_prestados = []
-        if self.control.verificar_admin(self.userName, 'books_prestados', 2):
-            '''for cliente in self.control.get_clientes():
-                for libro in cliente.ver_libros_prestados():
-                    books_prestados.append(libro.libro)'''
+        books_prestados = [] 
+        if self.boolAdmin:
             books_prestados = self.control.get_libros_prestados()
-            print(books_prestados)
-            for book in books_prestados:
-                self.showbook(book.nombre, book.autores[0], book.genero, book.estado)
+        else:
+            for prestamo in self.cliente.prestamos:
+                if prestamo.devuelto == False:
+                    books_prestados.append(prestamo.libro)
+        print(books_prestados)  
+        for libro in books_prestados:
+            self.showbook(libro.nombre, libro.guardar_autores(), libro.genero, libro.estado)
 
     def viewProfile_button(self):
         label = QLabel(self)
@@ -1134,8 +1138,6 @@ class UserWindow(QWidget):
             else:
                 print("no se encontro el libro")
 
-    # Crea una funcion que verifique si un str dado esta dentro de otro str dado
-    # y retorne True si esta y False si no esta
     def secondBox(self):
         if not self.shelveScroll.isHidden():
             self.shelveScroll.hide()
@@ -1240,11 +1242,11 @@ class UserWindow(QWidget):
         labels.append(date)
         editorial = QLabel('Editorial: '+libro[-1].editorial, self.infoArea)
         labels.append(editorial)
-        ubi = QLabel('Ubicación: '+libro[-1].ubicacion, self.infoArea)
+        ubi = QLabel('Ubicación: '+ str(libro[-1].ubicacion), self.infoArea)
         labels.append(ubi)
         if libro[0].estado != None:
             state = QLabel('Estado: Prestado', self.infoArea)
-            owner = QLabel(f'Dueño actual: {libro[-1].estado.cliente}', self.infoArea)
+            owner = QLabel(f'Dueño actual: {libro[-1].estado.cliente.nombre}', self.infoArea)
             labels.append(owner)
         else:
             state = QLabel('Estado: Disponible', self.infoArea)
@@ -1274,7 +1276,6 @@ class UserWindow(QWidget):
             if usuario.nombre == self.userName:
                 user_a_prestar = usuario
         self.control.new_prestamo(fecha= datetime.now(), id_cliente = user_a_prestar.codigo_Usuario, nombre = book.nombre)
-# ↑se debe agregar internamente el libro al usuario
 
     def confirmLendingTo(self, book):
         self.ledwin = LendBookTo(win=self, bookname=book)
@@ -1282,13 +1283,16 @@ class UserWindow(QWidget):
         # se debe mandar el libro
 
     def ledTo(self, user: 'Cliente', book: 'Libro'):
-        self.control.new_prestamo(fecha= datetime.now(), id_cliente = user.codigo_Usuario, nombre = book.nombre )
-# ↑se debe agregar internamente el libro al usuario
+        self.control.new_prestamo(fecha= datetime.now(), id_cliente = user.codigo_Usuario, nombre = book.nombre)
 
     def returnBook(self, book):
+        libro = self.control.get_libro_by_name(book)
         padre = self.sender().parent()
         padre.deleteLater()
-# ↑internamente tambien se debe eliminar el libro del usuario
+        if self.boolAdmin is True:
+            self.admin.devolver_libro(libro, libro.estado.cliente)
+        else:
+            self.cliente.devolver_libro(libro)
 
     def showbook(self, name, autor, gender, estado)-> None:
         count = self.searchLayout.count()-1
@@ -1791,15 +1795,13 @@ class LendBookTo(QWidget):   # ventana prestar libro
 
     def accept_clicked(self):
         user=self.name.text()
-        for cliente in self.control.get_clientes():
-            if cliente.nombre == user:
-                cliente_a_prestar = cliente
-                break
+        cliente_a_prestar = self.control.get_cliente(123, user)
         libros = list(set(self.control.get_libro_by_name(self.bookname)))
         for book in libros:
             if book.nombre == self.bookname:
                 guardar_libro = book
                 break
+        print('cliente: ' ,cliente_a_prestar, 'libro: ', guardar_libro)
         self.win.ledTo(user =cliente_a_prestar, book=guardar_libro)
         self.close()
     # ↑internamente tambien se debe agregar el libro al usuario

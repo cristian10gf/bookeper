@@ -51,8 +51,7 @@ class Bookeeper:
         #for admin in self.__administradores: self.__estantes.extend(admin.estantes)
         self.__estantes = todos_los_datos['estantes']
 
-        prestamos_pendientes = []
-        for cliente in self.__clientes: prestamos_pendientes.extend(cliente.prestamos)
+        prestamos_pendientes = todos_los_datos['prestamos']
 
         for admin in self.__administradores:
             admin.prestamos_pendientes.extend(prestamos_pendientes)
@@ -177,34 +176,28 @@ class Bookeeper:
     def new_prestamo(
             self,
             fecha: datetime = None,
-            nombre_cliente: str = None,
-            username_cliente: str = None,
             id_cliente: int = None,
-            nombre: str = None,
-            autores: str = None,
-            fecha_lanzamiento: date = None,
-            genero: str = None,
-            editorial: str = None,
-            ubicacion: int = None,
-            codigo: int = None,
-            estado: 'Prestamo' = None
+            nombre: str = None
     ) -> None:
         libro = self.buscar_libro_por_nombre(nombre)
         cliente = self.get_cliente(id_cliente)
         if libro[0] is not None and cliente is not None:
-            prestamo = Prestamo(cliente, libro[0], fecha)
+            prestamo = Prestamo(cliente, libro[-1], fecha)
     
     def new_cliente(self, nombre: str, password: str) -> None:
         cliente = Cliente(nombre, password)
         self.__clientes.append(cliente)
         guardar_datos(self)
 
-    def new_libro(self, nombre: str, autores: str, fecha_lanzamiento: date, genero: str, editorial: str, ubicacion: int) -> None:
+    def new_libro(self, nombre: str, autores: str, fecha_lanzamiento: date, genero: str, editorial: str, ubicacion: int) -> bool:
         libro = Libro(nombre, autores, fecha_lanzamiento, genero, editorial, ubicacion)
         for estante in self.__estantes:
             if estante.codigo == ubicacion:
                 estante.libros.append(libro)
+                return True
                 break
+        return False
+        
 
     def generate_recomendacion(self, cliente: Cliente) -> bool:
         if len(traer_datos()['prestamos']) > 4:
@@ -271,5 +264,5 @@ class Bookeeper:
         guardar_datos(self)
 
     def libros_prestatos(self) -> list['Prestamo']:
-        return self.administradores[0].prestamos_pendientes
+        return self.administradores[0].ver_libros_prestados()
     
