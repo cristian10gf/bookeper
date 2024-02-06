@@ -3,15 +3,11 @@ from src.Models.Usuarios.usuarios import Usuario
 from src.Models.core.prestamos import Prestamo
 
 class administrador(Usuario):
-    @dispatch(str, str)
-    def __init__(self, nombre: str, contrasena: str) -> None:
-        super().__init__(nombre, contrasena)
-        self.__estantes = []
-        self.__prestamos_pendientes = []
-
-    @dispatch(str, str, list, int)
-    def __init__(self, nombre:str, contrasena: str, estantes: list['EstanteDeLibros'], codigo_usuario: int) -> None:
-        super().__init__(nombre, contrasena, codigo_usuario)
+    def __init__(self, nombre: str, contrasena: str, estantes: list['EstanteDeLibros'] = [], codigo_usuario: int = 0) -> None:
+        if (codigo_usuario == 0):
+            super().__init__(nombre, contrasena)
+        else: 
+            super().__init__(nombre, contrasena, codigo_usuario)
         self.__estantes = estantes
         self.__prestamos_pendientes = []
 

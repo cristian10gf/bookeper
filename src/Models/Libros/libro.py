@@ -5,55 +5,8 @@ from datetime import date
 import random
 
 class Libro:
-    @dispatch(str, str, int, str, str, int, Prestamo or None)
-    def __init__(self,
-                 nombre: str,
-                 autores: str,
-                 fecha_lanzamiento:int, 
-                 genero: str,
-                 editorial:str,
-                 ubicacion: int,
-                 estado: 'Prestamo' = None
-    ) -> None:
-        self.__nombre = nombre
-        self.__autores = autores.split(",")
-        self.__fecha_lanzamiento = fecha_lanzamiento
-        self.__genero = genero
-        self.__editorial = editorial
-        self.__ubicacion = ubicacion
-        self.__codigo = random.randint(1000, 9999)
-        self.__estado = estado
 
-
-    @dispatch(str, str, int, str, str, int)
-    def __init__(self,
-                 nombre: str,
-                 autores: str,
-                 fecha_lanzamiento:int, 
-                 genero: str,
-                 editorial:str,
-                 ubicacion: int,
-    ) -> None:
-        self.__nombre = nombre
-        self.__autores = autores.split(",")
-        self.__fecha_lanzamiento = fecha_lanzamiento
-        self.__genero = genero
-        self.__editorial = editorial
-        self.__ubicacion = ubicacion
-        self.__codigo = random.randint(1000, 9999)
-        self.__estado = None
-
-    @dispatch(str, str, int, str, str, int,int,Prestamo or None)
-    def __init__(self,
-                 nombre: str,
-                 autores: str,
-                 fecha_lanzamiento: int,
-                 genero: str,
-                 editorial:str,
-                 ubicacion: int,
-                 codigo: int,
-                 estado: 'Prestamo' = None
-    ) -> None:
+    def __init__(self, nombre: str, autores: str, fecha_lanzamiento: int, genero: str, editorial: str, ubicacion: int,codigo: int = random.randint(1000, 9999), estado: 'Prestamo' = None):
         self.__nombre = nombre
         self.__autores = autores.split(",")
         self.__fecha_lanzamiento = fecha_lanzamiento
@@ -62,17 +15,6 @@ class Libro:
         self.__ubicacion = ubicacion
         self.__codigo = codigo
         self.__estado = estado
-
-    @dispatch(str, str, int, str, str, int, int)
-    def __init__(self, nombre: str, autores: str, fecha_lanzamiento: int, genero: str, editorial: str, ubicacion: int,codigo: int):
-        self.__nombre = nombre
-        self.__autores = autores.split(",")
-        self.__fecha_lanzamiento = fecha_lanzamiento
-        self.__genero = genero
-        self.__editorial = editorial
-        self.__ubicacion = ubicacion
-        self.__codigo = codigo
-        self.__estado = None
 
     def __str__(self):
         return f"{self.__nombre}," \
