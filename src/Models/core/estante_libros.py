@@ -4,23 +4,7 @@ import random
 
 
 class EstanteDeLibros:
-
-    @dispatch(list, administrador, str, int)
-    def __init__(self, libros: list['libro'], admin: 'administrador', genero: str, tamano: int):
-        self.__codigo = random.randint(1000, 9999)
-        if libros is None or len(libros) == 0:
-            self.__libros = []
-        else:
-            self.__libros = libros
-            for libro in self.__libros:
-                libro.ubicacion = self
-        self.__admin = admin
-        self.__admin.estantes.append(self)
-        self.__genero = genero
-        self.__tamano = tamano
-
-    @dispatch(list, int, administrador, str, int)
-    def __init__(self, libros: list, codigo: int, admin: 'administrador', genero: str, tamano: int):
+    def __init__(self, libros: list['Libro'], admin: 'administrador', genero: str, tamano: int, codigo: int = random.randint(1000, 9999)):
         if libros is None or len(libros) == 0:
             self.__libros = []
         else:

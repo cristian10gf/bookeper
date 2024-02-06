@@ -9,6 +9,47 @@ from functools import partial
 import sys
 from src.Controllers.control_bookeeper import ControlBookeeper
 
+def center(self):
+    qr = self.frameGeometry()
+    cp = self.screen().availableGeometry().center()
+    qr.moveCenter(cp)
+    self.move(qr.topLeft())
+
+
+def minimize_button(self):
+    label = QLabel('', self)
+    label.resize(70, 50)
+    label.move(self.width - 98, 0)
+    label.setStyleSheet(
+        """background-color:#6B6051 ;border-bottom-left-radius: 20px""")
+    button = QPushButton('-', self)
+    button.resize(48, 50)
+    button.move(self.width - 98, 0)
+    button.setFont(QFont('Now', 20))
+    font = button.font()
+    font.setBold(True)
+    font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+    button.setFont(font)
+    button.setStyleSheet(
+        """color: #FFF9F2; background-color: none ;border-style:solid""")
+    button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+    button.clicked.connect(self.showMinimized)
+
+
+def close_button(self):
+    button = QPushButton("x", self)
+    button.resize(50, 50)
+    button.move(self.width-49, 0)
+    button.setFont(QFont('Now', 20))
+    font = button.font()
+    font.setBold(True)
+    font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+    button.setFont(font)
+    button.setStyleSheet(
+        """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px""")
+    button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+    button.clicked.connect(self.close)
+
 
 class CustomEdit(QLineEdit):
     def mousePressEvent(self, event):
@@ -57,18 +98,11 @@ class LoginWindow(QWidget):
             timer.start(5)
             timer.timeout.connect(self.close)
         #########1############
-        self.minimize_button()
-        self.close_button()
-        self.center()  #
+        minimize_button(self)
+        close_button(self)
+        center(self)  #
         self.show()  #
         #####################
-
-
-    def center(self):
-        qr = self.frameGeometry()
-        cp = self.screen().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
 
     def linesEdits(self):
         #   user
@@ -176,37 +210,6 @@ class LoginWindow(QWidget):
             """color:#FFF9F2; background-color:#594E3F; border-radius: 30px""")
         loginB.clicked.connect(self.login_clicked)
 
-    def minimize_button(self):
-        label = QLabel('', self)
-        label.resize(70, 50)
-        label.move(self.width - 98, 0)
-        label.setStyleSheet(
-            """background-color:#6B6051 ;border-bottom-left-radius: 20px""")
-        button = QPushButton('-', self)
-        button.resize(48, 50)
-        button.move(self.width - 98, 0)
-        button.setFont(QFont('Now', 20))
-        font = button.font()
-        font.setBold(True)
-        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-        button.setFont(font)
-        button.setStyleSheet(
-            """color: #FFF9F2; background-color: none ;border-style:solid""")
-        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        button.clicked.connect(self.showMinimized)
-
-    def close_button(self):
-        closeAction = QApplication.instance().quit
-        closeB = QPushButton("x", self)
-        closeB.resize(50, 50)
-        closeB.move(self.width - 49, 0)
-        closeB.setFont(QFont('Now', 20))
-        closeB.setStyleSheet(
-            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px;
-            change-cursor: cursor('PointingHand')""")
-        closeB.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        closeB.clicked.connect(closeAction)
-
     def signUp_clicked(self):
         self.SignWin = SignUpWindow()
         self.SignWin.show()
@@ -307,17 +310,11 @@ class SignUpWindow(QWidget):
         self.back_button()
         self.checkBox()
         ######################
-        self.minimize_button()
-        self.close_button()  #
-        self.center()  #
+        minimize_button(self)
+        close_button(self)  #
+        center(self)  #
         self.show()  #
         ######################
-
-    def center(self):
-        qr = self.frameGeometry()
-        cp = self.screen().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
 
     def labels(self):
         #   title
@@ -406,40 +403,6 @@ class SignUpWindow(QWidget):
         signB.setStyleSheet(
             """color:#FFF9F2; background-color:#594E3F; border-radius: 30px""")
         signB.clicked.connect(self.SignUp_clicked)
-
-    def close_button(self):
-        closeAction = QApplication.instance().quit
-        button = QPushButton("x", self)
-        button.resize(50, 50)
-        button.move(self.width - 49, 0)
-        button.setFont(QFont('Now', 20))
-        font = button.font()
-        font.setBold(True)
-        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-        button.setFont(font)
-        button.setStyleSheet(
-            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px""")
-        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        button.clicked.connect(closeAction)
-
-    def minimize_button(self):
-        label = QLabel('', self)
-        label.resize(70, 50)
-        label.move(self.width - 98, 0)
-        label.setStyleSheet(
-            """background-color:#6B6051 ;border-bottom-left-radius: 20px""")
-        button = QPushButton('-', self)
-        button.resize(48, 50)
-        button.move(self.width - 98, 0)
-        button.setFont(QFont('Now', 20))
-        font = button.font()
-        font.setBold(True)
-        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-        button.setFont(font)
-        button.setStyleSheet(
-            """color: #FFF9F2; background-color: none ;border-style:solid""")
-        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        button.clicked.connect(self.showMinimized)
 
     def back_button(self):
         button = QPushButton('«', self)
@@ -585,9 +548,9 @@ class UserWindow(QWidget):
         self.logOut_button()                  # cerrar sesion
         self.init_Shelve()                    # Mostrar Estantes Creados
         ########################
-        self.minimize_button()
-        self.close_button()  #
-        self.center()  #
+        minimize_button(self)
+        close_button(self)  #
+        center(self)  #
         self.show()  #
         ########################
 
@@ -1526,31 +1489,6 @@ class UserWindow(QWidget):
     def mostrar(self):
         self.show()
 
-    def center(self):
-        qr = self.frameGeometry()
-        cp = self.screen().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
-    def minimize_button(self):
-        label = QLabel('', self)
-        label.resize(70, 50)
-        label.move(self.width - 98, 0)
-        label.setStyleSheet(
-            """background-color:#6B6051 ;border-bottom-left-radius: 20px""")
-        button = QPushButton('-', self)
-        button.resize(48, 50)
-        button.move(self.width - 98, 0)
-        button.setFont(QFont('Now', 20))
-        font = button.font()
-        font.setBold(True)
-        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-        button.setFont(font)
-        button.setStyleSheet(
-            """color: #FFF9F2; background-color: none ;border-style:solid""")
-        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        button.clicked.connect(self.showMinimized)
-
     def close_button(self):
         closeAction = QApplication.instance().quit
         button = QPushButton("x", self)
@@ -1626,8 +1564,8 @@ class AddShelveWindow(QWidget):  # ventana agregar estante
         self.linesEdit()
         self.accept_button()
         ########################
-        self.close_button()  #
-        self.center()  #
+        close_button(self)  #
+        center(self)  #
         self.show()  #
         ########################
 
@@ -1713,12 +1651,6 @@ class AddShelveWindow(QWidget):  # ventana agregar estante
                             self.close()
         # ↑internamente tambien se debe agregar la libreria con los datos obtenidos
 
-    def center(self):
-        qr = self.frameGeometry()
-        cp = self.screen().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
     def close_button(self):
         button = QPushButton("x", self)
         button.resize(50, 50)
@@ -1768,8 +1700,8 @@ class LendBookTo(QWidget):   # ventana prestar libro
         self.lendTo()
         self.accept_button()
         ########################
-        self.close_button()    #
-        self.center()          #
+        close_button(self)    #
+        center(self)          #
         self.show()            #
         ########################
 
@@ -1820,26 +1752,6 @@ class LendBookTo(QWidget):   # ventana prestar libro
         self.win.ledTo(user =cliente_a_prestar, book=guardar_libro)
         self.close()
     # ↑internamente tambien se debe agregar el libro al usuario
-
-    def center(self):
-        qr = self.frameGeometry()
-        cp = self.screen().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
-    def close_button(self):
-        button = QPushButton("x", self)
-        button.resize(50, 50)
-        button.move(self.width-49, 0)
-        button.setFont(QFont('Now', 20))
-        font = button.font()
-        font.setBold(True)
-        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-        button.setFont(font)
-        button.setStyleSheet(
-            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px""")
-        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        button.clicked.connect(self.close)
 # ______________________________________________________________________________________
 
 
@@ -1875,7 +1787,7 @@ class SeeBooksSomeone(QWidget):   # ventana ver libros de alguien
         self.accept_button()
         ########################
         self.close_button()    #
-        self.center()          #
+        self.center(self)          #
         self.show()            #
         ########################
 
@@ -1919,25 +1831,7 @@ class SeeBooksSomeone(QWidget):   # ventana ver libros de alguien
         self.close()
     # ↑internamente tambien se debe agregar el libro al usuario
 
-    def center(self):
-        qr = self.frameGeometry()
-        cp = self.screen().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
-    def close_button(self):
-        button = QPushButton("x", self)
-        button.resize(50, 50)
-        button.move(self.width-49, 0)
-        button.setFont(QFont('Now', 20))
-        font = button.font()
-        font.setBold(True)
-        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-        button.setFont(font)
-        button.setStyleSheet(
-            """color: #FFF9F2; background-color:#594E3F; border-bottom-left-radius:20px; border-top-right-radius:20px""")
-        button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        button.clicked.connect(self.close)
+    
 # ______________________________________________________________________________________
 
 
@@ -1977,7 +1871,7 @@ class AddBookToShelve(QWidget):  # ventana eliminar libro de estante
         self.accept_button()
         ########################
         self.close_button()    #
-        self.center()          #
+        self.center(self)          #
         self.show()            #
         ########################
 
@@ -2059,11 +1953,6 @@ class AddBookToShelve(QWidget):  # ventana eliminar libro de estante
             
     # ↑internamente tambien se debe agregar el libro al usuario
 
-    def center(self):
-        qr = self.frameGeometry()
-        cp = self.screen().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
 
     def close_button(self):
         button = QPushButton("x", self)
@@ -2115,7 +2004,7 @@ class Delete(QWidget):      # ventana eliminar estante
         self.no_button()
         ########################
         self.close_button()    #
-        self.center()          #
+        self.center(self)          #
         self.show()            #
         ########################
 
@@ -2164,12 +2053,6 @@ class Delete(QWidget):      # ventana eliminar estante
         self.close()
     # ↑internamente tambien se debe agregar el libro al usuario
 
-    def center(self):
-        qr = self.frameGeometry()
-        cp = self.screen().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
     def close_button(self):
         button = QPushButton("x", self)
         button.resize(50, 50)
@@ -2215,7 +2098,7 @@ class ProfileWindow(QMainWindow):     # ventana perfil de usuario
         self.saveChanges_button()
         ########################
         self.close_button()    #
-        self.center()          #
+        self.center(self)          #
         self.show()            #
         ########################
 
@@ -2385,13 +2268,6 @@ class ProfileWindow(QMainWindow):     # ventana perfil de usuario
             change-cursor: cursor('PointingHand')""")
         button.setCursor(QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         button.clicked.connect(closeAction)
-
-    def center(self):
-        qr = self.frameGeometry()
-        cp = self.screen().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
 
   # ________________________________________________________________________________________________________
 
