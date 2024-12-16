@@ -1,17 +1,11 @@
+import random
+from src.Models.Libros.libro import Libro
+from src.Models.Libros.recomendacio import Recomendacion
 from src.Models.core.prestamos import Prestamo
 from src.Models.Usuarios.usuarios import Usuario
-from multipledispatch import dispatch
-#from src.Models.Libros.recomendacio import Recomendacion
 
 class Cliente(Usuario):
-    @dispatch(str, str)
-    def __init__(self, nombre: str, contraseña: str):
-        super().__init__(nombre, contraseña)
-        self.__prestamos: list['Prestamo'] = []
-        self.__recomendaciones: list['Recomendacion'] = []
-
-    @dispatch(str, str, int)
-    def __init__(self, nombre: str, contraseña: str, codigo_usuario: int):
+    def __init__(self, nombre: str, contraseña: str, codigo_usuario: int = random.randint(1000, 9999)):
         super().__init__(nombre, contraseña, codigo_usuario)
         self.__prestamos: list['Prestamo'] = []
         self.__recomendaciones: list['Recomendacion'] = []
@@ -29,16 +23,9 @@ class Cliente(Usuario):
                 prestamo.devolver()
                 return
         print("No tienes este libro prestado.")
-
-    def ver_libros_prestados(self) -> list['Prestamo']:
-        return self.__prestamos
-
-    def buscar_libro_por_nombre(self, nombre: str) -> 'Libro':
-        for estante in self.biblioteca.estantes:
-            libro = estante.buscar_libro_por_nombre(nombre)
-            if libro is not None:
-                return libro
-        return None
+    
+    def add_prestamo(self, prestamo: 'Prestamo'):
+        self.__prestamos.append(prestamo)
     
     def eliminar_recomendacion(self, recomendacion: 'Recomendacion') -> None:
         self.__recomendaciones.remove(recomendacion)
@@ -57,6 +44,3 @@ class Cliente(Usuario):
     @property
     def recomendaciones(self):
         return self.__recomendaciones
-    
-    def add_prestamo(self, prestamo: 'Prestamo'):
-        self.__prestamos.append(prestamo)

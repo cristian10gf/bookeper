@@ -1,19 +1,18 @@
-from multipledispatch import dispatch
+from typing import Optional
 from src.Models.Libros.libro import Libro
-from src.Models.Usuarios.cliente import Cliente
 
 class Recomendacion:
     __id: int = 0
 
-    def __init__(self, id: int = None, libro: 'Libro' = None, usuario: 'Cliente' = None, prestamo: bool = False):
+    def __init__(self, id: Optional[int] = None, libro: Optional['Libro'] = None, usuario = None, prestamo: bool = False):
         if id is None:
             self.__id = Recomendacion.__id
             Recomendacion.__id += 1
         else:
             self.__id = id
-        self.__libro = libro
-        self.__usuario = usuario
-        self.__usuario.agregar_recomendacion(self)
+        self.__libro = libro if libro is not None else None
+        self.__usuario = usuario if usuario is not None else None
+        self.__usuario.agregar_recomendacion(self) if self.__usuario is not None else None
         self.__prestamo = prestamo
 
     @property

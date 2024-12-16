@@ -1,15 +1,16 @@
-from multipledispatch import dispatch
+import random
+from src.Models.Constantes import Metodos_consulta
+from src.Models.Libros.libro import Libro
+from src.Models.Usuarios.cliente import Cliente
 from src.Models.Usuarios.usuarios import Usuario
+from src.Models.core.estante_libros import EstanteDeLibros
 from src.Models.core.prestamos import Prestamo
 
 class administrador(Usuario):
-    def __init__(self, nombre: str, contrasena: str, estantes: list['EstanteDeLibros'] = [], codigo_usuario: int = 0) -> None:
-        if (codigo_usuario == 0):
-            super().__init__(nombre, contrasena)
-        else: 
-            super().__init__(nombre, contrasena, codigo_usuario)
+    def __init__(self, nombre: str, contrasena: str, estantes: list['EstanteDeLibros'] = [], codigo_usuario: int = random.randint(1000, 9999)) -> None:
+        super().__init__(nombre, contrasena, codigo_usuario)
         self.__estantes = estantes
-        self.__prestamos_pendientes = []
+        self.__prestamos_pendientes: list[Prestamo] = []
 
     def agregar_estante(self, estante: 'EstanteDeLibros'):
         self.__estantes.append(estante)
@@ -17,9 +18,9 @@ class administrador(Usuario):
     def quitar_estante(self, estante: 'EstanteDeLibros'):
         self.__estantes.remove(estante)
 
-    def buscar_libro_por_nombre(self, nombre: str) -> 'Libro':
+    def buscar_libro(self, nombre: str) -> Libro | None:
         for estante in self.__estantes:
-            libro = estante.buscar_libro_por_nombre(nombre)
+            libro = estante.get_libro_por_nombre(nombre)
             if libro is not None:
                 return libro
         return None
@@ -27,7 +28,7 @@ class administrador(Usuario):
     def buscar_libros_por_autor(self, autor) -> list['Libro']:
         libros_encontrados = []
         for estante in self.estantes:
-            libros_en_estante = estante.buscar_libros_por_autor(autor)
+            libros_en_estante = estante.buscar_libros(autor, Metodos_consulta.AUTOR)
             libros_encontrados.extend(libros_en_estante)
         return libros_encontrados
 
@@ -35,39 +36,30 @@ class administrador(Usuario):
         prestamo = Prestamo(Cliente, libro)
         self.__prestamos_pendientes.append(prestamo)
 
-    def devolver_libro(self, libro: 'Libro', Cliente: 'Cliente') -> None:
+    def devolver_libro(self, libro: 'Libro', Cliente: 'Cliente') -> str:
         Cliente.devolver_libro(libro)
         for prestamo in self.__prestamos_pendientes:
             if prestamo.libro.codigo == libro.codigo:
                 self.__prestamos_pendientes.remove(prestamo)
-                return
-        print("No se encontro el prestamo")
-
-    def ver_libros_prestados(self) -> list['Prestamo']:
-        return self.__prestamos_pendientes
+                return "Libro devuelto por el administrador"
+        return "No se encontro el prestamo"
 
     def verificar_libro_prestado(self, libro: 'Libro') -> bool:
-        return libro in self.__prestamos_pendientes
+        for prestamo in self.__prestamos_pendientes:
+            if prestamo.libro.codigo == libro.codigo:
+                return True
+        return False
 
-    @property
-    def estantes(self):
-        return self.__estantes
-
-    @estantes.setter
-    def estantes(self, estante):
-        self.__estantes.append(estante)
-
-    @property
-    def prestamos_pendientes(self):
-        return self.__prestamos_pendientes
-
-    @prestamos_pendientes.setter
-    def prestamos_pendientes(self, prestamo):
-        self.__prestamos_pendientes.append(prestamo)
-
-    def get_estante(self,id: int) -> 'EstanteDeLibros':
+    def get_estante(self,id: int) -> EstanteDeLibros | None:
         for estante in self.__estantes:
             if estante.codigo == id:
                 return estante
         return None
 
+    @property
+    def estantes(self):
+        return self.__estantes
+
+    @property
+    def prestamos_pendientes(self):
+        return self.__prestamos_pendientes

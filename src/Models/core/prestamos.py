@@ -1,32 +1,24 @@
-
-#from Libros.libro import Libro
 from datetime import datetime
-from datetime import date
 import random
+from typing import Optional
+from src.Models.Libros.libro import Libro
 
 class Prestamo:
 
     def __init__(
-            self,
-            cliente: 'Cliente',
-            libro: 'Libro',
-            fecha_prestamo: datetime,
-            fecha_devolucion: datetime = None,
-            devuelto: bool = False,
-            codigo: int = None
+        self, cliente: 'Cliente', libro: 'Libro',
+        fecha_prestamo: datetime = datetime.now(), fecha_devolucion: Optional[datetime] = None,
+        devuelto: bool = False,
+        codigo: int = random.randint(1000, 9999)
     ) -> None:
         self.__cliente = cliente
         self.__cliente.add_prestamo(self)
         self.__libro = libro
         self.__fecha_prestamo = fecha_prestamo
         self.__fecha_devolucion = fecha_devolucion
-        if codigo is None:
-            self.__codigo = random.randint(1000, 9999)
-        else:
-            self.__codigo = codigo
+        self.__codigo = codigo
         self.__devuelto = devuelto
         self.libro.prestar(self)
-
 
     @property
     def libro(self) -> 'Libro':
@@ -37,7 +29,7 @@ class Prestamo:
         return self.__cliente
 
     @property
-    def fecha_devolucion(self) -> datetime:
+    def fecha_devolucion(self) -> datetime | None:
         return self.__fecha_devolucion
 
     @property
